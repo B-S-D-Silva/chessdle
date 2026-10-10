@@ -6,6 +6,11 @@
   <meta name="theme-color" content="#14231d">
   <meta name="description" content="Cinco desafios diários para quem ama xadrez. Jogue Chessdle de graça.">
   <title>Chessdle — desafios diários de xadrez</title>
+  <script>
+    if (!sessionStorage.getItem("EMAIL_USUARIO") || !sessionStorage.getItem("NOME_USUARIO")) {
+      window.location.replace("login.html");
+    }
+  </script>
   <link rel="stylesheet" href="css/chessdle.css">
 </head>
 <body>
