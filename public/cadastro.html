@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14231d">
+  <meta name="description" content="Crie sua conta Chessdle e aproveite os desafios diários de xadrez.">
+  <title>Criar conta — Chessdle</title>
+  <link rel="stylesheet" href="css/chessdle.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/cadastro.css">
+  <script src="js/sessao.js"></script>
+</head>
+<body class="login-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Chessdle, início">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span>chessdle</span>
+      </a>
+      <nav class="login-nav" aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="login.html">Entrar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="login-main cadastro-main">
+    <section class="login-intro">
+      <p class="eyebrow">Faça parte do Chessdle</p>
+      <h1>Crie sua conta</h1>
+      <p class="intro-copy">Cadastre-se para entrar e aproveitar seus desafios de xadrez.</p>
+    </section>
+
+    <section class="login-panel" aria-labelledby="cadastro-title">
+      <div class="login-panel-heading">
+        <span class="login-piece" aria-hidden="true">♟</span>
+        <div>
+          <p class="mode-kicker">Sua jornada começa aqui</p>
+          <h2 id="cadastro-title">Novo cadastro</h2>
+        </div>
+      </div>
+
+      <div class="alerta_erro" id="cardErro" role="alert" aria-live="polite">
+        <span id="mensagem_erro"></span>
+      </div>
+      <div id="div_erros_login" class="login-error" role="alert" aria-live="polite"></div>
+
+      <form class="login-form" id="cadastro-form">
+        <label for="codigo_input">Código de ativação</label>
+        <input id="codigo_input" name="codigo" type="text" placeholder="Digite o código de ativação" autocomplete="off" required>
+
+        <label for="nome_input">Nome</label>
+        <input id="nome_input" name="nome" type="text" placeholder="Seu nome" autocomplete="name" required>
+
+        <label for="email_input">E-mail</label>
+        <input id="email_input" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+
+        <label for="senha_input">Senha</label>
+        <input id="senha_input" name="senha" type="password" placeholder="Crie uma senha" autocomplete="new-password" required>
+
+        <label for="confirmacao_senha_input">Confirme sua senha</label>
+        <input id="confirmacao_senha_input" name="confirmacao" type="password" placeholder="Digite a senha novamente" autocomplete="new-password" required>
+
+        <button class="submit-button" type="submit">Criar conta <span aria-hidden="true">→</span></button>
+      </form>
+
+      <div id="div_aguardar" class="loading-div" aria-live="polite">
+        <img src="assets/circle-loading.gif" id="loading-gif" alt="Carregando">
+        <span>Preparando seu cadastro...</span>
+      </div>
+
+      <p class="login-signup">Já tem uma conta? <a href="login.html">Entrar</a></p>
+    </section>
+
+    <footer class="site-footer">
+      <p>Feito para quem ama xadrez. ♞</p>
+      <p>Chessdle não é afiliado ao Chess.com.</p>
+    </footer>
+  </main>
+
+  <script>
+    var empresas = [];
+    var empresasCarregadas = false;
+
+    function mostrarErro(texto) {
+      var caixa = document.getElementById("cardErro");
+      document.getElementById("mensagem_erro").textContent = texto;
+      caixa.style.display = "block";
+    }
+
+    function listar() {
+      fetch("/empresas/listar").then(function(resposta) {
+        if (!resposta.ok) {
+          throw new Error("Não foi possível carregar os códigos de ativação.");
+        }
+        return resposta.json();
+      }).then(function(lista) {
+        empresas = lista;
+        empresasCarregadas = true;
+      }).catch(function() {
+        mostrarErro("Não foi possível carregar os códigos de ativação. Atualize a página e tente novamente.");
+      });
+    }
+
+    function cadastrar(evento) {
+      evento.preventDefault();
+      var codigo = document.getElementById("codigo_input").value.trim();
+      var nome = document.getElementById("nome_input").value.trim();
+      var email = document.getElementById("email_input").value.trim();
+      var senha = document.getElementById("senha_input").value;
+      var confirmacao = document.getElementById("confirmacao_senha_input").value;
+      var idEmpresa;
+      var i = 0;
+      var botao = document.querySelector(".login-form button");
+
+      document.getElementById("cardErro").style.display = "none";
+      document.getElementById("div_erros_login").style.display = "none";
+
+      if (empresasCarregadas == false) {
+        mostrarErro("Aguarde enquanto carregamos os códigos de ativação.");
+        return false;
+      }
+
+      if (senha != confirmacao) {
+        mostrarErro("As senhas não são iguais.");
+        return false;
+      }
+
+      while (i < empresas.length) {
+        if (empresas[i].codigo_ativacao == codigo) {
+          idEmpresa = empresas[i].id;
+        }
+        i++;
+      }
+
+      if (idEmpresa == undefined) {
+        mostrarErro("Código de ativação inválido.");
+        return false;
+      }
+
+      botao.disabled = true;
+      aguardar();
+      fetch("/usuarios/cadastrar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nomeServer: nome,
+          emailServer: email,
+          senhaServer: senha,
+          idEmpresaVincularServer: idEmpresa
+        })
+      }).then(function(resposta) {
+        if (!resposta.ok) {
+          throw new Error("Não foi possível criar a conta. Verifique seus dados e tente novamente.");
+        }
+        mostrarErro("Conta criada! Redirecionando para o login...");
+        document.getElementById("cardErro").classList.add("login-success");
+        document.getElementById("cadastro-form").reset();
+        setTimeout(function() {
+          window.location = "login.html";
+        }, 2000);
+      }).catch(function(erro) {
+        finalizarAguardar(erro.message);
+        botao.disabled = false;
+      });
+
+      return false;
+    }
+
+    document.getElementById("cadastro-form").onsubmit = cadastrar;
+    listar();
+  </script>
+</body>
+</html>

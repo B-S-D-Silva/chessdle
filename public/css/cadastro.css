@@ -1,0 +1,32 @@
+.cadastro-main {
+  width: min(560px, calc(100% - 40px));
+}
+
+.cadastro-main .login-panel {
+  padding: 25px 28px;
+}
+
+.cadastro-main .login-form {
+  gap: 7px;
+}
+
+.cadastro-main .login-form label {
+  margin-top: 5px;
+}
+
+.login-error.login-success,
+.alerta_erro.login-success {
+  border-color: rgba(163, 209, 96, .4);
+  background: rgba(129, 182, 76, .12);
+  color: var(--green-bright);
+}
+
+@media (max-width: 480px) {
+  .cadastro-main {
+    width: min(100% - 24px, 560px);
+  }
+
+  .cadastro-main .login-panel {
+    padding: 20px 17px;
+  }
+}

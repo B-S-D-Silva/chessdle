@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14231d">
+  <meta name="description" content="Cinco desafios diários para quem ama xadrez. Jogue Chessdle de graça.">
+  <title>Chessdle — desafios diários de xadrez</title>
+  <link rel="stylesheet" href="css/chessdle.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#" aria-label="Chessdle, início">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span>chessdle</span>
+      </a>
+      <div class="header-right">
+        <span class="header-note">Cinco desafios. Um novo dia.</span>
+        <span class="header-user" id="header-user" hidden></span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Seu desafio diário de xadrez</p>
+      <h1 id="page-title">Quanto você conhece de xadrez?</h1>
+      <p class="intro-copy">Escolha um modo, use as pistas e descubra a resposta do dia.</p>
+    </section>
+
+    <nav class="mode-tabs" role="tablist" aria-label="Modos de jogo">
+      <button class="mode-tab" id="tab-player" type="button" role="tab" aria-selected="true" aria-controls="game-content" data-mode="player">
+        <span class="tab-icon" aria-hidden="true">♟</span><span class="tab-label">Jogador</span>
+      </button>
+      <button class="mode-tab" id="tab-opening" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="opening">
+        <span class="tab-icon" aria-hidden="true">♘</span><span class="tab-label">Abertura</span>
+      </button>
+      <button class="mode-tab" id="tab-move" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="move">
+        <span class="tab-icon" aria-hidden="true">♜</span><span class="tab-label">Melhor lance</span>
+      </button>
+      <button class="mode-tab" id="tab-quote" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="quote">
+        <span class="tab-icon" aria-hidden="true">❝</span><span class="tab-label">Citação</span>
+      </button>
+      <button class="mode-tab" id="tab-puzzle" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="puzzle">
+        <span class="tab-icon" aria-hidden="true">♛</span><span class="tab-label">Posição do dia</span>
+      </button>
+    </nav>
+
+    <section class="game-panel" id="game-content" role="tabpanel" aria-labelledby="tab-player">
+      <div class="panel-top">
+        <div>
+          <p class="mode-kicker" id="mode-kicker">Desafio 1 de 5</p>
+          <h2 id="mode-title">Adivinhe o jogador</h2>
+          <p class="mode-description" id="mode-description"></p>
+        </div>
+        <div class="tries" id="tries-counter" aria-live="polite"></div>
+      </div>
+      <div class="challenge">
+        <div class="challenge-content" id="challenge-content"></div>
+        <aside class="side-card" aria-label="Como jogar">
+          <p class="side-card-title">Como jogar</p>
+          <ul>
+            <li><span aria-hidden="true">●</span> Você tem até 6 tentativas.</li>
+            <li><span aria-hidden="true">●</span> Peça uma pista se precisar.</li>
+            <li><span aria-hidden="true">●</span> Um novo desafio chega à meia-noite.</li>
+          </ul>
+        </aside>
+      </div>
+      <div class="history" id="guess-history" aria-live="polite"></div>
+    </section>
+
+    <section class="daily-footer" aria-label="Resumo diário">
+      <div>
+        <strong>♙ Cinco jeitos de jogar xadrez</strong>
+        <p>Novos desafios todos os dias. Sem cadastro e sem instalar nada.</p>
+      </div>
+      <div class="daily-meta">
+        Desafio de hoje
+        <span id="today-date"></span>
+        <button class="reset-button" id="reset-button" type="button">Jogar novamente</button>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>Feito para quem ama xadrez. ♞</p>
+      <p>Chessdle não é afiliado ao Chess.com.</p>
+    </footer>
+  </main>
+
+  <datalist id="guess-options"></datalist>
+
+  <script src="js/chessdle.js" defer></script>
+</body>
+</html>

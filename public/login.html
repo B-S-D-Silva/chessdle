@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14231d">
+  <meta name="description" content="Entre na sua conta Chessdle.">
+  <title>Entrar — Chessdle</title>
+  <link rel="stylesheet" href="css/chessdle.css">
+  <link rel="stylesheet" href="css/login.css">
+  <script src="js/sessao.js"></script>
+</head>
+<body class="login-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Chessdle, início">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span>chessdle</span>
+      </a>
+      <nav class="login-nav" aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="cadastro.html">Criar conta</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="login-main">
+    <section class="login-intro">
+      <p class="eyebrow">Bom ter você de volta</p>
+      <h1>Entre para continuar jogando</h1>
+      <p class="intro-copy">Acesse sua conta e volte aos seus desafios de xadrez.</p>
+    </section>
+
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="login-panel-heading">
+        <span class="login-piece" aria-hidden="true">♟</span>
+        <div>
+          <p class="mode-kicker">Sua conta Chessdle</p>
+          <h2 id="login-title">Entrar</h2>
+        </div>
+      </div>
+
+      <div class="alerta_erro" id="cardErro" role="alert" aria-live="polite">
+        <span id="mensagem_erro"></span>
+      </div>
+      <div id="div_erros_login" class="login-error" role="alert" aria-live="polite"></div>
+
+      <form class="login-form" onsubmit="return entrar()">
+        <label for="email_input">E-mail</label>
+        <input id="email_input" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+
+        <label for="senha_input">Senha</label>
+        <input id="senha_input" name="senha" type="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+
+        <button class="submit-button" type="submit">Entrar <span aria-hidden="true">→</span></button>
+      </form>
+
+      <div id="div_aguardar" class="loading-div" aria-live="polite">
+        <img src="assets/circle-loading.gif" id="loading-gif" alt="Carregando">
+        <span>Verificando seus dados...</span>
+      </div>
+
+      <p class="login-signup">Ainda não tem uma conta? <a href="cadastro.html">Cadastre-se</a></p>
+    </section>
+
+    <footer class="site-footer">
+      <p>Feito para quem ama xadrez. ♞</p>
+      <p>Chessdle não é afiliado ao Chess.com.</p>
+    </footer>
+  </main>
+
+  <script>
+    function entrar() {
+      var emailVar = document.getElementById("email_input").value;
+      var senhaVar = document.getElementById("senha_input").value;
+      var cardErro = document.getElementById("cardErro");
+      var mensagemErro = document.getElementById("mensagem_erro");
+      var botao = document.querySelector(".login-form button");
+
+      cardErro.style.display = "none";
+      document.getElementById("div_erros_login").style.display = "none";
+
+      if (emailVar == "" || senhaVar == "") {
+        mensagemErro.innerHTML = "Preencha o e-mail e a senha.";
+        cardErro.style.display = "block";
+        return false;
+      }
+
+      botao.disabled = true;
+      aguardar();
+
+      fetch("/usuarios/autenticar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          emailServer: emailVar,
+          senhaServer: senhaVar
+        })
+      }).then(function(resposta) {
+        if (resposta.ok) {
+          resposta.json().then(function(json) {
+            sessionStorage.EMAIL_USUARIO = json.email;
+            sessionStorage.NOME_USUARIO = json.nome;
+            sessionStorage.ID_USUARIO = json.id;
+            sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
+            window.location = "dashboard/cards.html";
+          });
+        } else {
+          resposta.text().then(function(texto) {
+            finalizarAguardar(texto);
+            botao.disabled = false;
+          });
+        }
+      }).catch(function() {
+        finalizarAguardar("Não foi possível conectar. Tente novamente.");
+        botao.disabled = false;
+      });
+
+      return false;
+    }
+  </script>
+</body>
+</html>
