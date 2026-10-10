@@ -1,52 +1,40 @@
 var modo = 0;
 var maxTentativas = 6;
-var tentativas = [0, 0, 0, 0, 0];
-var pistasUsadas = [0, 0, 0, 0, 0];
-var terminou = [false, false, false, false, false];
+var tentativas = [0, 0, 0];
+var pistasUsadas = [0, 0, 0];
+var terminou = [false, false, false];
 var tipoMensagem = "";
 
 // Os itens dos vetores seguem a ordem das abas no HTML.
 var titulos = [
   "Adivinhe o jogador",
   "Adivinhe a abertura",
-  "Qual o melhor lance?",
-  "De quem é a citação?",
-  "Posição do dia"
+  "De quem é a citação?"
 ];
 var descricoes = [
   "Descubra qual grande nome do xadrez está escondido.",
   "Reconheça a abertura pelos lances.",
-  "Encontre o melhor lance para as brancas.",
-  "Descubra quem disse esta frase.",
-  "Encontre o mate em 2."
+  "Descubra quem disse esta frase."
 ];
 var perguntas = [
   "Quem é o enxadrista misterioso?",
   "1. e4 e5  2. Nf3 Nc6  3. Bc4",
-  "As brancas jogam. Qual lance dá xeque?",
-  "Quem disse esta frase?",
-  "Digite a sequência de mate em 2."
+  "Quem disse esta frase?"
 ];
 var respostas = [
   "",
   "Abertura Italiana",
-  "Nxf7+",
-  "José Raúl Capablanca",
-  "Qh7+ Kxh7 Rh3#"
+  "José Raúl Capablanca"
 ];
 var opcoes = [
   [],
   ["Abertura Italiana", "Defesa Siciliana", "Ruy López", "Gambito da Dama"],
-  ["Nxf7+", "Bxf7+", "Qh5+", "O-O", "Rxf7", "Nd5"],
-  ["Bobby Fischer", "Garry Kasparov", "Magnus Carlsen", "José Raúl Capablanca"],
-  []
+  ["Bobby Fischer", "Garry Kasparov", "Magnus Carlsen", "José Raúl Capablanca"]
 ];
 var dicas = [
   ["É um grande mestre norueguês.", "Nasceu em 1990."],
   ["O bispo branco vai para c4.", "A abertura começa com 1. e4 e5."],
-  ["Procure um xeque com o cavalo.", "O cavalo pode ir para f7."],
-  ["Nasceu em Cuba.", "Foi campeão mundial entre 1921 e 1927."],
-  ["Comece com um xeque da dama.", "Depois, use a torre na coluna h."]
+  ["Nasceu em Cuba.", "Foi campeão mundial entre 1921 e 1927."]
 ];
 var jogadores = [
   ["Magnus Carlsen", "É um grande mestre norueguês.", 1990],
@@ -58,10 +46,7 @@ var jogadores = [
   ["Viswanathan Anand", "Foi o primeiro campeão mundial indiano.", 1969],
   ["Fabiano Caruana", "Disputou o título mundial em 2018.", 1992]
 ];
-var pecas = ["", "♜", "", "♚", "♟", "", "♟", "♟", "", "♘", "", "♕", "♖", "", "♔", ""];
-var cores = ["light", "dark", "light", "dark", "dark", "light", "dark", "light",
-  "light", "dark", "light", "dark", "dark", "light", "dark", "light"];
-var abas = ["tab-player", "tab-opening", "tab-move", "tab-quote", "tab-puzzle"];
+var abas = ["tab-player", "tab-opening", "tab-quote"];
 var hoje = new Date();
 var nomeUsuario = sessionStorage.getItem("NOME_USUARIO");
 var meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
@@ -102,17 +87,6 @@ function montarOpcoes() {
   document.getElementById("guess-options").innerHTML = texto;
 }
 
-function montarTabuleiro() {
-  var texto = '<div class="board" role="img" aria-label="Tabuleiro de xadrez">';
-  var i = 0;
-
-  while (i < pecas.length) {
-    texto = texto + '<span class="square ' + cores[i] + '">' + pecas[i] + "</span>";
-    i++;
-  }
-  return texto + "</div>";
-}
-
 function mostrarJogo() {
   var texto = "";
   var extra = "";
@@ -120,7 +94,7 @@ function mostrarJogo() {
   var resto = maxTentativas - tentativas[modo];
   var i = 0;
 
-  document.getElementById("mode-kicker").innerHTML = "Desafio " + (modo + 1) + " de 5";
+  document.getElementById("mode-kicker").innerHTML = "Desafio " + (modo + 1) + " de 3";
   document.getElementById("mode-title").innerHTML = titulos[modo];
   document.getElementById("mode-description").innerHTML = descricoes[modo];
   document.getElementById("game-content").setAttribute("aria-labelledby", abas[modo]);
@@ -138,25 +112,13 @@ function mostrarJogo() {
   document.getElementById("tries-counter").innerHTML = "<strong>" + resto + "</strong> " + texto;
 
   if (modo == 2) {
-    extra = '<div class="position-card">' + montarTabuleiro() +
-      '<div class="board-caption"><strong>Posição para analisar</strong>Encontre o lance tático.</div></div>';
-  }
-  if (modo == 3) {
     extra = '<blockquote class="quote-card">“O xadrez é a vida em miniatura.”</blockquote>';
-  }
-  if (modo == 4) {
-    extra = '<div class="position-card">' + montarTabuleiro() +
-      '<div class="board-caption"><strong>Brancas jogam</strong>Encontre o mate em 2.</div></div>';
   }
 
   texto = '<p class="prompt">' + perguntas[modo] + "</p>" + extra;
   texto = texto + '<form class="guess-form" id="guess-form">';
   texto = texto + '<input class="guess-input" id="guess-input" list="guess-options" autocomplete="off" required';
-  if (modo == 4) {
-    texto = texto + ' placeholder="Ex.: Qh7+ Kxh7 Rh3#"';
-  } else {
-    texto = texto + ' placeholder="Digite sua resposta..."';
-  }
+  texto = texto + ' placeholder="Digite sua resposta..."';
   if (terminou[modo] == true) {
     texto = texto + " disabled";
   }
@@ -249,9 +211,7 @@ document.getElementById("reset-button").onclick = function() {
 
 document.getElementById("tab-player").onclick = function() { trocarModo(0); };
 document.getElementById("tab-opening").onclick = function() { trocarModo(1); };
-document.getElementById("tab-move").onclick = function() { trocarModo(2); };
-document.getElementById("tab-quote").onclick = function() { trocarModo(3); };
-document.getElementById("tab-puzzle").onclick = function() { trocarModo(4); };
+document.getElementById("tab-quote").onclick = function() { trocarModo(2); };
 
 document.getElementById("today-date").innerHTML = hoje.getDate() + " de " +
   meses[hoje.getMonth()] + " de " + hoje.getFullYear();

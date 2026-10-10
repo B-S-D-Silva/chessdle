@@ -128,7 +128,7 @@
 
     .mode-tabs {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       padding: 8px;
       border: 1px solid var(--line);
@@ -410,7 +410,7 @@
 
     @media (max-width: 700px) {
       main { padding-top: 27px; }
-      .mode-tabs { grid-template-columns: repeat(5, minmax(90px, 1fr)); overflow-x: auto; }
+      .mode-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .mode-tab { min-height: 64px; flex-direction: column; gap: 5px; padding: 8px 5px; }
       .tab-label { font-size: 11px; }
       .challenge { grid-template-columns: minmax(0, 1fr); gap: 19px; padding: 21px; }
