@@ -1,105 +1,81 @@
-<img src="https://user-images.githubusercontent.com/46379117/192358781-9ca879e4-e55e-4d0d-b876-f9a4a2ed9ae8.png" width="600px">
+<p align="center">
+  <img src="public/assets/chessdle-logo.svg" alt="Logo Chessdle" width="320">
+</p>
 
-_Web Data Visualization = Visualização de Dados na Web_
+<h1 align="center">Chessdle</h1>
 
-_Implementação de Referência para o seu Projeto de Primeiro Semestre_
+<p align="center">
+  Desafios de xadrez para testar seus conhecimentos, uma partida por vez.
+</p>
 
-<hr>
+## Sobre o projeto
 
-# Como usar
+O **Chessdle** é um projeto acadêmico individual desenvolvido para a matéria de **PI (Projeto e Inovação)**. A proposta é criar uma experiência inspirada em jogos de adivinhação diária, com uma interface visual baseada no Chess.com.
 
-1. Clone este repositório em sua máquina.
+O projeto está em desenvolvimento. Atualmente, a página principal apresenta três modos:
 
+- **Adivinhe o jogador:** descubra o enxadrista usando pistas.
+- **Adivinhe a abertura:** identifique a abertura a partir dos lances apresentados.
+- **Citação:** descubra qual enxadrista disse uma frase famosa.
 
-1. Crie, no Banco de Dados, as tabelas necessárias para o funcionamento deste projeto.
-- Siga as instruções no arquivo **/src/database/script-tabelas.sql**
+A aplicação também conta com telas de cadastro e login. O nome da pessoa autenticada é exibido no cabeçalho da página inicial.
 
+## Tecnologias
 
-3. Acesse o arquivo **app.js** e parametrize o ambiente.
-- Se você estiver utilizando o Ambiente de Produção (remoto), comente a linha 2 e deixe habilitada a linha 1 onde está o valor **var ambiente_processo = 'producao';**
-- Se você estiver utilizando o Ambiente de Desenvolvimento (local), comente a linha 1 e deixe habilitada a linha 2 onde está o valor **var ambiente_processo = 'desenvolvimento';**
+- HTML, CSS e JavaScript no front-end.
+- Node.js e Express no servidor.
+- MySQL para persistência e autenticação.
 
-4. Adicione as credenciais de Banco de Dados no arquivo **.env** ou em **.env.dev**, seguindo as instruções neste.
+## Adaptação da API Web Data Viz
 
-5. Acesse este repositório no seu terminal (GitBash ou VSCode) e execute os comandos abaixo:
+O projeto parte da estrutura da API Web Data Viz, utilizada como referência acadêmica, e adapta essa base para o Chessdle. A estrutura do servidor Express e a organização em **routes**, **controllers** e **models** foram aproveitadas como ponto de partida. As telas e a identidade visual foram modificadas para o tema de xadrez, e os fluxos de cadastro e autenticação foram conectados à interface do Chessdle.
 
+A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios apresentados na página principal são implementados no JavaScript do front-end; eles ainda não são servidos nem salvos como partidas pela API.
+
+## Como executar
+
+1. Instale o [Node.js](https://nodejs.org/) e o MySQL.
+2. Instale as dependências do projeto:
+
+   ```bash
+   npm install
+   ```
+
+3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
+4. Configure o ambiente usado pelo servidor em `app.js`.
+5. Prepare o banco de dados e as tabelas necessárias. O arquivo `src/database/script-tabelas.sql` serve como referência inicial; confira se o schema corresponde às consultas e relacionamentos usados atualmente pelo projeto.
+6. Inicie o servidor:
+
+   ```bash
+   npm start
+   ```
+
+7. Abra no navegador o endereço exibido no terminal, normalmente `http://localhost:8080`.
+
+## Estrutura principal
+
+```text
+public/
+  assets/          Imagens e recursos estáticos
+  css/             Estilos das páginas
+  js/              Lógica do front-end
+  index.html       Desafios do Chessdle
+  login.html       Autenticação
+  cadastro.html    Cadastro de usuário
+src/
+  controllers/     Lógica das rotas da API
+  database/        Conexão e scripts do banco
+  models/          Consultas e acesso a dados
+  routes/          Endpoints da API
+app.js             Configuração do servidor Express
 ```
-npm i
-``` 
-_O comando acima irá instalar as bibliotecas necessárias para o funcionamento do projeto. As bibliotecas a serem instaladas estão listadas no arquivo **package.json** então é muito importante que este não seja alterado. Será criada uma nova pasta/diretório chamado **node_modules** quando o comando for finalizado, que é onde as bibliotecas estão localizadas. Não altere a pasta/diretório._
 
-```
-npm start
-``` 
+## Próximos passos
 
-_O comando acima irá iniciar seu projeto e efetuar os comandos de acordo com a sua parametrização feita nos passos anteriores._
+- Alinhar o schema do banco com os recursos usados no cadastro e na autenticação.
+- Adaptar ou remover os recursos restantes da API que pertencem ao projeto de referência.
+- Evoluir os desafios de xadrez e integrar seu estado à API, caso necessário.
 
-6. Para "ver" seu projeto funcionando, acesse em seu navegador o caminho **informado no terminal**.
+---
 
-7. Caso queira parar a execução, tecle **CTRL+C** no terminal em que o projeto está rodando.
-
-## Adicionar novo recurso ao projeto
-
-**"Recurso? O que é?"** Enquanto no Banco de Dados chamamos as tabelas de "entidades", quando tratamos de desenvolvimento WEB usamos a palavra "recurso" para se referir a algo que podemos criar, ler, atualizar ou deletar [1]. Estas ações são conhecidas como CRUD: Create, Read, Update e Delete. Para acessar cada ação, usamos os métodos HTTP: POST, GET, PUT e DELETE [2]. (Há outros verbos, porém com estes já conseguimos efetuar CRUDs). 
-
-**Tabela para ajudar a fazer a associação**
-
-<table>
-  <tr>
-    <th>C.R.U.D</th>
-    <th>Ação</th>
-    <th>Tradução</th>
-    <th>Verbo HTTP *</th>
-    <th>Comando BD</th>
-  </tr>
-  <tr>
-    <td>C</td>
-    <td>Create</td>
-    <td>Criar</td>
-    <td>POST</td>
-    <td>INSERT</td>
-  </tr>
-  <tr>
-    <td>R</td>
-    <td>Read</td>
-    <td>Ler</td>
-    <td>GET</td>
-    <td>SELECT</td>
-  </tr>
-  <tr>
-    <td>U</td>
-    <td>Update</td>
-    <td>Atualizar</td>
-    <td>PUT</td>
-    <td>UPDATE</td>
-  </tr>
-  <tr>
-    <td>D</td>
-    <td>Delete</td>
-    <td>Deletar</td>
-    <td>DELETE</td>
-    <td>DELETE</td>
-  </tr>
-</table>
-
-_* Você verá o verbo HTTP sendo apontado nos arquivos em /routes_
-
-**"E no meu projeto, o que seria um recurso?"** Em web-data-viz manipulamos os recursos **usuário**, **aviso** e **medida**. Podemos conferir isso vendo para quais entidades foram criados os caminhos de inserção e captura de dados, que envolve os diretórios **routes**, **controllers** e **models**.
-
-Abaixo, uma figura que ajuda a compreender o caminho percorrido para, por exemplo, efetuar o cadastro de um usuário:
-
-
-![image](https://github.com/user-attachments/assets/d576f178-0da6-437e-b5c9-658e3ebaf6ca)
-
-
-
-**Entendi o que é um recurso e gostaria de adicionar um novo ao meu projeto! Como faz?**  
-- Primeiro, crie a tabela no Banco de Dados referente a este recurso. Exemplos de recursos comuns de serem adicionados ao projeto no primeiro semestre: Silo, Aquário, Sala, Andar, Endereço, Mercado, Prateleira, Unidade, Carro, Caminhão...  
-- Assim que criada a tabela, faça todo o caminho de **front-end → routes → controllers → models** replicando o que já existe!  
-- Exemplo, se você quiser a funcionalidade de adicionar um novo Aquário, deve criar arquivos referentes ao aquario nos diretórios e replicar também as funções.  
-- Dica: A implementação de AVISO já contém o CRUD completo! :wink:
- 
-### Fontes bibliográficas
-
-[1] https://datatracker.ietf.org/doc/html/rfc2396  
-[2] https://datatracker.ietf.org/doc/html/rfc7231
+Projeto acadêmico individual para a matéria de PI.
