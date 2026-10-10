@@ -2,7 +2,7 @@
   <img src="public/assets/chessdle-logo.svg" alt="Logo Chessdle" width="320">
 </p>
 
-<h1 align="center">Chessdle</h1>
+<h1 align="center"></h1>
 
 <p align="center">
   Desafios de xadrez para testar seus conhecimentos, uma partida por vez.
