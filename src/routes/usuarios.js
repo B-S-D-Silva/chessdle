@@ -12,4 +12,12 @@ router.post("/autenticar", function (req, res) {
     usuarioController.autenticar(req, res);
 });
 
+router.get("/:id/perfil", function(req, res) {
+    usuarioController.obterPerfil(req, res);
+});
+
+router.put("/:id/perfil", function(req, res) {
+    usuarioController.atualizarPerfil(req, res);
+});
+
 module.exports = router;

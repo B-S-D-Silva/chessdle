@@ -63,8 +63,41 @@ function buscarPorId(partidaId, usuarioId) {
         });
 }
 
+function buscarHistoricoPorUsuario(usuarioId) {
+    var instrucaoSql = `
+        SELECT
+            id,
+            DATE_FORMAT(data_partida, '%Y-%m-%d') AS data,
+            jogador_tentativas, jogador_acertou, jogador_pistas,
+            abertura_tentativas, abertura_acertou, abertura_pistas,
+            citacao_tentativas, citacao_acertou, citacao_pistas
+        FROM partida
+        WHERE usuario_id = ?
+        ORDER BY data_partida DESC, criada_em DESC, id DESC
+    `;
+    return database.executar(instrucaoSql, [usuarioId])
+        .then(function(linhas) {
+            return linhas.map(function(partida) {
+                return {
+                    id: partida.id,
+                    data: partida.data,
+                    resultados: modosOrdenados.map(function(modo) {
+                        var prefixo = modo + "_";
+                        return {
+                            modo: modo,
+                            tentativas: Number(partida[prefixo + "tentativas"]),
+                            acertou: Boolean(partida[prefixo + "acertou"]),
+                            pistas: Number(partida[prefixo + "pistas"])
+                        };
+                    })
+                };
+            });
+        });
+}
+
 module.exports = {
     criar,
     buscarPorId,
+    buscarHistoricoPorUsuario,
     modosOrdenados
 };

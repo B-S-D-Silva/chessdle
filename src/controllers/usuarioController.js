@@ -56,7 +56,61 @@ function cadastrar(req, res) {
     }
 }
 
+function obterPerfil(req, res) {
+    var usuarioId = Number(req.params.id);
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1) {
+        res.status(400).send("Identificador do usuário inválido.");
+        return;
+    }
+
+    usuarioModel.buscarPerfil(usuarioId)
+        .then(function(perfil) {
+            if (perfil == null) {
+                res.status(404).send("Usuário não encontrado.");
+                return;
+            }
+            res.json(perfil);
+        })
+        .catch(function(erro) {
+            console.error("Não foi possível carregar o perfil.", erro);
+            res.status(500).send("Não foi possível carregar o perfil.");
+        });
+}
+
+function atualizarPerfil(req, res) {
+    var usuarioId = Number(req.params.id);
+    var corpo = req.body || {};
+    var descricao = corpo.descricao;
+    var ratingChessCom = corpo.ratingChessCom;
+
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1 ||
+        typeof descricao != "string" || descricao.length > 500 ||
+        !(ratingChessCom == null ||
+          (Number.isInteger(ratingChessCom) && ratingChessCom >= 0 && ratingChessCom <= 4000))) {
+        res.status(400).send("Dados do perfil inválidos.");
+        return;
+    }
+
+    usuarioModel.atualizarPerfil(usuarioId, descricao.trim(), ratingChessCom)
+        .then(function() {
+            return usuarioModel.buscarPerfil(usuarioId);
+        })
+        .then(function(perfil) {
+            if (perfil == null) {
+                res.status(404).send("Usuário não encontrado.");
+                return;
+            }
+            res.json(perfil);
+        })
+        .catch(function(erro) {
+            console.error("Não foi possível atualizar o perfil.", erro);
+            res.status(500).send("Não foi possível atualizar o perfil.");
+        });
+}
+
 module.exports = {
     autenticar,
-    cadastrar
+    cadastrar,
+    obterPerfil,
+    atualizarPerfil
 }

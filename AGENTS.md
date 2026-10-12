@@ -21,11 +21,13 @@ O projeto mistura:
 
 ### Front-end
 - `public/index.html`: landing page do jogo principal
+- `public/perfil.html`: página independente do perfil e do histórico da pessoa usuária
 - `public/login.html`: tela de login
 - `public/cadastro.html`: tela de cadastro
 - `public/dashboard/`: páginas internas do painel/admin
 - `public/js/`: scripts do front-end (`chessdle.js`, `sessao.js`, `alerta.js`)
 - `public/css/`: estilos do site
+- `public/js/perfil.js` e `public/css/perfil.css`: comportamento e estilos da página independente de perfil
 
 ### Estrutura de dados e camadas
 - `src/routes/*.js`: rotas HTTP da API
@@ -33,6 +35,7 @@ O projeto mistura:
 - `src/models/*.js`: consultas SQL por entidade
 - `src/database/config.js`: configuração da conexão com o MySQL
 - `src/database/script-tabelas.sql`: script de apoio para criação das tabelas
+- `src/database/migracao-perfil.sql`: migração incremental dos campos de perfil, preservando os dados existentes
 
 ## Fluxo principal do app
 
@@ -45,6 +48,8 @@ O projeto mistura:
   - `ID_USUARIO`
 - A verificação da sessão é feita em `public/js/sessao.js`
 - Cadastro e autenticação usam apenas nome, e-mail e senha; não dependem de empresas ou códigos de ativação
+- O link com o nome da pessoa no canto superior direito abre `public/perfil.html`
+- A página de perfil permite salvar descrição e rating do Chess.com na tabela `usuario`; o histórico de partidas é consultado na tabela `partida`
 
 ### Jogo Chessdle
 - A lógica do jogo fica em `public/js/chessdle.js`
@@ -149,6 +154,7 @@ npm run dev
 - Preserve o padrão de HTML/JS vanilla em vez de introduzir framework sem necessidade.
 - Antes de mexer em autenticação, verifique o fluxo de `sessionStorage` e os endpoints `/usuarios/autenticar` e `/usuarios/cadastrar`.
 - Ao alterar o banco, consulte `src/database/script-tabelas.sql` e os models correspondentes.
+- Registre neste arquivo `diarios de prompt.md` todo prompt enviado pelo usuário para o assistente. Se o texto estiver mal escrito, revise a redação sem alterar sua intenção e registre a versão revisada.
 - Se for preciso rodar o app, sempre verifique primeiro as variáveis de ambiente e o arquivo `.env`/`.env.dev`.
 
 ## Resumo executivo

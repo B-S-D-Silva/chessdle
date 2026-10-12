@@ -482,13 +482,13 @@ function inicializarJogo() {
 
   document.getElementById("today-date").textContent = hoje.getDate() + " de " +
     meses[hoje.getMonth()] + " de " + hoje.getFullYear();
-  if (nomeUsuario != null && nomeUsuario != "") {
-    document.getElementById("header-user").textContent = "Olá, " + nomeUsuario;
-    document.getElementById("header-user").hidden = false;
-  }
   mostrarJogo();
 }
 
+if (nomeUsuario != null && nomeUsuario != "") {
+  document.getElementById("header-user").textContent = "Olá, " + nomeUsuario;
+  document.getElementById("header-user").hidden = false;
+}
 document.getElementById("challenge-content").textContent = "Carregando desafios...";
 fetch("/desafios", { cache: "no-store" })
   .then(function(resposta) {

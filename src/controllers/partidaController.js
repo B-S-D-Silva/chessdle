@@ -82,7 +82,25 @@ function obterPorId(req, res) {
         });
 }
 
+function obterHistorico(req, res) {
+    var usuarioId = Number(req.params.usuarioId);
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1) {
+        res.status(400).send("Identificador do usuário inválido.");
+        return;
+    }
+
+    partidaModel.buscarHistoricoPorUsuario(usuarioId)
+        .then(function(partidas) {
+            res.json(partidas);
+        })
+        .catch(function(erro) {
+            console.error("Não foi possível consultar o histórico de partidas.", erro);
+            res.status(500).send("Não foi possível carregar o histórico de partidas.");
+        });
+}
+
 module.exports = {
     registrar,
-    obterPorId
+    obterPorId,
+    obterHistorico
 };

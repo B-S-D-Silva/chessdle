@@ -8,7 +8,9 @@ CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(254) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+    senha VARCHAR(255) NOT NULL,
+    descricao VARCHAR(500) NOT NULL DEFAULT '',
+    rating_chess_com SMALLINT UNSIGNED NULL
 );
 
 -- Uma linha representa uma partida completa com os tres desafios diarios.
@@ -116,3 +118,7 @@ INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas) VALU
 ('Defesa Siciliana', 'Semiaberta', '1. e4', '1... c5'),
 ('Ruy López', 'Aberta', '1. e4', '1... e5'),
 ('Gambito da Dama', 'Fechada', '1. d4', '1... d5');
+
+ALTER TABLE usuario
+    ADD COLUMN descricao VARCHAR(500) NOT NULL DEFAULT '',
+    ADD COLUMN rating_chess_com SMALLINT UNSIGNED NULL;
