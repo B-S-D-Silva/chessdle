@@ -1,0 +1,13 @@
+var express = require("express");
+var router = express.Router();
+var partidaController = require("../controllers/partidaController");
+
+router.post("/", function(req, res) {
+    partidaController.registrar(req, res);
+});
+
+router.get("/:id", function(req, res) {
+    partidaController.obterPorId(req, res);
+});
+
+module.exports = router;

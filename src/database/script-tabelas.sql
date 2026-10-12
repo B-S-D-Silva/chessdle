@@ -1,68 +1,31 @@
--- Arquivo de apoio, caso você queira criar tabelas como as aqui criadas para a API funcionar.
--- Você precisa executar os comandos no banco de dados para criar as tabelas,
--- ter este arquivo aqui não significa que a tabela em seu BD estará como abaixo!
-
-/*
-comandos para mysql server
-*/
-
+-- ATENCAO: este script apaga o banco chessdle e todos os dados existentes.
+-- Destinado somente ao ambiente de desenvolvimento.
+DROP DATABASE IF EXISTS chessdle;
 CREATE DATABASE chessdle;
-
 USE chessdle;
-
 
 CREATE TABLE usuario (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	nome VARCHAR(50),
-	email VARCHAR(50),
-	senha VARCHAR(50)
-	);
-
-CREATE TABLE empresa (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	razao_social VARCHAR(50),
-	cnpj CHAR(14),
-	codigo_ativacao VARCHAR(50)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(254) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE aviso (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	titulo VARCHAR(100),
-	descricao VARCHAR(150),
-	fk_usuario INT,
-	FOREIGN KEY (fk_usuario) REFERENCES usuario(id)
+-- Uma linha representa uma partida completa com os tres desafios diarios.
+CREATE TABLE partida (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT NOT NULL,
+    data_partida DATE NOT NULL,
+    jogador_tentativas TINYINT UNSIGNED NOT NULL,
+    jogador_acertou BOOLEAN NOT NULL,
+    jogador_pistas TINYINT UNSIGNED NOT NULL,
+    abertura_tentativas TINYINT UNSIGNED NOT NULL,
+    abertura_acertou BOOLEAN NOT NULL,
+    abertura_pistas TINYINT UNSIGNED NOT NULL,
+    citacao_tentativas TINYINT UNSIGNED NOT NULL,
+    citacao_acertou BOOLEAN NOT NULL,
+    citacao_pistas TINYINT UNSIGNED NOT NULL,
+    criada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE,
+    INDEX (usuario_id, data_partida)
 );
-
-create table aquario (
-/* em nossa regra de negócio, um aquario tem apenas um sensor */
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	descricao VARCHAR(300),
-	fk_empresa INT,
-	FOREIGN KEY (fk_empresa) REFERENCES empresa(id)
-);
-
-/* esta tabela deve estar de acordo com o que está em INSERT de sua API do arduino - dat-acqu-ino */
-
-create table medida (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	temperatura DECIMAL,
-	momento DATETIME,
-	fk_aquario INT,
-	FOREIGN KEY (fk_aquario) REFERENCES aquario(id)
-);
-
-insert into empresa (razao_social, codigo_ativacao) values ('Empresa 1', 'ED145B');
-insert into empresa (razao_social, codigo_ativacao) values ('Empresa 2', 'A1B2C3');
-insert into aquario (descricao, fk_empresa) values ('Aquário de Estrela-do-mar', 1);
-insert into aquario (descricao, fk_empresa) values ('Aquário de Peixe-dourado', 2);
-
-USE chessdle;
-SHOW TABLES;
-DESCRIBE usuario;
-
-ALTER TABLE usuario
-ADD COLUMN fk_empresa INT,
-ADD CONSTRAINT empresa
-    FOREIGN KEY (fk_empresa) REFERENCES empresa(id);
-    
-select * from usuario;

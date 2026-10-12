@@ -47,9 +47,6 @@
       <div id="div_erros_login" class="login-error" role="alert" aria-live="polite"></div>
 
       <form class="login-form" id="cadastro-form">
-        <label for="codigo_input">Código de ativação</label>
-        <input id="codigo_input" name="codigo" type="text" placeholder="Digite o código de ativação" autocomplete="off" required>
-
         <label for="nome_input">Nome</label>
         <input id="nome_input" name="nome" type="text" placeholder="Seu nome" autocomplete="name" required>
 
@@ -80,62 +77,25 @@
   </main>
 
   <script>
-    var empresas = [];
-    var empresasCarregadas = false;
-
     function mostrarErro(texto) {
       var caixa = document.getElementById("cardErro");
       document.getElementById("mensagem_erro").textContent = texto;
       caixa.style.display = "block";
     }
 
-    function listar() {
-      fetch("/empresas/listar").then(function(resposta) {
-        if (!resposta.ok) {
-          throw new Error("Não foi possível carregar os códigos de ativação.");
-        }
-        return resposta.json();
-      }).then(function(lista) {
-        empresas = lista;
-        empresasCarregadas = true;
-      }).catch(function() {
-        mostrarErro("Não foi possível carregar os códigos de ativação. Atualize a página e tente novamente.");
-      });
-    }
-
     function cadastrar(evento) {
       evento.preventDefault();
-      var codigo = document.getElementById("codigo_input").value.trim();
       var nome = document.getElementById("nome_input").value.trim();
       var email = document.getElementById("email_input").value.trim();
       var senha = document.getElementById("senha_input").value;
       var confirmacao = document.getElementById("confirmacao_senha_input").value;
-      var idEmpresa;
-      var i = 0;
       var botao = document.querySelector(".login-form button");
 
       document.getElementById("cardErro").style.display = "none";
       document.getElementById("div_erros_login").style.display = "none";
 
-      if (empresasCarregadas == false) {
-        mostrarErro("Aguarde enquanto carregamos os códigos de ativação.");
-        return false;
-      }
-
       if (senha != confirmacao) {
         mostrarErro("As senhas não são iguais.");
-        return false;
-      }
-
-      while (i < empresas.length) {
-        if (empresas[i].codigo_ativacao == codigo) {
-          idEmpresa = empresas[i].id;
-        }
-        i++;
-      }
-
-      if (idEmpresa == undefined) {
-        mostrarErro("Código de ativação inválido.");
         return false;
       }
 
@@ -147,8 +107,7 @@
         body: JSON.stringify({
           nomeServer: nome,
           emailServer: email,
-          senhaServer: senha,
-          idEmpresaVincularServer: idEmpresa
+          senhaServer: senha
         })
       }).then(function(resposta) {
         if (!resposta.ok) {
@@ -167,9 +126,8 @@
 
       return false;
     }
-
     document.getElementById("cadastro-form").onsubmit = cadastrar;
-    listar();
+    document.getElementById("cadastro-form").onsubmit = cadastrar;
   </script>
 </body>
 </html>

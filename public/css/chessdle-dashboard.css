@@ -57,6 +57,12 @@
   margin: 22px 0 0;
 }
 
+.chart-status {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .chart-container {
   position: relative;
   height: 240px;

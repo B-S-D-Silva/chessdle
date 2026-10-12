@@ -10,6 +10,8 @@ var pistasUsadas = [0, 0, 0];
 var terminou = [false, false, false];
 // Guarda as respostas enviadas em cada modo para montar o histórico visual.
 var palpites = [[], [], []];
+var enviandoResultado = false;
+var falhaAoSalvarResultado = false;
 // Classe usada para apresentar o estado da mensagem de feedback.
 var tipoMensagem = "";
 
@@ -399,7 +401,12 @@ function enviarResposta() {
 // Salva o desempenho da sessão e abre o dashboard assim que os três modos
 // forem concluídos.
 function exibirResultadoDiario() {
-  var nomesModos = ["Jogador", "Abertura", "Citação"];
+  if (enviandoResultado) {
+    return;
+  }
+  enviandoResultado = true;
+
+  var nomesModos = ["jogador", "abertura", "citacao"];
   var resultados = [];
   var i = 0;
 
@@ -413,17 +420,37 @@ function exibirResultadoDiario() {
     i++;
   }
 
-  try {
-    sessionStorage.setItem("CHESSDLE_RESULTADO", JSON.stringify({
+  fetch("/partidas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      usuarioId: Number(sessionStorage.getItem("ID_USUARIO")),
       data: hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0") +
         "-" + String(hoje.getDate()).padStart(2, "0"),
       resultados: resultados
-    }));
-    window.location.href = "dashboard/resultado.html";
-  } catch (erro) {
+    })
+  }).then(function(resposta) {
+    if (!resposta.ok) {
+      return resposta.text().then(function(texto) {
+        throw new Error(texto || "Falha ao salvar o resultado.");
+      });
+    }
+    return resposta.json();
+  }).then(function(partida) {
+    if (!partida || !Number.isSafeInteger(Number(partida.id)) || Number(partida.id) < 1) {
+      throw new Error("A resposta do servidor não informou a partida salva.");
+    }
+    window.location.href = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
+  }).catch(function(erro) {
+    enviandoResultado = false;
+    falhaAoSalvarResultado = true;
     console.error("Não foi possível salvar o resultado do Chessdle.", erro);
-    window.alert("Não foi possível abrir seu gráfico de resultados. Tente novamente.");
-  }
+    mensagem = "Não foi possível salvar sua partida. Verifique a conexão e tente novamente.";
+    tipoMensagem = "error";
+    document.getElementById("feedback").textContent = mensagem;
+    document.getElementById("feedback").className = "feedback " + tipoMensagem;
+    document.getElementById("reset-button").textContent = "Tentar salvar resultado";
+  });
 }
 
 // Retorna a resposta associada a um modo sem depender da aba atualmente aberta.
@@ -441,13 +468,23 @@ function trocarModo(numero) {
 
 // Reinicia o desafio atual, incluindo tentativas, pistas e histórico.
 document.getElementById("reset-button").onclick = function() {
-  sessionStorage.removeItem("CHESSDLE_RESULTADO");
+  if (falhaAoSalvarResultado && terminou[0] && terminou[1] && terminou[2]) {
+    falhaAoSalvarResultado = false;
+    mensagem = "Salvando seu resultado...";
+    tipoMensagem = "";
+    document.getElementById("feedback").textContent = mensagem;
+    document.getElementById("feedback").className = "feedback";
+    exibirResultadoDiario();
+    return;
+  }
+
   tentativas[modo] = 0;
   pistasUsadas[modo] = 0;
   terminou[modo] = false;
   palpites[modo] = [];
   mensagem = "";
   tipoMensagem = "";
+  document.getElementById("reset-button").textContent = "Jogar novamente";
   mostrarJogo();
 };
 

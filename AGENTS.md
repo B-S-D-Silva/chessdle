@@ -43,8 +43,8 @@ O projeto mistura:
   - `EMAIL_USUARIO`
   - `NOME_USUARIO`
   - `ID_USUARIO`
-  - `AQUARIOS`
 - A verificação da sessão é feita em `public/js/sessao.js`
+- Cadastro e autenticação usam apenas nome, e-mail e senha; não dependem de empresas ou códigos de ativação
 
 ### Jogo Chessdle
 - A lógica do jogo fica em `public/js/chessdle.js`
@@ -54,14 +54,14 @@ O projeto mistura:
   - citação
 - Há um sistema de tentativas, pistas e histórico de palpites
 - O “desafio do dia” é calculado em função da data atual
-- Ao concluir os três modos, o desempenho da sessão é salvo em `sessionStorage` e exibido em `public/dashboard/resultado.html`
+- Ao concluir os três modos, o desempenho completo é persistido em uma linha de `partida` pela API `POST /partidas`
+- O dashboard carrega pela API `GET /partidas/:id?usuarioId=...` a partida recém-salva
 - O gráfico de tentativas usa Chart.js, carregado via CDN em `public/dashboard/resultado.html`
-- Os dados e o resumo da sessão são preparados por `public/js/chessdle-dashboard.js`, com estilos em `public/css/chessdle-dashboard.css`
+- Os dados e o resumo são apresentados por `public/js/chessdle-dashboard.js`, com estilos em `public/css/chessdle-dashboard.css`
 
 ### Dashboard / área interna
-- O projeto tem páginas dedicadas para administração e listagem de avisos, empresas, aquários e medidas
-- Há referências a `empresa`, `aquario`, `aviso`, `medida` e `usuario`
-- Nem todos os módulos estão diretamente ligados ao gameplay principal, mas fazem parte da base do app
+- O banco usa somente `usuario` e `partida`; cada partida tem colunas de tentativas, acertos e pistas para jogador, abertura e citação
+- As tabelas e rotas antigas de empresas, aquários, medidas e avisos são legadas e não fazem parte do fluxo principal
 
 ## Convenções do código
 
@@ -75,7 +75,7 @@ O projeto mistura:
   - `routes` recebe a requisição
   - `controllers` valida e orquestra a operação
   - `models` executa query SQL
-- As queries são montadas em template string diretamente no model
+- Use placeholders SQL (`?`) e parâmetros em `database.executar`
 
 ### Variáveis de ambiente
 O servidor usa os seguintes parâmetros do ambiente:
@@ -111,11 +111,10 @@ npm run dev
 
 ## Observações importantes para manutenção
 
-1. Este projeto foi montado sobre um template inicial e ainda conserva alguns nomes genéricos (empresa/aquário/medida) que não são totalmente exclusivos do Chessdle.
-2. O front-end é estático; não há framework (React/Vue/Angular) aparente no projeto atual.
-3. A autenticação e o jogo usam `sessionStorage`, então qualquer alteração no fluxo de login pode quebrar o carregamento da página inicial.
-4. O acesso ao banco é feito diretamente com SQL em strings; qualquer modificação na camada de acesso deve preservar a conexão e o tratamento de erro.
-5. Algumas telas e módulos parecem parcialmente desacoplados do gameplay principal; quando alterar a arquitetura, vale preservar o fluxo de login e a página principal do jogo.
+1. O front-end é estático; não há framework (React/Vue/Angular) aparente no projeto atual.
+2. A autenticação usa `sessionStorage`; qualquer alteração nesse fluxo pode quebrar o acesso ao jogo e à partida salva.
+3. `src/database/script-tabelas.sql` apaga e recria o banco `chessdle`; só execute no ambiente de desenvolvimento, pois todos os dados serão perdidos.
+4. O gráfico depende da API e da tabela `partida`; não use dados temporários do navegador como fonte do gráfico.
 
 ## Arquivos de referência importantes
 - `app.js`
@@ -126,6 +125,9 @@ npm run dev
 - `public/dashboard/resultado.html`
 - `public/js/chessdle-dashboard.js`
 - `public/css/chessdle-dashboard.css`
+- `src/routes/partidas.js`
+- `src/controllers/partidaController.js`
+- `src/models/partidaModel.js`
 - `src/routes/usuarios.js`
 - `src/controllers/usuarioController.js`
 - `src/models/usuarioModel.js`
@@ -136,8 +138,8 @@ npm run dev
 
 - Mantenha a linguagem em português do Brasil nos textos de interface.
 - Preserve o padrão de HTML/JS vanilla em vez de introduzir framework sem necessidade.
-- Antes de mexer em autenticação, verifique o fluxo de `sessionStorage` e o endpoint `/usuarios/autenticar`.
-- Ao alterar o banco, consulte `script-tabelas.sql` e os models correspondentes.
+- Antes de mexer em autenticação, verifique o fluxo de `sessionStorage` e os endpoints `/usuarios/autenticar` e `/usuarios/cadastrar`.
+- Ao alterar o banco, consulte `src/database/script-tabelas.sql` e os models correspondentes.
 - Se for preciso rodar o app, sempre verifique primeiro as variáveis de ambiente e o arquivo `.env`/`.env.dev`.
 
 ## Resumo executivo
