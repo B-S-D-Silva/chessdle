@@ -364,6 +364,56 @@
     .history:empty { display: none; }
     .history-title { margin: 0 0 2px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
 
+    .clue-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      align-items: stretch;
+    }
+
+    .clue-grid.opening-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .clue-heading {
+      padding: 0 4px 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .clue-tile {
+      display: grid;
+      min-height: 54px;
+      place-items: center;
+      padding: 7px 5px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.25;
+      text-align: center;
+      overflow-wrap: anywhere;
+      animation: clue-reveal .25s ease both;
+    }
+
+    .clue-tile.correct { background: #27834d; }
+    .clue-tile.partial { background: #a47c24; }
+    .clue-tile.incorrect { background: #a83e3a; }
+    .clue-tile.unknown { background: #39463f; color: var(--muted); }
+
+    .clue-legend {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @keyframes clue-reveal {
+      from { opacity: 0; transform: scale(.88); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .guess-row {
       display: flex;
       align-items: center;
@@ -419,6 +469,7 @@
       .side-card li { align-items: flex-start; font-size: 11px; }
       .panel-top { padding: 21px; }
       .history { padding: 0 21px 21px; }
+      .clue-tile { min-height: 48px; font-size: 11px; }
     }
 
     @media (max-width: 480px) {
@@ -443,6 +494,10 @@
       .side-card ul { grid-template-columns: 1fr; }
       .side-card li { align-items: center; font-size: 12px; }
       .history { padding: 0 16px 18px; }
+      .clue-grid { gap: 4px; }
+      .clue-heading { font-size: 10px; }
+      .clue-tile { min-height: 44px; padding: 5px 3px; font-size: 10px; }
+      .clue-legend { font-size: 10px; }
       .daily-footer { align-items: flex-start; padding: 14px; }
       .daily-meta { font-size: 10px; }
       .board { grid-template-columns: repeat(4, 31px); grid-template-rows: repeat(4, 31px); }
