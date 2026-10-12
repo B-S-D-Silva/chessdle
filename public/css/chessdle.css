@@ -303,10 +303,9 @@
     .submit-button:disabled, .guess-input:disabled { cursor: not-allowed; opacity: .55; }
 
     .below-form {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      display: grid;
+      justify-items: start;
+      gap: 10px;
       margin-top: 11px;
     }
 
@@ -320,11 +319,30 @@
 
     .hint-button:disabled { cursor: default; opacity: .55; }
 
+    .hint-card {
+      width: 100%;
+      padding: 13px 15px;
+      border: 1px solid rgba(232, 184, 75, .38);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      background: linear-gradient(110deg, rgba(232, 184, 75, .14), rgba(16, 26, 22, .34));
+      box-shadow: 0 5px 16px rgba(0, 0, 0, .12);
+    }
+
+    .hint-card-title {
+      margin: 0 0 4px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
     .hint-text, .feedback {
       min-height: 20px;
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 13px;
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
       line-height: 1.5;
     }
 

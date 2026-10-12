@@ -300,7 +300,12 @@ function mostrarJogo() {
   // Monta a área de pistas e feedback antes de atualizar o DOM.
   texto = texto + '<div class="below-form"><button class="hint-button" id="hint-button" type="button">';
   texto = texto + "Revelar pista (" + (2 - pistasUsadas[modo]) + " restantes)</button>";
-  texto = texto + '<span class="hint-text">' + escaparHTML(dica) + "</span></div>";
+  if (dica != "") {
+    texto = texto + '<aside class="hint-card" aria-label="Pista revelada" aria-live="polite">';
+    texto = texto + '<p class="hint-card-title">Pista revelada</p>';
+    texto = texto + '<p class="hint-text">' + escaparHTML(dica) + "</p></aside>";
+  }
+  texto = texto + "</div>";
   texto = texto + '<p class="feedback ' + tipoMensagem + '" id="feedback" role="status">' +
     escaparHTML(mensagem) + "</p>";
   document.getElementById("challenge-content").innerHTML = texto;
