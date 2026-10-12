@@ -87,6 +87,25 @@
 
     a.header-user:hover, a.header-user:focus-visible { color: var(--text); text-decoration: underline; }
 
+    .logout-button {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .04);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+
+    .logout-button:hover, .logout-button:focus-visible {
+      border-color: rgba(163, 209, 96, .45);
+      background: rgba(163, 209, 96, .1);
+      color: var(--text);
+    }
+
     main {
       width: min(960px, calc(100% - 40px));
       margin: 0 auto;

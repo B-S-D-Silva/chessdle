@@ -15,3 +15,4 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 9. Destacar a dica do jogo em um card mais evidente para facilitar a leitura.
 10. Adicionar uma aba **Perfil** onde a pessoa possa informar uma descrição e seu rating no Chess.com, seguida do histórico das próprias partidas. Criar este diário e atualizar o `AGENTS.md` para registrar todos os prompts enviados ao assistente; quando necessário, revisar a redação sem alterar a intenção e registrar a versão revisada.
 11. Mover o acesso ao perfil para o nome de usuário exibido no canto superior direito (por exemplo, “Olá, Bruno”) e apresentar o perfil em um arquivo HTML separado, em vez de como uma aba dentro da página do jogo.
+12. Criar um botão para que a pessoa usuária possa sair da conta.

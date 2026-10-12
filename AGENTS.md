@@ -49,6 +49,7 @@ O projeto mistura:
 - A verificação da sessão é feita em `public/js/sessao.js`
 - Cadastro e autenticação usam apenas nome, e-mail e senha; não dependem de empresas ou códigos de ativação
 - O link com o nome da pessoa no canto superior direito abre `public/perfil.html`
+- As páginas autenticadas exibem um botão **Sair** no cabeçalho; `public/js/logout.js` limpa o `sessionStorage` e redireciona para o login
 - A página de perfil permite salvar descrição e rating do Chess.com na tabela `usuario`; o histórico de partidas é consultado na tabela `partida`
 
 ### Jogo Chessdle
