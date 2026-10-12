@@ -49,6 +49,11 @@ function registrar(req, res) {
             res.status(201).json({ id: partidaId });
         })
         .catch(function(erro) {
+            if (erro.errno == 1216 || erro.errno == 1452 ||
+                erro.code == "ER_NO_REFERENCED_ROW" || erro.code == "ER_NO_REFERENCED_ROW_2") {
+                res.status(401).send("Sua conta não existe no banco atual. Entre novamente ou crie sua conta e refaça a partida.");
+                return;
+            }
             console.error("Não foi possível salvar a partida.", erro);
             res.status(500).send("Não foi possível salvar o resultado da partida.");
         });

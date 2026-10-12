@@ -29,3 +29,90 @@ CREATE TABLE partida (
     FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE,
     INDEX (usuario_id, data_partida)
 );
+
+CREATE TABLE desafio_config (
+    modo ENUM('jogador', 'abertura', 'citacao') PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    pergunta VARCHAR(255) NOT NULL,
+    resposta VARCHAR(150),
+    conteudo TEXT
+);
+
+CREATE TABLE opcao_desafio (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    modo ENUM('jogador', 'abertura', 'citacao') NOT NULL,
+    valor VARCHAR(150) NOT NULL,
+    FOREIGN KEY (modo) REFERENCES desafio_config(modo) ON DELETE CASCADE,
+    UNIQUE KEY (modo, valor)
+);
+
+CREATE TABLE dica_desafio (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    modo ENUM('jogador', 'abertura', 'citacao') NOT NULL,
+    ordem TINYINT UNSIGNED NOT NULL,
+    texto VARCHAR(255) NOT NULL,
+    FOREIGN KEY (modo) REFERENCES desafio_config(modo) ON DELETE CASCADE,
+    UNIQUE KEY (modo, ordem)
+);
+
+CREATE TABLE jogador (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    dica VARCHAR(255) NOT NULL,
+    nascimento SMALLINT UNSIGNED NOT NULL,
+    pais VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE abertura (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    classificacao VARCHAR(50) NOT NULL,
+    primeiro_lance VARCHAR(50) NOT NULL,
+    resposta_pretas VARCHAR(50) NOT NULL
+);
+
+INSERT INTO desafio_config (modo, titulo, descricao, pergunta, resposta, conteudo) VALUES
+('jogador', 'Adivinhe o jogador', 'Descubra qual grande nome do xadrez está escondido.', 'Quem é o enxadrista misterioso?', NULL, NULL),
+('abertura', 'Adivinhe a abertura', 'Reconheça a abertura pelos lances.', '1. e4 e5  2. Nf3 Nc6  3. Bc4', 'Abertura Italiana', NULL),
+('citacao', 'De quem é a citação?', 'Descubra quem disse esta frase.', 'Quem disse esta frase?', 'José Raúl Capablanca', '“O xadrez é a vida em miniatura.”');
+
+INSERT INTO opcao_desafio (modo, valor) VALUES
+('jogador', 'Magnus Carlsen'),
+('jogador', 'Garry Kasparov'),
+('jogador', 'Bobby Fischer'),
+('jogador', 'Judit Polgár'),
+('jogador', 'Hikaru Nakamura'),
+('jogador', 'José Raúl Capablanca'),
+('jogador', 'Viswanathan Anand'),
+('jogador', 'Fabiano Caruana'),
+('abertura', 'Abertura Italiana'),
+('abertura', 'Defesa Siciliana'),
+('abertura', 'Ruy López'),
+('abertura', 'Gambito da Dama'),
+('citacao', 'Bobby Fischer'),
+('citacao', 'Garry Kasparov'),
+('citacao', 'Magnus Carlsen'),
+('citacao', 'José Raúl Capablanca');
+
+INSERT INTO dica_desafio (modo, ordem, texto) VALUES
+('abertura', 1, 'O bispo branco vai para c4.'),
+('abertura', 2, 'A abertura começa com 1. e4 e5.'),
+('citacao', 1, 'Nasceu em Cuba.'),
+('citacao', 2, 'Foi campeão mundial entre 1921 e 1927.');
+
+INSERT INTO jogador (nome, dica, nascimento, pais) VALUES
+('Magnus Carlsen', 'É um grande mestre norueguês.', 1990, 'Noruega'),
+('Garry Kasparov', 'Foi campeão mundial por quinze anos.', 1963, 'Rússia'),
+('Bobby Fischer', 'Enfrentou Spassky no match de 1972.', 1943, 'Estados Unidos'),
+('Judit Polgár', 'É considerada a maior enxadrista da história.', 1976, 'Hungria'),
+('Hikaru Nakamura', 'É um dos maiores nomes do xadrez online.', 1987, 'Estados Unidos'),
+('José Raúl Capablanca', 'Foi um grande enxadrista cubano.', 1888, 'Cuba'),
+('Viswanathan Anand', 'Foi o primeiro campeão mundial indiano.', 1969, 'Índia'),
+('Fabiano Caruana', 'Disputou o título mundial em 2018.', 1992, 'Estados Unidos');
+
+INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas) VALUES
+('Abertura Italiana', 'Aberta', '1. e4', '1... e5'),
+('Defesa Siciliana', 'Semiaberta', '1. e4', '1... c5'),
+('Ruy López', 'Aberta', '1. e4', '1... e5'),
+('Gambito da Dama', 'Fechada', '1. d4', '1... d5');

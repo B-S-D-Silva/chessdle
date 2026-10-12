@@ -15,62 +15,17 @@ var falhaAoSalvarResultado = false;
 // Classe usada para apresentar o estado da mensagem de feedback.
 var tipoMensagem = "";
 
-// Textos dos desafios; os índices seguem a ordem das abas definidas no HTML.
-var titulos = [
-  "Adivinhe o jogador",
-  "Adivinhe a abertura",
-  "De quem é a citação?"
-];
-var descricoes = [
-  "Descubra qual grande nome do xadrez está escondido.",
-  "Reconheça a abertura pelos lances.",
-  "Descubra quem disse esta frase."
-];
-var perguntas = [
-  "Quem é o enxadrista misterioso?",
-  "1. e4 e5  2. Nf3 Nc6  3. Bc4",
-  "Quem disse esta frase?"
-];
-// Respostas dos modos de abertura e citação. A do jogador é selecionada
-// diariamente a partir da lista jogadores.
-var respostas = [
-  "",
-  "Abertura Italiana",
-  "José Raúl Capablanca"
-];
-// Alternativas mostradas pelo datalist nos modos de abertura e citação.
-// As alternativas do modo jogador vêm diretamente da lista jogadores.
-var opcoes = [
-  [],
-  ["Abertura Italiana", "Defesa Siciliana", "Ruy López", "Gambito da Dama"],
-  ["Bobby Fischer", "Garry Kasparov", "Magnus Carlsen", "José Raúl Capablanca"]
-];
-// Duas pistas disponíveis em cada modo, na ordem em que são reveladas.
-var dicas = [
-  ["É um grande mestre norueguês.", "Nasceu em 1990."],
-  ["O bispo branco vai para c4.", "A abertura começa com 1. e4 e5."],
-  ["Nasceu em Cuba.", "Foi campeão mundial entre 1921 e 1927."]
-];
-// Dados dos enxadristas: nome, primeira pista, ano de nascimento e país.
-// O índice desta lista também é usado para escolher o jogador do dia.
-var jogadores = [
-  ["Magnus Carlsen", "É um grande mestre norueguês.", 1990, "Noruega"],
-  ["Garry Kasparov", "Foi campeão mundial por quinze anos.", 1963, "Rússia"],
-  ["Bobby Fischer", "Enfrentou Spassky no match de 1972.", 1943, "Estados Unidos"],
-  ["Judit Polgár", "É considerada a maior enxadrista da história.", 1976, "Hungria"],
-  ["Hikaru Nakamura", "É um dos maiores nomes do xadrez online.", 1987, "Estados Unidos"],
-  ["José Raúl Capablanca", "Foi um grande enxadrista cubano.", 1888, "Cuba"],
-  ["Viswanathan Anand", "Foi o primeiro campeão mundial indiano.", 1969, "Índia"],
-  ["Fabiano Caruana", "Disputou o título mundial em 2018.", 1992, "Estados Unidos"]
-];
-// Dados usados para comparar cada palpite de abertura com a resposta:
-// nome, classificação, primeiro lance e resposta das pretas.
-var aberturas = [
-  ["Abertura Italiana", "Aberta", "1. e4", "1... e5"],
-  ["Defesa Siciliana", "Semiaberta", "1. e4", "1... c5"],
-  ["Ruy López", "Aberta", "1. e4", "1... e5"],
-  ["Gambito da Dama", "Fechada", "1. d4", "1... d5"]
-];
+// Conteúdo carregado da API /desafios antes de iniciar a interface.
+var titulos = [];
+var descricoes = [];
+var perguntas = [];
+var respostas = [];
+var conteudos = [];
+var opcoes = [[], [], []];
+var dicas = [[], [], []];
+var jogadores = [];
+var aberturas = [];
+var jogadoresPorNome = {};
 // IDs das abas no HTML, na mesma ordem dos índices de modo.
 var abas = ["tab-player", "tab-opening", "tab-quote"];
 // Data local usada para mostrar a data e selecionar o desafio diário.
@@ -80,18 +35,49 @@ var nomeUsuario = sessionStorage.getItem("NOME_USUARIO");
 // Nomes dos meses e quantidade de dias de cada mês para calcular o dia do ano.
 var meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
   "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-var diasDosMeses = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-// Soma os dias dos meses anteriores para obter uma posição diária previsível.
-var diaDoAno = hoje.getDate();
-var i = 0;
-while (i < hoje.getMonth()) {
-  diaDoAno = diaDoAno + diasDosMeses[i];
-  i++;
-}
-// A posição varia a cada dia e percorre ciclicamente a lista de enxadristas.
-var jogadorDoDia = diaDoAno % jogadores.length;
+var jogadorDoDia = 0;
 // Texto e classe apresentados abaixo do formulário após um palpite.
 var mensagem = "";
+
+function carregarConteudoDoBanco(conteudo) {
+  var modos = ["jogador", "abertura", "citacao"];
+  if (!conteudo || !Array.isArray(conteudo.desafios) || conteudo.desafios.length != 3 ||
+      !Array.isArray(conteudo.jogadores) || conteudo.jogadores.length == 0 ||
+      !Array.isArray(conteudo.aberturas) || conteudo.aberturas.length == 0) {
+    throw new Error("O conteúdo retornado pelo banco está incompleto.");
+  }
+
+  conteudo.desafios.forEach(function(desafio, indice) {
+    if (!desafio || desafio.modo != modos[indice] || !desafio.titulo ||
+        !desafio.descricao || !desafio.pergunta || !Array.isArray(desafio.opcoes) ||
+        desafio.opcoes.length == 0 || !Array.isArray(desafio.dicas)) {
+      throw new Error("A configuração do desafio " + modos[indice] + " está inválida.");
+    }
+    titulos.push(desafio.titulo);
+    descricoes.push(desafio.descricao);
+    perguntas.push(desafio.pergunta);
+    respostas.push(desafio.resposta);
+    conteudos.push(desafio.conteudo);
+    opcoes[indice] = desafio.opcoes;
+    dicas[indice] = desafio.dicas;
+  });
+
+  jogadores = conteudo.jogadores.map(function(jogador) {
+    return [jogador.nome, jogador.dica, Number(jogador.nascimento), jogador.pais];
+  });
+  aberturas = conteudo.aberturas.map(function(abertura) {
+    return [abertura.nome, abertura.classificacao, abertura.primeiroLance, abertura.respostaPretas];
+  });
+
+  jogadoresPorNome = {};
+  jogadores.forEach(function(jogador) {
+    jogadoresPorNome[jogador[0]] = jogador;
+  });
+
+  var diaDoAno = Math.floor((Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) -
+    Date.UTC(hoje.getFullYear(), 0, 0)) / 86400000);
+  jogadorDoDia = diaDoAno % jogadores.length;
+}
 
 // Devolve a resposta correspondente ao modo que está aberto.
 function respostaDoDia() {
@@ -107,16 +93,9 @@ function montarOpcoes() {
   var texto = "";
   var i = 0;
 
-  if (modo == 0) {
-    while (i < jogadores.length) {
-      texto = texto + "<option>" + jogadores[i][0] + "</option>";
-      i++;
-    }
-  } else {
-    while (i < lista.length) {
-      texto = texto + "<option>" + lista[i] + "</option>";
-      i++;
-    }
+  while (i < lista.length) {
+    texto = texto + "<option>" + escaparHTML(lista[i]) + "</option>";
+    i++;
   }
   document.getElementById("guess-options").innerHTML = texto;
 }
@@ -135,14 +114,6 @@ function jogadorPorNome(nome) {
     i++;
   }
   return null;
-}
-
-// Cria um índice pelo nome para localizar rapidamente os dados de cada jogador.
-var jogadoresPorNome = {};
-var indiceJogador = 0;
-while (indiceJogador < jogadores.length) {
-  jogadoresPorNome[jogadores[indiceJogador][0]] = jogadores[indiceJogador];
-  indiceJogador++;
 }
 
 // Gera um quadradinho de pista com classe de cor, texto acessível e conteúdo
@@ -279,8 +250,8 @@ function mostrarJogo() {
 
   // Mantém acessibilidade e seleção visual das abas sincronizadas com o modo.
   document.getElementById("mode-kicker").innerHTML = "Desafio " + (modo + 1) + " de 3";
-  document.getElementById("mode-title").innerHTML = titulos[modo];
-  document.getElementById("mode-description").innerHTML = descricoes[modo];
+  document.getElementById("mode-title").textContent = titulos[modo];
+  document.getElementById("mode-description").textContent = descricoes[modo];
   document.getElementById("game-content").setAttribute("aria-labelledby", abas[modo]);
 
   while (i < abas.length) {
@@ -298,11 +269,11 @@ function mostrarJogo() {
 
   // Apresenta o conteúdo específico da citação nesse modo.
   if (modo == 2) {
-    extra = '<blockquote class="quote-card">“O xadrez é a vida em miniatura.”</blockquote>';
+    extra = '<blockquote class="quote-card">' + escaparHTML(conteudos[modo]) + '</blockquote>';
   }
 
   // Cria o campo de palpite e impede novas entradas após o encerramento.
-  texto = '<p class="prompt">' + perguntas[modo] + "</p>" + extra;
+  texto = '<p class="prompt">' + escaparHTML(perguntas[modo]) + "</p>" + extra;
   texto = texto + '<form class="guess-form" id="guess-form">';
   texto = texto + '<input class="guess-input" id="guess-input" list="guess-options" autocomplete="off" required';
   texto = texto + ' placeholder="Digite sua resposta..."';
@@ -329,8 +300,9 @@ function mostrarJogo() {
   // Monta a área de pistas e feedback antes de atualizar o DOM.
   texto = texto + '<div class="below-form"><button class="hint-button" id="hint-button" type="button">';
   texto = texto + "Revelar pista (" + (2 - pistasUsadas[modo]) + " restantes)</button>";
-  texto = texto + '<span class="hint-text">' + dica + "</span></div>";
-  texto = texto + '<p class="feedback ' + tipoMensagem + '" id="feedback" role="status">' + mensagem + "</p>";
+  texto = texto + '<span class="hint-text">' + escaparHTML(dica) + "</span></div>";
+  texto = texto + '<p class="feedback ' + tipoMensagem + '" id="feedback" role="status">' +
+    escaparHTML(mensagem) + "</p>";
   document.getElementById("challenge-content").innerHTML = texto;
   montarOpcoes();
   montarHistorico();
@@ -432,7 +404,9 @@ function exibirResultadoDiario() {
   }).then(function(resposta) {
     if (!resposta.ok) {
       return resposta.text().then(function(texto) {
-        throw new Error(texto || "Falha ao salvar o resultado.");
+        var erro = new Error(texto || "Falha ao salvar o resultado.");
+        erro.status = resposta.status;
+        throw erro;
       });
     }
     return resposta.json();
@@ -443,6 +417,14 @@ function exibirResultadoDiario() {
     window.location.href = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
   }).catch(function(erro) {
     enviandoResultado = false;
+    if (erro.status == 401) {
+      window.alert(erro.message);
+      sessionStorage.removeItem("ID_USUARIO");
+      sessionStorage.removeItem("EMAIL_USUARIO");
+      sessionStorage.removeItem("NOME_USUARIO");
+      window.location.replace("login.html");
+      return;
+    }
     falhaAoSalvarResultado = true;
     console.error("Não foi possível salvar o resultado do Chessdle.", erro);
     mensagem = "Não foi possível salvar sua partida. Verifique a conexão e tente novamente.";
@@ -488,18 +470,39 @@ document.getElementById("reset-button").onclick = function() {
   mostrarJogo();
 };
 
-// Associa cada aba ao índice correspondente nos vetores de dados.
-document.getElementById("tab-player").onclick = function() { trocarModo(0); };
-document.getElementById("tab-opening").onclick = function() { trocarModo(1); };
-document.getElementById("tab-quote").onclick = function() { trocarModo(2); };
+function inicializarJogo() {
+  document.getElementById("tab-player").onclick = function() { trocarModo(0); };
+  document.getElementById("tab-opening").onclick = function() { trocarModo(1); };
+  document.getElementById("tab-quote").onclick = function() { trocarModo(2); };
 
-// Exibe a data do desafio no formato usado pela interface.
-document.getElementById("today-date").innerHTML = hoje.getDate() + " de " +
-  meses[hoje.getMonth()] + " de " + hoje.getFullYear();
-// Mostra o nome da pessoa quando há um nome salvo na sessão.
-if (nomeUsuario != null && nomeUsuario != "") {
-  document.getElementById("header-user").innerHTML = "Olá, " + nomeUsuario;
-  document.getElementById("header-user").hidden = false;
+  document.getElementById("today-date").textContent = hoje.getDate() + " de " +
+    meses[hoje.getMonth()] + " de " + hoje.getFullYear();
+  if (nomeUsuario != null && nomeUsuario != "") {
+    document.getElementById("header-user").textContent = "Olá, " + nomeUsuario;
+    document.getElementById("header-user").hidden = false;
+  }
+  mostrarJogo();
 }
-// Renderização inicial do modo selecionado ao carregar o script.
-mostrarJogo();
+
+document.getElementById("challenge-content").textContent = "Carregando desafios...";
+fetch("/desafios", { cache: "no-store" })
+  .then(function(resposta) {
+    if (!resposta.ok) {
+      return resposta.text().then(function(texto) {
+        throw new Error(texto || "Não foi possível carregar os desafios.");
+      });
+    }
+    return resposta.json();
+  })
+  .then(function(conteudo) {
+    carregarConteudoDoBanco(conteudo);
+    inicializarJogo();
+  })
+  .catch(function(erro) {
+    console.error("Não foi possível carregar os dados dos desafios do banco.", erro);
+    document.getElementById("mode-title").textContent = "Desafios indisponíveis";
+    document.getElementById("mode-description").textContent = "";
+    document.getElementById("challenge-content").textContent =
+      "Não foi possível carregar os desafios do banco. Verifique o servidor e o banco de dados e recarregue a página.";
+    document.getElementById("tries-counter").textContent = "";
+  });

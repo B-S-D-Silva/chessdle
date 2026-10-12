@@ -54,13 +54,16 @@ O projeto mistura:
   - citação
 - Há um sistema de tentativas, pistas e histórico de palpites
 - O “desafio do dia” é calculado em função da data atual
+- Títulos, descrições, perguntas, respostas, opções, pistas, jogadores e aberturas são carregados de `GET /desafios`
+- O conteúdo inicial dos desafios está em `src/database/script-tabelas.sql`
 - Ao concluir os três modos, o desempenho completo é persistido em uma linha de `partida` pela API `POST /partidas`
 - O dashboard carrega pela API `GET /partidas/:id?usuarioId=...` a partida recém-salva
 - O gráfico de tentativas usa Chart.js, carregado via CDN em `public/dashboard/resultado.html`
 - Os dados e o resumo são apresentados por `public/js/chessdle-dashboard.js`, com estilos em `public/css/chessdle-dashboard.css`
 
 ### Dashboard / área interna
-- O banco usa somente `usuario` e `partida`; cada partida tem colunas de tentativas, acertos e pistas para jogador, abertura e citação
+- O banco usa as tabelas `usuario`, `partida`, `desafio_config`, `opcao_desafio`, `dica_desafio`, `jogador` e `abertura`
+- Cada partida guarda tentativas, acertos e pistas dos três modos em uma única linha
 - As tabelas e rotas antigas de empresas, aquários, medidas e avisos são legadas e não fazem parte do fluxo principal
 
 ## Convenções do código
@@ -126,8 +129,14 @@ npm run dev
 - `public/js/chessdle-dashboard.js`
 - `public/css/chessdle-dashboard.css`
 - `src/routes/partidas.js`
+- `src/routes/desafios.js`
+- `src/controllers/desafioController.js`
+- `src/models/desafioModel.js`
+- `src/routes/desafios.js`
 - `src/controllers/partidaController.js`
+- `src/controllers/desafioController.js`
 - `src/models/partidaModel.js`
+- `src/models/desafioModel.js`
 - `src/routes/usuarios.js`
 - `src/controllers/usuarioController.js`
 - `src/models/usuarioModel.js`
