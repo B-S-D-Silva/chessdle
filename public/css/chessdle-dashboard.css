@@ -1,0 +1,148 @@
+.results-main {
+  width: min(820px, calc(100% - 40px));
+}
+
+.results-panel {
+  margin-top: 24px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(41, 58, 50, .96), rgba(29, 43, 36, .98));
+  box-shadow: 0 18px 52px rgba(0, 0, 0, .2);
+}
+
+.results-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.results-description {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.chart-legend {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-legend i {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+.legend-win {
+  background: var(--green-bright);
+}
+
+.legend-miss {
+  background: var(--red);
+}
+
+.attempts-chart {
+  margin: 22px 0 0;
+}
+
+.chart-container {
+  position: relative;
+  height: 240px;
+}
+
+.chart-error {
+  margin: 12px 0 0;
+  color: #ff9a91;
+  font-size: 13px;
+}
+
+.attempts-chart figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.results-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.summary-item {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 10px;
+  background: rgba(16, 26, 22, .42);
+}
+
+.summary-item strong {
+  display: block;
+  color: var(--green-bright);
+  font-size: 20px;
+}
+
+.summary-item span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.results-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.results-actions a {
+  text-decoration: none;
+}
+
+@media (max-width: 540px) {
+  .results-main {
+    width: min(100% - 24px, 820px);
+  }
+
+  .results-panel {
+    padding: 20px 16px;
+  }
+
+  .results-heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chart-container {
+    height: 220px;
+  }
+
+  .results-summary {
+    gap: 6px;
+  }
+
+  .summary-item {
+    padding: 11px 8px;
+  }
+
+  .summary-item strong {
+    font-size: 17px;
+  }
+
+  .summary-item span {
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14231d">
+  <meta name="description" content="Confira seu desempenho nos desafios diários do Chessdle.">
+  <title>Seu resultado — Chessdle</title>
+  <link rel="stylesheet" href="../css/chessdle.css">
+  <link rel="stylesheet" href="../css/chessdle-dashboard.css">
+  <script>
+    if (!sessionStorage.getItem("EMAIL_USUARIO") || !sessionStorage.getItem("NOME_USUARIO")) {
+      window.location.replace("../login.html");
+    }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html" aria-label="Chessdle, início">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span>chessdle</span>
+      </a>
+      <span class="header-user" id="header-user"></span>
+    </div>
+  </header>
+
+  <main class="results-main">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Desafios concluídos</p>
+      <h1 id="page-title">Seu resultado de hoje</h1>
+      <p class="intro-copy" id="result-date"></p>
+    </section>
+
+    <section class="results-panel" aria-labelledby="chart-title">
+      <div class="results-heading">
+        <div>
+          <p class="mode-kicker">Resumo diário</p>
+          <h2 id="chart-title">Tentativas por desafio</h2>
+          <p class="results-description">Veja quantas tentativas você usou em cada modo.</p>
+        </div>
+        <div class="chart-legend" aria-label="Legenda do gráfico">
+          <span><i class="legend-win" aria-hidden="true"></i> Acertou</span>
+          <span><i class="legend-miss" aria-hidden="true"></i> Não acertou</span>
+        </div>
+      </div>
+      <figure class="attempts-chart">
+        <div class="chart-container">
+          <canvas id="attempt-chart" role="img" aria-label="Gráfico de tentativas por desafio"></canvas>
+        </div>
+        <p id="chart-error" class="chart-error" role="alert" hidden></p>
+        <figcaption>O limite em cada desafio é de seis tentativas.</figcaption>
+      </figure>
+      <div class="results-summary" id="results-summary" aria-live="polite"></div>
+    </section>
+
+    <div class="results-actions">
+      <a class="submit-button" id="restart-game" href="../index.html">Jogar novamente</a>
+    </div>
+
+    <footer class="site-footer">
+      <p>Feito para quem ama xadrez. ♞</p>
+      <p>Chessdle não é afiliado ao Chess.com.</p>
+    </footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../js/chessdle-dashboard.js" defer></script>
+</body>
+</html>

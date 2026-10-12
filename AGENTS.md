@@ -54,6 +54,9 @@ O projeto mistura:
   - citação
 - Há um sistema de tentativas, pistas e histórico de palpites
 - O “desafio do dia” é calculado em função da data atual
+- Ao concluir os três modos, o desempenho da sessão é salvo em `sessionStorage` e exibido em `public/dashboard/resultado.html`
+- O gráfico de tentativas usa Chart.js, carregado via CDN em `public/dashboard/resultado.html`
+- Os dados e o resumo da sessão são preparados por `public/js/chessdle-dashboard.js`, com estilos em `public/css/chessdle-dashboard.css`
 
 ### Dashboard / área interna
 - O projeto tem páginas dedicadas para administração e listagem de avisos, empresas, aquários e medidas
@@ -120,6 +123,9 @@ npm run dev
 - `public/login.html`
 - `public/cadastro.html`
 - `public/js/chessdle.js`
+- `public/dashboard/resultado.html`
+- `public/js/chessdle-dashboard.js`
+- `public/css/chessdle-dashboard.css`
 - `src/routes/usuarios.js`
 - `src/controllers/usuarioController.js`
 - `src/models/usuarioModel.js`

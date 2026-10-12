@@ -390,6 +390,45 @@ function enviarResposta() {
     tipoMensagem = "error";
   }
   mostrarJogo();
+
+  if (terminou[0] && terminou[1] && terminou[2]) {
+    exibirResultadoDiario();
+  }
+}
+
+// Salva o desempenho da sessão e abre o dashboard assim que os três modos
+// forem concluídos.
+function exibirResultadoDiario() {
+  var nomesModos = ["Jogador", "Abertura", "Citação"];
+  var resultados = [];
+  var i = 0;
+
+  while (i < nomesModos.length) {
+    resultados.push({
+      modo: nomesModos[i],
+      tentativas: tentativas[i],
+      acertou: palpites[i][palpites[i].length - 1].toLowerCase() == respostaDoModo(i).toLowerCase(),
+      pistas: pistasUsadas[i]
+    });
+    i++;
+  }
+
+  try {
+    sessionStorage.setItem("CHESSDLE_RESULTADO", JSON.stringify({
+      data: hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0") +
+        "-" + String(hoje.getDate()).padStart(2, "0"),
+      resultados: resultados
+    }));
+    window.location.href = "dashboard/resultado.html";
+  } catch (erro) {
+    console.error("Não foi possível salvar o resultado do Chessdle.", erro);
+    window.alert("Não foi possível abrir seu gráfico de resultados. Tente novamente.");
+  }
+}
+
+// Retorna a resposta associada a um modo sem depender da aba atualmente aberta.
+function respostaDoModo(numero) {
+  return numero == 0 ? jogadores[jogadorDoDia][0] : respostas[numero];
 }
 
 // Troca o modo ativo e limpa apenas o feedback temporário da tela.
@@ -402,6 +441,7 @@ function trocarModo(numero) {
 
 // Reinicia o desafio atual, incluindo tentativas, pistas e histórico.
 document.getElementById("reset-button").onclick = function() {
+  sessionStorage.removeItem("CHESSDLE_RESULTADO");
   tentativas[modo] = 0;
   pistasUsadas[modo] = 0;
   terminou[modo] = false;
