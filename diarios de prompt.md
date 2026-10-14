@@ -16,3 +16,8 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 10. Adicionar uma aba **Perfil** onde a pessoa possa informar uma descrição e seu rating no Chess.com, seguida do histórico das próprias partidas. Criar este diário e atualizar o `AGENTS.md` para registrar todos os prompts enviados ao assistente; quando necessário, revisar a redação sem alterar a intenção e registrar a versão revisada.
 11. Mover o acesso ao perfil para o nome de usuário exibido no canto superior direito (por exemplo, “Olá, Bruno”) e apresentar o perfil em um arquivo HTML separado, em vez de como uma aba dentro da página do jogo.
 12. Criar um botão para que a pessoa usuária possa sair da conta.
+
+## 2026-10-14
+
+13. Atualizar a seção **SEUS PALPITES** do modo Abertura para comparar os lances em sequência, com cores de acerto, divergência e ausência de lance, além de exibir o tipo e o código ECO. Incluir linhas principais em notação algébrica em português para todas as aberturas cadastradas, selos com direção do ECO, destaque e animação da resposta correta, responsividade e rótulos acessíveis, sem alterar o formulário, as pistas, o limite de tentativas nem a lógica de vitória e derrota.
+14. Investigar o erro `ER_BAD_FIELD_ERROR: Unknown column 'lances' in 'field list'` recebido ao carregar os desafios, identificar a migração necessária e orientar como aplicá-la ao banco usado pela aplicação.

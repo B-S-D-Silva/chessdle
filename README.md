@@ -30,7 +30,7 @@ A aplicação também conta com telas de cadastro e login. O nome da pessoa aute
 
 O projeto parte da estrutura da API Web Data Viz, utilizada como referência acadêmica, e adapta essa base para o Chessdle. A estrutura do servidor Express e a organização em **routes**, **controllers** e **models** foram aproveitadas como ponto de partida. As telas e a identidade visual foram modificadas para o tema de xadrez, e os fluxos de cadastro e autenticação foram conectados à interface do Chessdle.
 
-A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios apresentados na página principal são implementados no JavaScript do front-end; eles ainda não são servidos nem salvos como partidas pela API.
+A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, e as partidas concluídas são salvas pelo endpoint `/partidas`. Os dados das aberturas incluem a linha principal em notação algébrica portuguesa e o código ECO.
 
 ## Como executar
 
@@ -43,7 +43,7 @@ A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como 
 
 3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
 4. Configure o ambiente usado pelo servidor em `app.js`.
-5. Prepare o banco de dados e as tabelas necessárias. O arquivo `src/database/script-tabelas.sql` serve como referência inicial; confira se o schema corresponde às consultas e relacionamentos usados atualmente pelo projeto.
+5. Prepare o banco de dados e as tabelas necessárias. Para criar um banco novo, use `src/database/script-tabelas.sql`. Para atualizar um banco existente, execute uma vez `src/database/migracao-lances-abertura.sql`, que adiciona as linhas principais e os códigos ECO às aberturas.
 6. Inicie o servidor:
 
    ```bash

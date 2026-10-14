@@ -71,7 +71,9 @@ CREATE TABLE abertura (
     nome VARCHAR(100) NOT NULL UNIQUE,
     classificacao VARCHAR(50) NOT NULL,
     primeiro_lance VARCHAR(50) NOT NULL,
-    resposta_pretas VARCHAR(50) NOT NULL
+    resposta_pretas VARCHAR(50) NOT NULL,
+    lances JSON NOT NULL,
+    eco VARCHAR(3) NOT NULL
 );
 
 INSERT INTO desafio_config (modo, titulo, descricao, pergunta, resposta, conteudo) VALUES
@@ -113,11 +115,15 @@ INSERT INTO jogador (nome, dica, nascimento, pais) VALUES
 ('Viswanathan Anand', 'Foi o primeiro campeão mundial indiano.', 1969, 'Índia'),
 ('Fabiano Caruana', 'Disputou o título mundial em 2018.', 1992, 'Estados Unidos');
 
-INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas) VALUES
-('Abertura Italiana', 'Aberta', '1. e4', '1... e5'),
-('Defesa Siciliana', 'Semiaberta', '1. e4', '1... c5'),
-('Ruy López', 'Aberta', '1. e4', '1... e5'),
-('Gambito da Dama', 'Fechada', '1. d4', '1... d5');
+INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas, lances, eco) VALUES
+('Abertura Italiana', 'Aberta', '1. e4', '1... e5',
+ '["e4","e5","Cf3","Cc6","Bc4","Bc5","c3","Cf6","d4","exd4","cxd4","Bb4+","Cc3"]', 'C50'),
+('Defesa Siciliana', 'Semiaberta', '1. e4', '1... c5',
+ '["e4","c5","Cf3","d6","d4","cxd4","Cxd4","Cf6","Cc3","a6"]', 'B20'),
+('Ruy López', 'Aberta', '1. e4', '1... e5',
+ '["e4","e5","Cf3","Cc6","Bb5","a6","Ba4","Cf6","O-O","Be7","Te1","b5","Bb3","d6"]', 'C60'),
+('Gambito da Dama', 'Fechada', '1. d4', '1... d5',
+ '["d4","d5","c4","e6","Cc3","Cf6","Bg5","Be7","e3","O-O","Cf3","h6"]', 'D06');
 
 ALTER TABLE usuario
     ADD COLUMN descricao VARCHAR(500) NOT NULL DEFAULT '',

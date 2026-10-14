@@ -472,6 +472,113 @@
     .guess-result.good { color: var(--green-bright); }
     .guess-result.close { color: var(--gold); }
 
+    .opening-guess-list { display: grid; gap: 7px; }
+
+    .opening-guess-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 9px;
+      background: rgba(16, 26, 22, .35);
+    }
+
+    .opening-guess-row.victory {
+      border-color: rgba(163, 209, 96, .7);
+      background: rgba(93, 139, 57, .22);
+      box-shadow: 0 0 0 1px rgba(163, 209, 96, .12);
+    }
+
+    .opening-guess-name {
+      display: flex;
+      flex: 0 0 138px;
+      align-items: center;
+      gap: 6px;
+      color: #f3f6f2;
+      font-size: 13px;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .opening-win-mark { color: var(--green-bright); font-size: 16px; }
+
+    .opening-guess-details {
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .opening-move-list {
+      display: flex;
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .opening-move-pair {
+      display: grid;
+      flex: none;
+      grid-template-columns: repeat(2, 43px);
+      gap: 3px;
+    }
+
+    .opening-move-number {
+      grid-column: 1 / -1;
+      padding-left: 2px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .opening-move-tile {
+      display: inline-flex;
+      width: 43px;
+      min-height: 31px;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 2px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 6px;
+      color: #fff;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .opening-move-tile.correct { background: #27834d; }
+    .opening-move-tile.incorrect { background: #a83e3a; }
+    .opening-move-tile.unknown { background: #39463f; color: #a6b0a9; }
+
+    .opening-badge {
+      flex: none;
+      padding: 5px 7px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .05);
+      color: #dbe1dc;
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .opening-eco { color: var(--green-bright); font-weight: 800; }
+
+    .opening-guess-row.reveal .opening-move-tile {
+      animation: opening-tile-flip .32s ease both;
+      animation-delay: var(--reveal-delay, 0ms);
+    }
+
+    @keyframes opening-tile-flip {
+      from { opacity: .45; transform: perspective(160px) rotateX(88deg); }
+      to { opacity: 1; transform: perspective(160px) rotateX(0); }
+    }
+
     .daily-footer {
       display: flex;
       align-items: center;
@@ -540,6 +647,11 @@
       .clue-heading { font-size: 10px; }
       .clue-tile { min-height: 44px; padding: 5px 3px; font-size: 10px; }
       .clue-legend { font-size: 10px; }
+      .opening-guess-row { align-items: stretch; flex-direction: column; gap: 8px; padding: 9px; }
+      .opening-guess-name { flex-basis: auto; }
+      .opening-guess-details { flex-wrap: wrap; }
+      .opening-move-list { flex-basis: 100%; }
+      .opening-badge { margin-top: 2px; }
       .daily-footer { align-items: flex-start; padding: 14px; }
       .daily-meta { font-size: 10px; }
       .board { grid-template-columns: repeat(4, 31px); grid-template-rows: repeat(4, 31px); }
@@ -548,4 +660,5 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      .opening-guess-row.reveal .opening-move-tile { animation-delay: 0ms !important; animation-duration: .01ms !important; }
     }

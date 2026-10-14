@@ -6,7 +6,7 @@ function buscarConteudo() {
         "SELECT modo, valor FROM opcao_desafio ORDER BY id",
         "SELECT modo, ordem, texto FROM dica_desafio ORDER BY modo, ordem",
         "SELECT nome, dica, nascimento, pais FROM jogador ORDER BY id",
-        "SELECT nome, classificacao, primeiro_lance, resposta_pretas FROM abertura ORDER BY id"
+        "SELECT nome, classificacao, primeiro_lance, resposta_pretas, lances, eco FROM abertura ORDER BY id"
     ];
 
     return Promise.all(consultas.map(function(consulta) {
@@ -38,11 +38,15 @@ function buscarConteudo() {
                 };
             }),
             aberturas: resultados[4].map(function(abertura) {
+                var lances = typeof abertura.lances == "string" ?
+                    JSON.parse(abertura.lances) : abertura.lances;
                 return {
                     nome: abertura.nome,
                     classificacao: abertura.classificacao,
                     primeiroLance: abertura.primeiro_lance,
-                    respostaPretas: abertura.resposta_pretas
+                    respostaPretas: abertura.resposta_pretas,
+                    lances: lances,
+                    eco: abertura.eco
                 };
             })
         };

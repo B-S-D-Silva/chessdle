@@ -38,6 +38,7 @@ var meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
 var jogadorDoDia = 0;
 // Texto e classe apresentados abaixo do formulário após um palpite.
 var mensagem = "";
+var animarPalpiteAbertura = false;
 
 function carregarConteudoDoBanco(conteudo) {
   var modos = ["jogador", "abertura", "citacao"];
@@ -66,7 +67,12 @@ function carregarConteudoDoBanco(conteudo) {
     return [jogador.nome, jogador.dica, Number(jogador.nascimento), jogador.pais];
   });
   aberturas = conteudo.aberturas.map(function(abertura) {
-    return [abertura.nome, abertura.classificacao, abertura.primeiroLance, abertura.respostaPretas];
+    return {
+      nome: abertura.nome,
+      classificacao: abertura.classificacao,
+      lances: abertura.lances,
+      eco: abertura.eco
+    };
   });
 
   jogadoresPorNome = {};
@@ -165,6 +171,88 @@ function compararJogador(nome, jogadorAlvo, rotulo) {
     montarCelula("Nascimento", anoValor, anoStatus, anoTitulo + ": " + jogadorAlvo[2]);
 }
 
+function aberturaPorNome(nome) {
+  var i = 0;
+
+  while (i < aberturas.length) {
+    if (aberturas[i].nome.toLowerCase() == nome.toLowerCase()) {
+      return aberturas[i];
+    }
+    i++;
+  }
+  return null;
+}
+
+function montarFichaLance(valor, status, descricao, indice) {
+  return '<span class="opening-move-tile ' + status + '" style="--reveal-delay:' +
+    (indice * 150) + 'ms" title="' + escaparHTML(descricao) + '" aria-label="' +
+    escaparHTML(descricao) + '">' + escaparHTML(valor) +
+    (status == "correct" ? " ✓" : status == "incorrect" ? " ✗" : "") + "</span>";
+}
+
+function compararAbertura(palpite, aberturaAlvo, animar) {
+  var aberturaPalpite = aberturaPorNome(palpite);
+  var lancesPalpite = aberturaPalpite ? aberturaPalpite.lances : [];
+  var quantidade = Math.max(lancesPalpite.length, aberturaAlvo.lances.length);
+  var lances = "";
+  var divergido = false;
+  var linhaCorreta = aberturaPalpite != null &&
+    aberturaPalpite.nome.toLowerCase() == aberturaAlvo.nome.toLowerCase();
+  var movimento = 0;
+  var linha = '<div class="opening-guess-row' +
+    (linhaCorreta ? " victory" : "") + (animar ? " reveal" : "") + '">';
+  var nome = aberturaPalpite ? aberturaPalpite.nome : palpite;
+  var direcaoECO = aberturaPalpite ?
+    aberturaAlvo.eco.localeCompare(aberturaPalpite.eco, undefined, { numeric: true }) : 0;
+  var ecoExibido = aberturaPalpite ? aberturaPalpite.eco +
+    (direcaoECO < 0 ? " ↓" : direcaoECO > 0 ? " ↑" : "") : "—";
+  var descricaoECO = !aberturaPalpite ? "ECO indisponível" :
+    direcaoECO < 0 ? "A resposta tem um ECO anterior" :
+    direcaoECO > 0 ? "A resposta tem um ECO posterior" : "Mesmo código ECO";
+
+  while (movimento < quantidade) {
+    var lancePalpite = lancesPalpite[movimento];
+    var lanceAlvo = aberturaAlvo.lances[movimento];
+    var status = "unknown";
+    var valor = lancePalpite || lanceAlvo || "—";
+    var descricao = valor == "—" ? "Sem lance para comparar" :
+      valor + ", sem lance para comparar";
+
+    if (lancePalpite && lanceAlvo) {
+      if (lancePalpite == lanceAlvo && !divergido) {
+        status = "correct";
+        descricao = valor + ", correto";
+      } else {
+        divergido = true;
+        status = "incorrect";
+        descricao = valor + ", divergiu";
+      }
+    }
+    if (linhaCorreta && lancePalpite && lanceAlvo) {
+      status = "correct";
+      descricao = valor + ", correto";
+    }
+
+    if (movimento % 2 == 0) {
+      lances += '<span class="opening-move-pair"><span class="opening-move-number">' +
+        (Math.floor(movimento / 2) + 1) + '.</span>';
+    }
+    lances += montarFichaLance(valor, status, descricao, movimento);
+    if (movimento % 2 == 1 || movimento == quantidade - 1) {
+      lances += "</span>";
+    }
+    movimento++;
+  }
+
+  return linha + '<span class="opening-guess-name">' + escaparHTML(nome) +
+    (linhaCorreta ? '<span class="opening-win-mark" aria-label="Resposta correta">✓</span>' : "") +
+    '</span><div class="opening-guess-details"><div class="opening-move-list" aria-label="Lances da abertura">' +
+    lances + '</div><span class="opening-badge">' +
+    escaparHTML(aberturaPalpite ? aberturaPalpite.classificacao : "—") +
+    '</span><span class="opening-badge opening-eco" title="' + escaparHTML(descricaoECO) +
+    '">' + escaparHTML(ecoExibido) + "</span></div></div>";
+}
+
 // Reconstrói a grade de palpites do modo ativo sem apagar o histórico dos
 // outros modos, mantendo as tentativas na ordem em que foram feitas.
 function montarHistorico() {
@@ -172,6 +260,7 @@ function montarHistorico() {
   var linhas = "";
   var cabecalho = "";
   var i = 0;
+  var animarUltimoPalpite = modo == 1 && animarPalpiteAbertura;
 
   if (palpites[modo].length == 0) {
     historico.innerHTML = "";
@@ -185,46 +274,8 @@ function montarHistorico() {
       linhas = compararJogador(palpite, modo == 0 ? jogadores[jogadorDoDia] : jogadoresPorNome[respostas[2]],
         modo == 0 ? "Enxadrista" : "Autor") + linhas;
     } else {
-      // Localiza os dados da abertura tentada e da resposta correta.
-      var aberturaPalpite = null;
-      var aberturaAlvo = aberturas[0];
-      var j = 0;
-
-      while (j < aberturas.length) {
-        if (aberturas[j][0].toLowerCase() == palpite.toLowerCase()) {
-          aberturaPalpite = aberturas[j];
-        }
-        if (aberturas[j][0].toLowerCase() == respostas[1].toLowerCase()) {
-          aberturaAlvo = aberturas[j];
-        }
-        j++;
-      }
-
-      // Se o texto não corresponde a uma opção, mostra o palpite e informa
-      // que os demais atributos não podem ser comparados.
-      if (aberturaPalpite == null) {
-        cabecalho = '<span class="clue-heading">Abertura</span><span class="clue-heading">Tipo</span>' +
-          '<span class="clue-heading">1º lance</span><span class="clue-heading">Resposta</span>';
-        linhas = montarCelula("Abertura", palpite, "incorrect", "Palpite não encontrado na lista") +
-          montarCelula("Tipo", "—", "unknown", "Sem dados para comparar") +
-          montarCelula("1º lance", "—", "unknown", "Sem dados para comparar") +
-          montarCelula("Resposta", "—", "unknown", "Sem dados para comparar") + linhas;
-      } else {
-        cabecalho = '<span class="clue-heading">Abertura</span><span class="clue-heading">Tipo</span>' +
-          '<span class="clue-heading">1º lance</span><span class="clue-heading">Resposta</span>';
-        linhas = montarCelula("Abertura", aberturaPalpite[0],
-            aberturaPalpite[0] == aberturaAlvo[0] ? "correct" : "incorrect",
-            aberturaPalpite[0] == aberturaAlvo[0] ? "Resposta correta" : "Abertura diferente") +
-          montarCelula("Tipo", aberturaPalpite[1],
-            aberturaPalpite[1] == aberturaAlvo[1] ? "correct" : "incorrect",
-            aberturaPalpite[1] == aberturaAlvo[1] ? "Mesmo tipo" : "Tipo diferente") +
-          montarCelula("1º lance", aberturaPalpite[2],
-            aberturaPalpite[2] == aberturaAlvo[2] ? "correct" : "incorrect",
-            aberturaPalpite[2] == aberturaAlvo[2] ? "Mesmo primeiro lance" : "Primeiro lance diferente") +
-          montarCelula("Resposta", aberturaPalpite[3],
-            aberturaPalpite[3] == aberturaAlvo[3] ? "correct" : "incorrect",
-            aberturaPalpite[3] == aberturaAlvo[3] ? "Mesma resposta" : "Resposta diferente") + linhas;
-      }
+      linhas = compararAbertura(palpite, aberturaPorNome(respostas[1]) || aberturas[0],
+        animarUltimoPalpite && i == palpites[modo].length - 1) + linhas;
     }
     i++;
   }
@@ -233,10 +284,14 @@ function montarHistorico() {
     cabecalho = '<span class="clue-heading">' + (modo == 0 ? "Enxadrista" : "Autor") +
       "</span><span class=\"clue-heading\">País</span><span class=\"clue-heading\">Nascimento</span>";
   }
-  // Os cabeçalhos de colunas e todas as células formam uma grade responsiva.
-  historico.innerHTML = '<p class="history-title">Seus palpites</p><div class="clue-grid ' +
-    (modo == 1 ? "opening-grid" : "") + '">' +
-    cabecalho + linhas + '</div><p class="clue-legend">🟩 correto&nbsp; · &nbsp;🟥 diferente&nbsp; · &nbsp;🟨 próximo&nbsp; · &nbsp;↑/↓ indica se a resposta nasceu depois/antes</p>';
+  if (modo == 1) {
+    animarPalpiteAbertura = false;
+    historico.innerHTML = '<p class="history-title">Seus palpites</p><div class="opening-guess-list">' +
+      linhas + '</div><p class="clue-legend">🟩 lance correto&nbsp; · &nbsp;🟥 divergiu&nbsp; · &nbsp;⬜ sem lance para comparar</p>';
+  } else {
+    historico.innerHTML = '<p class="history-title">Seus palpites</p><div class="clue-grid">' +
+      cabecalho + linhas + '</div><p class="clue-legend">🟩 correto&nbsp; · &nbsp;🟥 diferente&nbsp; · &nbsp;🟨 próximo&nbsp; · &nbsp;↑/↓ indica se a resposta nasceu depois/antes</p>';
+  }
 }
 
 // Atualiza textos, formulário, contador, pistas, histórico e eventos da tela
@@ -354,6 +409,9 @@ function enviarResposta() {
   // Cada envio conta como tentativa e aparece como uma nova linha de pistas.
   tentativas[modo] = tentativas[modo] + 1;
   palpites[modo].push(tentativaOriginal);
+  if (modo == 1) {
+    animarPalpiteAbertura = true;
+  }
   if (tentativa == resposta) {
     terminou[modo] = true;
     mensagem = "Boa! Você acertou! ♟";

@@ -25,7 +25,10 @@ function listar(req, res) {
                 }) &&
                 conteudo.aberturas.every(function(abertura) {
                     return abertura.nome && abertura.classificacao &&
-                        abertura.primeiroLance && abertura.respostaPretas;
+                        abertura.primeiroLance && abertura.respostaPretas &&
+                        Array.isArray(abertura.lances) && abertura.lances.length > 0 &&
+                        abertura.lances.every(function(lance) { return typeof lance == "string" && lance.length > 0; }) &&
+                        /^[A-E][0-9]{2}$/.test(abertura.eco);
                 }) &&
                 opcoesPorModo.jogador.every(function(nome) { return nomesJogadores.indexOf(nome) >= 0; }) &&
                 opcoesPorModo.abertura.every(function(nome) { return nomesAberturas.indexOf(nome) >= 0; }) &&
