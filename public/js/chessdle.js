@@ -107,17 +107,154 @@ function respostaDoDia() {
   return respostas[modo];
 }
 
-// Preenche a lista de sugestões do campo de resposta para o modo atual.
+// Renderiza as opções disponíveis no seletor pesquisável do modo atual.
 function montarOpcoes() {
-  var lista = opcoes[modo];
-  var texto = "";
-  var i = 0;
+  var campo = document.getElementById("guess-input");
+  var lista = document.getElementById("guess-options");
+  var busca = normalizarBusca(campo.value.trim());
+  var opcoesOrdenadas = opcoes[modo].slice().sort(function(a, b) {
+    return a.localeCompare(b, "pt-BR");
+  });
+  var encontradas = 0;
 
-  while (i < lista.length) {
-    texto = texto + "<option>" + escaparHTML(lista[i]) + "</option>";
-    i++;
+  lista.textContent = "";
+  opcoesOrdenadas.forEach(function(valor, indice) {
+    if (normalizarBusca(valor).indexOf(busca) == -1) {
+      return;
+    }
+
+    var opcao = document.createElement("div");
+    opcao.id = "guess-option-" + indice;
+    opcao.className = "guess-option";
+    opcao.setAttribute("role", "option");
+    opcao.setAttribute("aria-selected", normalizarBusca(valor) == busca);
+    opcao.textContent = valor;
+    opcao.onmousedown = function(evento) {
+      evento.preventDefault();
+    };
+    opcao.onclick = function() {
+      selecionarOpcao(valor);
+    };
+    lista.appendChild(opcao);
+    encontradas++;
+  });
+
+  if (encontradas == 0) {
+    var vazio = document.createElement("p");
+    vazio.className = "guess-options-empty";
+    vazio.textContent = "Nenhuma opção encontrada. Você ainda pode enviar seu palpite.";
+    lista.appendChild(vazio);
   }
-  document.getElementById("guess-options").innerHTML = texto;
+
+  return encontradas;
+}
+
+function normalizarBusca(texto) {
+  return String(texto).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR");
+}
+
+function selecionarOpcao(valor) {
+  var campo = document.getElementById("guess-input");
+  campo.value = valor;
+  fecharSeletor();
+  campo.focus();
+}
+
+function fecharSeletor() {
+  var campo = document.getElementById("guess-input");
+  var lista = document.getElementById("guess-options");
+  var seletor = campo.closest(".guess-picker");
+  if (lista.hidden) {
+    return;
+  }
+  campo.setAttribute("aria-expanded", "false");
+  campo.removeAttribute("aria-activedescendant");
+  seletor.classList.remove("is-open");
+  seletor.classList.add("is-closing");
+  window.setTimeout(function() {
+    if (seletor.classList.contains("is-closing")) {
+      lista.hidden = true;
+      seletor.classList.remove("is-closing", "opens-up");
+    }
+  }, 130);
+}
+
+function configurarSeletor() {
+  var campo = document.getElementById("guess-input");
+  var lista = document.getElementById("guess-options");
+  var opcaoAtiva = -1;
+
+  function abrirSeletor() {
+    opcaoAtiva = -1;
+    montarOpcoes();
+    var limitesCampo = campo.getBoundingClientRect();
+    var espacoAbaixo = window.innerHeight - limitesCampo.bottom;
+    var espacoAcima = limitesCampo.top;
+    campo.closest(".guess-picker").classList.toggle(
+      "opens-up",
+      espacoAbaixo < Math.min(260, window.innerHeight * 0.4) && espacoAcima > espacoAbaixo
+    );
+    lista.hidden = false;
+    campo.setAttribute("aria-expanded", "true");
+    campo.closest(".guess-picker").classList.remove("is-closing");
+    campo.closest(".guess-picker").classList.add("is-open");
+  }
+
+  function definirOpcaoAtiva(indice) {
+    var opcoesVisiveis = lista.querySelectorAll('[role="option"]');
+    if (opcoesVisiveis.length == 0) {
+      opcaoAtiva = -1;
+      campo.removeAttribute("aria-activedescendant");
+      return;
+    }
+    opcaoAtiva = ((indice % opcoesVisiveis.length) + opcoesVisiveis.length) %
+      opcoesVisiveis.length;
+    opcoesVisiveis.forEach(function(opcao, indiceOpcao) {
+      opcao.classList.toggle("is-active", indiceOpcao == opcaoAtiva);
+    });
+    campo.setAttribute("aria-activedescendant", opcoesVisiveis[opcaoAtiva].id);
+    opcoesVisiveis[opcaoAtiva].scrollIntoView({ block: "nearest" });
+  }
+
+  campo.onfocus = abrirSeletor;
+  campo.onclick = abrirSeletor;
+  campo.oninput = function() {
+    opcaoAtiva = -1;
+    abrirSeletor();
+    definirOpcaoAtiva(0);
+  };
+  campo.onkeydown = function(evento) {
+    var opcoesVisiveis;
+    if (evento.key == "ArrowDown" || evento.key == "ArrowUp") {
+      evento.preventDefault();
+      if (campo.getAttribute("aria-expanded") != "true") {
+        abrirSeletor();
+      }
+      opcoesVisiveis = lista.querySelectorAll('[role="option"]');
+      var direcao = evento.key == "ArrowDown" ? 1 : -1;
+      definirOpcaoAtiva(opcaoAtiva < 0 ?
+        (direcao > 0 ? 0 : opcoesVisiveis.length - 1) : opcaoAtiva + direcao);
+    } else if (evento.key == "Enter" && campo.getAttribute("aria-expanded") == "true") {
+      opcoesVisiveis = lista.querySelectorAll('[role="option"]');
+      if (opcaoAtiva >= 0 && opcoesVisiveis[opcaoAtiva]) {
+        evento.preventDefault();
+        selecionarOpcao(opcoesVisiveis[opcaoAtiva].textContent);
+      } else if (opcoesVisiveis.length == 0) {
+        fecharSeletor();
+      }
+    } else if (evento.key == "Escape" && campo.getAttribute("aria-expanded") == "true") {
+      evento.preventDefault();
+      fecharSeletor();
+    }
+  };
+  campo.onblur = function() {
+    window.setTimeout(function() {
+      if (!campo.closest(".guess-picker").contains(document.activeElement)) {
+        fecharSeletor();
+      }
+    }, 0);
+  };
 }
 
 // Procura um enxadrista pelo nome, ignorando diferenças entre maiúsculas e
@@ -349,12 +486,16 @@ function mostrarJogo() {
   // Cria o campo de palpite e impede novas entradas após o encerramento.
   texto = '<p class="prompt">' + escaparHTML(perguntas[modo]) + "</p>" + extra;
   texto = texto + '<form class="guess-form" id="guess-form">';
-  texto = texto + '<input class="guess-input" id="guess-input" list="guess-options" autocomplete="off" required';
+  texto = texto + '<div class="guess-picker"><input class="guess-input" id="guess-input" role="combobox"';
+  texto = texto + ' aria-label="Buscar uma resposta" aria-autocomplete="list" aria-haspopup="listbox"';
+  texto = texto + ' aria-controls="guess-options" aria-expanded="false" autocomplete="off" required';
   texto = texto + ' placeholder="Digite sua resposta..."';
   if (terminou[modo] == true) {
     texto = texto + " disabled";
   }
-  texto = texto + '><button class="submit-button" id="send-button" type="submit">Enviar →</button></form>';
+  texto = texto + '><div class="guess-options" id="guess-options" role="listbox"';
+  texto = texto + ' aria-label="Opções de resposta" hidden></div></div>';
+  texto = texto + '<button class="submit-button" id="send-button" type="submit">Enviar →</button></form>';
 
   // Seleciona a pista revelada mais recentemente. No modo jogador, as pistas
   // são personalizadas para o enxadrista escolhido para o dia.
@@ -384,6 +525,7 @@ function mostrarJogo() {
     escaparHTML(mensagem) + "</p>";
   document.getElementById("challenge-content").innerHTML = texto;
   montarOpcoes();
+  configurarSeletor();
   montarHistorico();
 
   // Intercepta o envio para validar a tentativa sem recarregar a página.
@@ -514,6 +656,7 @@ function exibirResultadoDiario() {
     mostrarJogo();
     return;
   }
+  var inicioConclusao = Date.now();
   enviandoResultado = true;
 
   var nomesModos = ["jogador", "abertura", "citacao"];
@@ -558,7 +701,10 @@ function exibirResultadoDiario() {
     }
     var destino = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
     function irParaResultado() {
-      window.location.href = destino;
+      var tempoRestante = Math.max(0, 3000 - (Date.now() - inicioConclusao));
+      window.setTimeout(function() {
+        window.location.href = destino;
+      }, tempoRestante);
     }
     if (novasConquistas.length > 0) {
       mostrarToastConquistas(novasConquistas).then(irParaResultado);

@@ -224,7 +224,7 @@
 
     .game-panel {
       margin-top: 16px;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid var(--line);
       border-radius: 16px;
       background: linear-gradient(145deg, rgba(41, 58, 50, .96), rgba(29, 43, 36, .98));
@@ -328,6 +328,15 @@
 
     .guess-form { display: flex; gap: 9px; }
 
+    .guess-picker {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      z-index: 2;
+    }
+
+    .guess-picker.is-open { z-index: 12; }
+
     .guess-input {
       width: 100%;
       min-width: 0;
@@ -343,6 +352,77 @@
 
     .guess-input::placeholder { color: #89978e; }
     .guess-input:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(163, 209, 96, .13); }
+    .guess-input:disabled { cursor: not-allowed; opacity: .55; }
+
+    .guess-options {
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      max-height: min(260px, 40vh);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 6px;
+      border: 1px solid #53665a;
+      border-radius: 11px;
+      background: #17251e;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, .42);
+      animation: guess-options-enter .14s ease-out both;
+      transition: opacity .12s ease, transform .12s ease;
+    }
+
+    .guess-picker.opens-up .guess-options {
+      top: auto;
+      bottom: calc(100% + 7px);
+    }
+
+    .guess-picker.is-closing .guess-options {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+    }
+
+    .guess-options[hidden] { display: none; }
+
+    .guess-option {
+      display: flex;
+      min-height: 42px;
+      align-items: center;
+      padding: 8px 11px;
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.35;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+
+    .guess-option:hover, .guess-option.is-active {
+      background: #293a32;
+      color: var(--green-bright);
+    }
+
+    .guess-option[aria-selected="true"]::after {
+      margin-left: auto;
+      padding-left: 10px;
+      color: var(--green-bright);
+      content: "✓";
+      font-weight: 900;
+    }
+
+    .guess-options-empty {
+      margin: 0;
+      padding: 12px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @keyframes guess-options-enter {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .submit-button, .hint-button, .reset-button {
       display: inline-flex;
@@ -700,5 +780,6 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
       .achievement-toast { animation: none; }
+      .guess-options { animation: none; }
       .opening-guess-row.reveal .opening-move-tile { animation-delay: 0ms !important; animation-duration: .01ms !important; }
     }

@@ -20,6 +20,8 @@ O projeto está em desenvolvimento. Atualmente, a página principal apresenta tr
 
 A aplicação também conta com telas de cadastro e login. O nome da pessoa autenticada é exibido no cabeçalho da página inicial.
 
+O campo de resposta dos desafios oferece busca instantânea e navegação por teclado nas opções carregadas do endpoint `/desafios`; digitar uma resposta manualmente continua permitido.
+
 ## Tecnologias
 
 - HTML, CSS e JavaScript no front-end.
