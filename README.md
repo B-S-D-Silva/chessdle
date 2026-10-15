@@ -32,7 +32,7 @@ O campo de resposta dos desafios oferece busca instantânea e navegação por te
 
 O projeto parte da estrutura da API Web Data Viz, utilizada como referência acadêmica, e adapta essa base para o Chessdle. A estrutura do servidor Express e a organização em **routes**, **controllers** e **models** foram aproveitadas como ponto de partida. As telas e a identidade visual foram modificadas para o tema de xadrez, e os fluxos de cadastro e autenticação foram conectados à interface do Chessdle.
 
-A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, as conclusões individuais atualizam a sequência por `POST /partidas/concluir`, e a partida completa continua sendo salva por `POST /partidas`. `GET /streak?usuarioId=<id>` retorna a sequência e os últimos sete dias.
+A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, as conclusões individuais atualizam a sequência por `POST /partidas/concluir`, e a partida completa continua sendo salva por `POST /partidas`. `GET /partidas/historico/:usuarioId?offset=<n>` retorna até dez partidas por vez, o total de partidas e a lista paginada usada pelo botão **Ver mais 10 partidas** no perfil. `GET /streak?usuarioId=<id>` retorna a sequência e os últimos sete dias.
 
 ### Estatísticas do Chessdle
 

@@ -130,14 +130,19 @@ function obterPorId(req, res) {
 
 function obterHistorico(req, res) {
     var usuarioId = Number(req.params.usuarioId);
-    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1) {
-        res.status(400).send("Identificador do usuário inválido.");
+    var offsetInformado = req.query.offset;
+    var deslocamento = offsetInformado == null ? 0 : Number(offsetInformado);
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1 ||
+        (offsetInformado != null &&
+            (typeof offsetInformado != "string" || !/^\d+$/.test(offsetInformado))) ||
+        !Number.isSafeInteger(deslocamento) || deslocamento < 0) {
+        res.status(400).send("Parâmetros do histórico inválidos.");
         return;
     }
 
-    partidaModel.buscarHistoricoPorUsuario(usuarioId)
-        .then(function(partidas) {
-            res.json(partidas);
+    partidaModel.buscarHistoricoPorUsuario(usuarioId, 10, deslocamento)
+        .then(function(historico) {
+            res.json(historico);
         })
         .catch(function(erro) {
             console.error("Não foi possível consultar o histórico de partidas.", erro);

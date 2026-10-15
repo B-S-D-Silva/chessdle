@@ -31,3 +31,4 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 19. Adicionar uma célula de continente às comparações dos palpites nos modos Jogador e Citação, com uma divisão geográfica intuitiva; persistir o continente dos enxadristas e migrar os dados existentes.
 20. Melhorar o seletor de respostas com uma lista personalizada, busca instantânea, opções ordenadas alfabeticamente, rolagem limitada, navegação por teclado e layout responsivo, mantendo a lista dinâmica da API e permitindo digitação manual.
 21. Ao clicar em “Enviar” no último desafio, aguardar cinco segundos antes de sair da tela do jogo e exibir o gráfico de resultados.
+22. Limitar o histórico do perfil a dez partidas por vez e adicionar um botão para carregar mais dez partidas.

@@ -4,6 +4,10 @@
   var profileContent = document.getElementById("profile-content");
   var loginPrompt = document.getElementById("profile-login");
   var form = document.getElementById("profile-form");
+  var tamanhoPaginaHistorico = 10;
+  var deslocamentoHistorico = 0;
+  var totalPartidas = 0;
+  var carregandoHistorico = false;
   var catalogoIcones = {
     peao: '<path d="M24 6a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm-4 14-2 7-7 7v3h26v-3l-7-7-2-7M11 41h26v3H11z"/>',
     alvo: '<circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="10"/><circle cx="24" cy="24" r="3"/><path d="m24 24 13-13m-6 0h6v6"/>',
@@ -118,12 +122,15 @@
       total == 0 ? "Nenhuma conquista disponível no momento." : "";
   }
 
-  function renderizarHistorico(partidas) {
+  function renderizarHistorico(partidas, adicionar) {
     var lista = document.getElementById("profile-history-list");
     if (!Array.isArray(partidas)) {
       throw new Error("O histórico retornado pelo servidor está inválido.");
     }
     if (partidas.length == 0) {
+      if (adicionar) {
+        return;
+      }
       var vazio = document.createElement("p");
       vazio.className = "profile-empty";
       vazio.textContent = "Você ainda não concluiu nenhuma partida.";
@@ -160,14 +167,38 @@
       cartao.appendChild(resultados);
       fragmento.appendChild(cartao);
     });
-    lista.replaceChildren(fragmento);
+    if (adicionar) {
+      lista.appendChild(fragmento);
+    } else {
+      lista.replaceChildren(fragmento);
+    }
+  }
+
+  function validarHistorico(historico) {
+    if (!historico || !Array.isArray(historico.partidas) ||
+        !Number.isSafeInteger(historico.total) || historico.total < 0 ||
+        historico.partidas.length > tamanhoPaginaHistorico) {
+      throw new Error("O histórico retornado pelo servidor está inválido.");
+    }
+    return historico;
+  }
+
+  function atualizarHistorico(historico, adicionar) {
+    validarHistorico(historico);
+    renderizarHistorico(historico.partidas, adicionar);
+    deslocamentoHistorico += historico.partidas.length;
+    totalPartidas = Number(historico.total);
+    document.getElementById("profile-games").textContent =
+      new Intl.NumberFormat("pt-BR").format(totalPartidas);
+    document.getElementById("profile-load-more").hidden =
+      deslocamentoHistorico >= totalPartidas;
   }
 
   function carregarPerfil() {
     var urlUsuario = encodeURIComponent(usuarioId);
     return Promise.all([
       buscarJSON("/usuarios/" + urlUsuario + "/perfil"),
-      buscarJSON("/partidas/historico/" + urlUsuario),
+      buscarJSON("/partidas/historico/" + urlUsuario + "?offset=0"),
       buscarJSON("/streak?usuarioId=" + urlUsuario),
       buscarJSON("/conquistas?usuarioId=" + urlUsuario)
     ]).then(function(dados) {
@@ -198,10 +229,8 @@
 
       document.getElementById("profile-streak").textContent =
         new Intl.NumberFormat("pt-BR").format(Number(dados[2].atual) || 0);
-      document.getElementById("profile-games").textContent =
-        new Intl.NumberFormat("pt-BR").format(dados[1].length);
       renderizarConquistas(dados[3]);
-      renderizarHistorico(dados[1]);
+      atualizarHistorico(dados[1], false);
       document.getElementById("profile-form-message").textContent = "";
       profileContent.hidden = false;
     });
@@ -250,6 +279,34 @@
     }).finally(function() {
       botao.disabled = false;
     });
+  });
+
+  document.getElementById("profile-load-more").addEventListener("click", function() {
+    if (carregandoHistorico || deslocamentoHistorico >= totalPartidas) {
+      return;
+    }
+    carregandoHistorico = true;
+    var botao = document.getElementById("profile-load-more");
+    var status = document.getElementById("profile-history-status");
+    botao.disabled = true;
+    status.className = "profile-history-status";
+    status.textContent = "Carregando mais partidas...";
+
+    buscarJSON("/partidas/historico/" + encodeURIComponent(usuarioId) +
+      "?offset=" + encodeURIComponent(deslocamentoHistorico))
+      .then(function(historico) {
+        atualizarHistorico(historico, true);
+        status.textContent = "";
+      })
+      .catch(function(erro) {
+        console.error("Não foi possível carregar mais partidas do histórico.", erro);
+        status.textContent = erro.message || "Não foi possível carregar mais partidas.";
+        status.className = "profile-history-status error";
+      })
+      .then(function() {
+        carregandoHistorico = false;
+        botao.disabled = false;
+      });
   });
 
   carregarPerfil().catch(function(erro) {

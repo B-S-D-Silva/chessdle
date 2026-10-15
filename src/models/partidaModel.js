@@ -230,7 +230,7 @@ function buscarPorId(partidaId, usuarioId) {
         });
 }
 
-function buscarHistoricoPorUsuario(usuarioId) {
+function buscarHistoricoPorUsuario(usuarioId, limite, deslocamento) {
     var instrucaoSql = `
         SELECT
             id,
@@ -241,10 +241,14 @@ function buscarHistoricoPorUsuario(usuarioId) {
         FROM partida
         WHERE usuario_id = ?
         ORDER BY data_partida DESC, criada_em DESC, id DESC
+        LIMIT ? OFFSET ?
     `;
-    return database.executar(instrucaoSql, [usuarioId])
-        .then(function(linhas) {
-            return linhas.map(function(partida) {
+    return Promise.all([
+        database.executar(instrucaoSql, [usuarioId, limite, deslocamento]),
+        database.executar("SELECT COUNT(*) AS total FROM partida WHERE usuario_id = ?", [usuarioId])
+    ]).then(function(resultados) {
+        return {
+            partidas: resultados[0].map(function(partida) {
                 return {
                     id: partida.id,
                     data: partida.data,
@@ -258,8 +262,10 @@ function buscarHistoricoPorUsuario(usuarioId) {
                         };
                     })
                 };
-            });
-        });
+            }),
+            total: Number(resultados[1][0].total)
+        };
+    });
 }
 
 function gerarConsultaResultados(usuarioId, inicio, fim) {

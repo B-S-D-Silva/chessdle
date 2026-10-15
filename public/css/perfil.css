@@ -145,6 +145,9 @@
 .profile-history { margin-top: 30px; }
 .profile-history h2 { margin-bottom: 14px; }
 .profile-history-list { display: grid; gap: 10px; }
+.profile-history-status { margin: 10px 0; color: var(--muted); font-size: 13px; }
+.profile-history-status.error { color: #ff9a91; }
+.profile-load-more { display: block; margin: 14px auto 0; }
 .profile-empty {
   margin: 0;
   padding: 15px;
