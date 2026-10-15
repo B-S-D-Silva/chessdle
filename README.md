@@ -77,6 +77,10 @@ Exemplo resumido de resposta:
 
 O dashboard relaciona a origem acadêmica Web Data Viz com o Chessdle ao transformar os registros persistidos em visualizações de dados: as consultas agregam por data, modo e tentativas no backend, enquanto a página apresenta os resultados em gráficos e calendário de atividade.
 
+### Conquistas do perfil
+
+`GET /conquistas?usuarioId=<id>` retorna `{ conquistas: [...], resumo: { total, desbloqueadas } }` para o usuário informado, seguindo o padrão de identificação atual do projeto. Cada item contém `codigo`, `nome`, `descricao`, `icone`, `desbloqueada` e `dataDesbloqueio`. Ao salvar uma partida completa em `POST /partidas`, as regras são avaliadas no MySQL dentro da mesma transação e a resposta inclui `novasConquistas`, uma lista vazia ou com `{ codigo, nome, descricao, icone }`. Os cartões e as descrições de cada regra ficam no perfil; para ampliar o catálogo, adicione uma entrada com sua regra em `src/models/conquistasCatalogo.js` e inclua o mesmo código e seus metadados em `src/database/migracao-conquistas.sql` e `src/database/script-tabelas.sql`.
+
 ## Como executar
 
 1. Instale o [Node.js](https://nodejs.org/) e o MySQL.
@@ -88,7 +92,7 @@ O dashboard relaciona a origem acadêmica Web Data Viz com o Chessdle ao transfo
 
 3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
 4. Configure o ambiente usado pelo servidor em `app.js`.
-5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql`. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas).
+5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql` e `src/database/migracao-conquistas.sql`, nessa ordem. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas). A migração de conquistas cria o catálogo e concede retroativamente os marcos já atingidos; a data registrada para esses desbloqueios é o dia em que a migração foi executada.
 6. Inicie o servidor:
 
    ```bash
@@ -120,6 +124,42 @@ WHERE id = 1;
 Uma data de ontem deve exibir a sequência em risco; uma data anterior a ontem deve exibir sequência atual 0. Ao concluir um modo, a primeira condição incrementa a sequência e a segunda reinicia em 1. Os exemplos de datas precisam ser adaptados ao dia atual de Brasília.
 
 O projeto mantém a identidade do usuário no `sessionStorage` e ainda não tem sessão ou token validado no servidor. Os endpoints de sequência seguem o padrão existente de receber `usuarioId`; isso atende à integração atual, mas não equivale a autenticação segura no backend.
+
+### Testar conquistas
+
+Para testar o fluxo completo, entre em uma conta e conclua os três modos; a resposta de `POST /partidas` passa a incluir as conquistas recém-desbloqueadas e a página do jogo exibe um toast para cada uma. Para forçar a regra **Acertou de primeira** com dados fictícios em um banco de desenvolvimento, insira uma partida com o modo jogador acertado no primeiro palpite:
+
+```sql
+SET @usuario_teste = (
+    SELECT id FROM usuario WHERE email = 'seu-email-de-teste@exemplo.com' LIMIT 1
+);
+
+INSERT INTO partida (
+    usuario_id, data_partida,
+    jogador_tentativas, jogador_acertou, jogador_pistas,
+    abertura_tentativas, abertura_acertou, abertura_pistas,
+    citacao_tentativas, citacao_acertou, citacao_pistas
+)
+VALUES (
+    @usuario_teste,
+    DATE(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-03:00')),
+    1, TRUE, 0,
+    2, FALSE, 0,
+    3, FALSE, 0
+);
+```
+
+Depois conclua uma partida pelo jogo para executar novamente a checagem das regras. Para conferir imediatamente apenas a apresentação no perfil, também é possível conceder um badge diretamente:
+
+```sql
+INSERT IGNORE INTO usuario_conquista (fkUsuario, fkConquista, dataDesbloqueio)
+SELECT usuario.id, conquistas.id, CURRENT_DATE()
+FROM usuario
+JOIN conquistas ON conquistas.codigo = 'acertou-de-primeira'
+WHERE usuario.email = 'seu-email-de-teste@exemplo.com';
+```
+
+O comando que insere em `partida` testa a regra depois que você conclui outra partida pelo jogo; o comando em `usuario_conquista` testa apenas a apresentação no perfil. Use somente dados de teste.
 
 ## Estrutura principal
 

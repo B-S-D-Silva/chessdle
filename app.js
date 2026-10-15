@@ -21,6 +21,7 @@ var partidasRouter = require("./src/routes/partidas");
 var streakRouter = require("./src/routes/streak");
 var desafiosRouter = require("./src/routes/desafios");
 var estatisticasRouter = require("./src/routes/estatisticas");
+var conquistasRouter = require("./src/routes/conquistas");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -34,6 +35,7 @@ app.use("/partidas", partidasRouter);
 app.use("/streak", streakRouter);
 app.use("/desafios", desafiosRouter);
 app.use("/estatisticas", estatisticasRouter);
+app.use("/conquistas", conquistasRouter);
 
 app.listen(PORTA_APP, function () {
     console.log(`

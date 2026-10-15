@@ -4,27 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#14231d">
-  <meta name="description" content="Seu perfil e histórico de partidas no Chessdle.">
+  <meta name="description" content="Acompanhe suas conquistas e seu histórico no Chessdle.">
   <title>Perfil — Chessdle</title>
-  <script>
-    if (!sessionStorage.getItem("EMAIL_USUARIO") || !sessionStorage.getItem("NOME_USUARIO")) {
-      window.location.replace("login.html");
-    }
-  </script>
   <link rel="stylesheet" href="css/chessdle.css">
+  <link rel="stylesheet" href="css/streak.css">
   <link rel="stylesheet" href="css/perfil.css">
 </head>
-<body>
+<body class="profile-page">
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="index.html" aria-label="Chessdle, voltar ao jogo">
         <span class="brand-mark" aria-hidden="true">♞</span>
         <span>chessdle</span>
       </a>
-      <div class="header-right">
-        <a class="header-user" id="header-user" href="perfil.html" aria-label="Perfil"></a>
-        <button class="logout-button" type="button" data-redirect="login.html">Sair</button>
+      <div class="streak-widget" id="streak-widget">
+        <button class="streak-button zero" id="streak-button" type="button"
+          aria-label="Sequência de 0 dias" aria-controls="streak-popover" aria-expanded="false">
+          <svg class="streak-flame" viewBox="0 0 32 40" aria-hidden="true" focusable="false">
+            <path class="flame-outer" d="M17.4 1.5c1.2 7.6-1.1 10.5-4.6 14.1-2.2 2.3-3.8 4.8-3.8 8.3a7 7 0 0 0 14 0c0-2.8-1.2-5.2-3.2-7.6 6.4 2.7 10.1 8.1 10.1 14.1A13.9 13.9 0 0 1 16 44.3 13.9 13.9 0 0 1 2.1 30.4c0-7.6 4.1-12.5 8.8-17.2 2.7-2.7 5.1-6.1 6.5-11.7Z" transform="translate(0 -4)" />
+            <path class="flame-inner" d="M16 22.5c2.8 3.2 4.4 5.4 4.4 8a4.4 4.4 0 0 1-8.8 0c0-2.7 1.6-5 4.4-8Z" />
+          </svg>
+          <span class="streak-count" id="streak-count">0</span>
+        </button>
+        <section class="streak-popover" id="streak-popover" aria-labelledby="streak-title" hidden>
+          <button class="streak-close" id="streak-close" type="button" aria-label="Fechar sequência">×</button>
+          <h2 id="streak-title">Sua sequência</h2>
+          <div class="streak-stats">
+            <p><strong id="streak-current">0</strong><span>dias atuais</span></p>
+            <p><strong id="streak-best">0</strong><span>maior sequência</span></p>
+          </div>
+          <p class="streak-week-label">Últimos 7 dias</p>
+          <div class="streak-week" id="streak-week" aria-label="Atividade nos últimos sete dias"></div>
+          <p class="streak-message" id="streak-message" aria-live="polite"></p>
+        </section>
       </div>
+      <nav class="header-right profile-nav" aria-label="Navegação principal">
+        <a class="stats-nav-link" href="index.html">Jogar</a>
+        <a class="stats-nav-link" href="dashboard.html">Estatísticas</a>
+        <a class="stats-nav-link" href="perfil.html" aria-current="page">Perfil</a>
+        <a class="header-user" id="header-user" href="perfil.html" aria-label="Abrir perfil" hidden></a>
+        <button class="logout-button" type="button" data-redirect="login.html" hidden>Sair</button>
+      </nav>
     </div>
   </header>
 
@@ -32,32 +52,76 @@
     <section class="intro profile-intro" aria-labelledby="page-title">
       <p class="eyebrow">Sua conta</p>
       <h1 id="page-title">Perfil</h1>
-      <p class="intro-copy">Conte um pouco sobre você e acompanhe sua evolução no Chessdle.</p>
+      <p class="intro-copy">Acompanhe suas conquistas e sua evolução no Chessdle.</p>
     </section>
 
-    <section class="profile-panel" aria-labelledby="profile-form-title">
-      <h2 id="profile-form-title">Suas informações</h2>
-      <form class="profile-form" id="profile-form">
-        <label for="profile-description">Descrição</label>
-        <textarea id="profile-description" name="descricao" maxlength="500" rows="4"
-          placeholder="Fale um pouco sobre sua relação com o xadrez..."></textarea>
-        <label for="profile-rating">Rating no Chess.com</label>
-        <input id="profile-rating" name="ratingChessCom" type="number" min="0" max="4000" step="1"
-          placeholder="Ex.: 1200">
-        <p class="profile-help">Informe seu rating atual, de 0 a 4000. O campo pode ficar em branco.</p>
-        <div class="profile-actions">
-          <button class="submit-button" type="submit">Salvar perfil</button>
-          <p class="profile-message" id="profile-message" role="status" aria-live="polite"></p>
-        </div>
-      </form>
-    </section>
-
-    <section class="profile-history" aria-labelledby="profile-history-title">
-      <h2 id="profile-history-title">Histórico de partidas</h2>
-      <div class="profile-history-list" id="profile-history-list" aria-live="polite">
-        <p class="profile-empty">Carregando histórico...</p>
+    <section class="profile-login" id="profile-login" aria-labelledby="profile-login-title" hidden>
+      <h2 id="profile-login-title">Entre para ver seu perfil</h2>
+      <p>Suas conquistas e seu histórico ficam disponíveis depois que você entrar na sua conta.</p>
+      <div class="profile-login-actions">
+        <a class="profile-primary-link" href="login.html">Entrar</a>
+        <a class="profile-secondary-link" href="cadastro.html">Criar conta</a>
       </div>
     </section>
+
+    <div class="profile-content" id="profile-content" hidden>
+      <section class="profile-summary" aria-label="Resumo do perfil">
+        <div class="profile-avatar" id="profile-avatar" aria-hidden="true"></div>
+        <div class="profile-identity">
+          <p class="profile-overline">Perfil de</p>
+          <h2 id="profile-name"></h2>
+          <p class="profile-member" id="member-since" hidden></p>
+        </div>
+        <div class="profile-stat">
+          <strong id="profile-streak">0</strong>
+          <span>sequência atual</span>
+        </div>
+        <div class="profile-stat">
+          <strong id="profile-games">0</strong>
+          <span>partidas jogadas</span>
+        </div>
+      </section>
+
+      <section class="achievements-panel" aria-labelledby="achievements-title">
+        <div class="achievements-heading">
+          <div>
+            <p class="profile-overline">Seus marcos no Chessdle</p>
+            <h2 id="achievements-title">Conquistas</h2>
+          </div>
+          <p class="achievement-count" id="achievement-count" aria-live="polite">0 de 10 conquistas</p>
+        </div>
+        <div class="achievement-progress" role="progressbar" id="achievement-progress"
+          aria-label="Progresso das conquistas" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+          <span id="achievement-progress-fill"></span>
+        </div>
+        <p class="profile-message" id="profile-message" role="status" aria-live="polite">Carregando suas conquistas...</p>
+        <div class="achievement-grid" id="achievement-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="profile-panel" aria-labelledby="profile-form-title">
+        <h2 id="profile-form-title">Suas informações</h2>
+        <form class="profile-form" id="profile-form">
+          <label for="profile-description">Descrição</label>
+          <textarea id="profile-description" name="descricao" maxlength="500" rows="4"
+            placeholder="Fale um pouco sobre sua relação com o xadrez..."></textarea>
+          <label for="profile-rating">Rating no Chess.com</label>
+          <input id="profile-rating" name="ratingChessCom" type="number" min="0" max="4000" step="1"
+            placeholder="Ex.: 1200">
+          <p class="profile-help">Informe seu rating atual, de 0 a 4000. O campo pode ficar em branco.</p>
+          <div class="profile-actions">
+            <button class="submit-button" type="submit">Salvar perfil</button>
+            <p class="profile-message" id="profile-form-message" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <section class="profile-history" aria-labelledby="profile-history-title">
+        <h2 id="profile-history-title">Histórico de partidas</h2>
+        <div class="profile-history-list" id="profile-history-list" aria-live="polite">
+          <p class="profile-empty">Carregando histórico...</p>
+        </div>
+      </section>
+    </div>
 
     <footer class="site-footer">
       <p>Feito para quem ama xadrez. ♞</p>
@@ -65,6 +129,7 @@
     </footer>
   </main>
 
+  <script src="js/streak.js" defer></script>
   <script src="js/perfil.js" defer></script>
   <script src="js/logout.js" defer></script>
 </body>

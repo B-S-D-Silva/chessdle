@@ -96,6 +96,35 @@
     .stats-nav-link:hover, .stats-nav-link:focus-visible { color: var(--text); text-decoration: underline; }
     a.header-user:hover, a.header-user:focus-visible { color: var(--text); text-decoration: underline; }
 
+    .achievement-toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 3px 10px;
+      width: min(360px, calc(100vw - 32px));
+      padding: 15px 17px;
+      border: 1px solid rgba(163, 209, 96, .6);
+      border-radius: 13px;
+      background: #202f28;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .42);
+      color: var(--text);
+      animation: achievement-toast-enter .22s ease-out both;
+    }
+
+    .achievement-toast[hidden] { display: none; }
+    .achievement-toast-icon { grid-row: span 2; font-size: 25px; line-height: 1.2; }
+    .achievement-toast-message { align-self: end; font-size: 13px; font-weight: 800; line-height: 1.4; }
+    .achievement-toast-link { justify-self: start; color: var(--green-bright); font-size: 11px; font-weight: 800; }
+    .achievement-toast-link:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 3px; }
+
+    @keyframes achievement-toast-enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .logout-button {
       min-height: 34px;
       padding: 0 12px;
@@ -670,5 +699,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      .achievement-toast { animation: none; }
       .opening-guess-row.reveal .opening-move-tile { animation-delay: 0ms !important; animation-duration: .01ms !important; }
     }

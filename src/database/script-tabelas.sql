@@ -35,6 +35,35 @@ CREATE TABLE partida (
     INDEX (usuario_id, data_partida)
 );
 
+CREATE TABLE conquistas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    nome VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    icone VARCHAR(40) NOT NULL
+);
+
+CREATE TABLE usuario_conquista (
+    fkUsuario INT NOT NULL,
+    fkConquista INT NOT NULL,
+    dataDesbloqueio DATE NOT NULL,
+    PRIMARY KEY (fkUsuario, fkConquista),
+    FOREIGN KEY (fkUsuario) REFERENCES usuario(id) ON DELETE CASCADE,
+    FOREIGN KEY (fkConquista) REFERENCES conquistas(id) ON DELETE CASCADE
+);
+
+INSERT INTO conquistas (codigo, nome, descricao, icone) VALUES
+('primeira-partida', 'Primeira partida', 'Conclua seu primeiro desafio diário.', 'peao'),
+('acertou-de-primeira', 'Acertou de primeira', 'Acerte qualquer desafio na primeira tentativa.', 'alvo'),
+('sem-erro', 'Sem erro', 'Acerte cinco desafios em até duas tentativas.', 'escudo'),
+('sequencia-7', '7 dias de sequência', 'Jogue ao menos um desafio por sete dias seguidos.', 'chama'),
+('sequencia-30', '30 dias de sequência', 'Jogue ao menos um desafio por 30 dias seguidos.', 'coroa'),
+('aberturas-10', '10 aberturas acertadas', 'Acerte dez desafios de Adivinhe a abertura.', 'torre'),
+('citacoes-10', 'Fã de citações', 'Acerte dez desafios do modo Citação.', 'citacao'),
+('jogadores-10', 'Detetive', 'Acerte dez desafios de Adivinhe o jogador.', 'lupa'),
+('mestre-tres-modos', 'Mestre dos três modos', 'Acerte os três desafios do mesmo dia.', 'tres-pecas'),
+('persistente', 'Persistente', 'Acerte um desafio exatamente na sexta tentativa.', 'trofeu');
+
 CREATE TABLE streak_dia (
     usuario_id INT NOT NULL,
     data_conclusao DATE NOT NULL,

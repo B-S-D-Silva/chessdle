@@ -1,4 +1,5 @@
 var database = require("../database/config");
+var conquistasModel = require("./conquistasModel");
 
 var modosOrdenados = ["jogador", "abertura", "citacao"];
 
@@ -163,10 +164,14 @@ function criar(usuarioId, resultados) {
     return database.executarTransacao(function(executar) {
         return executar(instrucaoSql, valores).then(function(resultadoPartida) {
             return atualizarSequencia(executar, usuarioId, hoje).then(function(sequencia) {
-                return {
-                    id: resultadoPartida.insertId,
-                    sequencia: sequencia
-                };
+                return conquistasModel.desbloquear(executar, usuarioId, hoje)
+                    .then(function(novasConquistas) {
+                        return {
+                            id: resultadoPartida.insertId,
+                            sequencia: sequencia,
+                            novasConquistas: novasConquistas
+                        };
+                    });
             });
         });
     });

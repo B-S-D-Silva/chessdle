@@ -547,16 +547,20 @@ function exibirResultadoDiario() {
     if (!partida || !Number.isSafeInteger(Number(partida.id)) || Number(partida.id) < 1) {
       throw new Error("A resposta do servidor não informou a partida salva.");
     }
+    var novasConquistas = Array.isArray(partida.novasConquistas) ? partida.novasConquistas : [];
     if (partida.sequencia && window.ChessdleStreak) {
       window.ChessdleStreak.atualizar(partida.sequencia, partida.sequencia.aumentou);
     }
     var destino = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
-    if (partida.sequencia && partida.sequencia.aumentou) {
-      window.setTimeout(function() {
-        window.location.href = destino;
-      }, 700);
-    } else {
+    function irParaResultado() {
       window.location.href = destino;
+    }
+    if (novasConquistas.length > 0) {
+      mostrarToastConquistas(novasConquistas).then(irParaResultado);
+    } else if (partida.sequencia && partida.sequencia.aumentou) {
+      window.setTimeout(irParaResultado, 700);
+    } else {
+      irParaResultado();
     }
   }).catch(function(erro) {
     enviandoResultado = false;
@@ -575,6 +579,51 @@ function exibirResultadoDiario() {
     document.getElementById("feedback").textContent = mensagem;
     document.getElementById("feedback").className = "feedback " + tipoMensagem;
     document.getElementById("reset-button").textContent = "Tentar salvar resultado";
+  });
+}
+
+function mostrarToastConquistas(conquistas) {
+  var toast = document.getElementById("achievement-toast");
+  if (!toast || !Array.isArray(conquistas) || conquistas.length == 0) {
+    return Promise.resolve();
+  }
+
+  var indice = 0;
+  return new Promise(function(resolve) {
+    function mostrarProxima() {
+      if (indice >= conquistas.length) {
+        toast.hidden = true;
+        toast.textContent = "";
+        resolve();
+        return;
+      }
+
+      var conquista = conquistas[indice];
+      var icone = document.createElement("span");
+      icone.className = "achievement-toast-icon";
+      icone.setAttribute("aria-hidden", "true");
+      icone.textContent = "🏆";
+
+      var mensagemToast = document.createElement("span");
+      mensagemToast.className = "achievement-toast-message";
+      mensagemToast.textContent = "Conquista desbloqueada: " + conquista.nome;
+
+      var link = document.createElement("a");
+      link.className = "achievement-toast-link";
+      link.href = "perfil.html";
+      link.textContent = "Ver no perfil";
+
+      toast.textContent = "";
+      toast.appendChild(icone);
+      toast.appendChild(mensagemToast);
+      toast.appendChild(link);
+      toast.hidden = false;
+
+      indice++;
+      window.setTimeout(mostrarProxima, 2800);
+    }
+
+    mostrarProxima();
   });
 }
 
