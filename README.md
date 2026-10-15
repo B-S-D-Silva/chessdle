@@ -99,6 +99,15 @@ VALUES (
 
 As opções de resposta do modo passam a incluir os nomes cadastrados em `jogador`. O jogo alterna diariamente entre as citações cadastradas, e novas citações ficam disponíveis para os próximos dias ainda não atribuídos.
 
+### Continente nos palpites
+
+Os modos **Adivinhe o jogador** e **Citação** comparam também o continente do palpite. A divisão usa América do Norte, América Central e Caribe, América do Sul, Europa, Eurásia (para a Rússia, por ser transcontinental), Ásia, África e Oceania. Em bancos existentes, execute uma vez `src/database/migracao-continente-jogador.sql`; os países conhecidos recebem uma classificação inicial e os demais ficam como `Não informado`. Para novos enxadristas, informe `continente` ao inserir a linha em `jogador`; se omitir o campo, o banco usa `Não informado`. Exemplo:
+
+```sql
+INSERT INTO jogador (nome, dica, nascimento, pais, continente)
+VALUES ('Nome do enxadrista', 'Dica do jogo.', 1990, 'Brasil', 'América do Sul');
+```
+
 ## Como executar
 
 1. Instale o [Node.js](https://nodejs.org/) e o MySQL.
@@ -110,7 +119,7 @@ As opções de resposta do modo passam a incluir os nomes cadastrados em `jogado
 
 3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
 4. Configure o ambiente usado pelo servidor em `app.js`.
-5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql`, `src/database/migracao-conquistas.sql` e `src/database/migracao-citacoes.sql`. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas). A migração de conquistas cria o catálogo e concede retroativamente os marcos já atingidos; a data registrada para esses desbloqueios é o dia em que a migração foi executada. A migração de citações cria as tabelas e importa a frase atual se o autor já estiver cadastrado em `jogador`.
+5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql`, `src/database/migracao-conquistas.sql`, `src/database/migracao-citacoes.sql` e `src/database/migracao-continente-jogador.sql`. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas). A migração de conquistas cria o catálogo e concede retroativamente os marcos já atingidos; a data registrada para esses desbloqueios é o dia em que a migração foi executada. A migração de citações cria as tabelas e importa a frase atual se o autor já estiver cadastrado em `jogador`. A migração de continentes adiciona a classificação geográfica usada nos palpites.
 6. Inicie o servidor:
 
    ```bash

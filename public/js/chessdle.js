@@ -78,7 +78,7 @@ function carregarConteudoDoBanco(conteudo) {
   });
 
   jogadores = conteudo.jogadores.map(function(jogador) {
-    return [jogador.nome, jogador.dica, Number(jogador.nascimento), jogador.pais];
+    return [jogador.nome, jogador.dica, Number(jogador.nascimento), jogador.pais, jogador.continente];
   });
   aberturas = conteudo.aberturas.map(function(abertura) {
     return {
@@ -149,19 +149,21 @@ function escaparHTML(texto) {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-// Compara o jogador enviado com o jogador correto e cria as células de
-// nome, país e ano de nascimento, incluindo a indicação de direção do ano.
+// Compara o jogador enviado com o jogador correto usando nome, país,
+// continente e ano de nascimento.
 function compararJogador(nome, jogadorAlvo, rotulo) {
   var jogadorPalpite = jogadorPorNome(nome);
 
   if (jogadorPalpite == null) {
     return montarCelula(rotulo, nome, "incorrect", "Palpite não encontrado na lista") +
       montarCelula("País", "—", "unknown", "Sem dados para comparar") +
+      montarCelula("Continente", "—", "unknown", "Sem dados para comparar") +
       montarCelula("Nascimento", "—", "unknown", "Sem dados para comparar");
   }
 
   var nomeCerto = jogadorPalpite[0].toLowerCase() == jogadorAlvo[0].toLowerCase();
   var paisCerto = jogadorPalpite[3] == jogadorAlvo[3];
+  var continenteCerto = jogadorPalpite[4] == jogadorAlvo[4];
   var diferencaAno = jogadorAlvo[2] - jogadorPalpite[2];
   var anoStatus = diferencaAno == 0 ? "correct" :
     Math.abs(diferencaAno) <= 10 ? "partial" : "incorrect";
@@ -182,6 +184,8 @@ function compararJogador(nome, jogadorAlvo, rotulo) {
       nomeCerto ? "Resposta correta" : "Nome diferente") +
     montarCelula("País", jogadorPalpite[3], paisCerto ? "correct" : "incorrect",
       paisCerto ? "Mesmo país" : "País diferente") +
+    montarCelula("Continente", jogadorPalpite[4], continenteCerto ? "correct" : "incorrect",
+      continenteCerto ? "Mesmo continente" : "Continente diferente") +
     montarCelula("Nascimento", anoValor, anoStatus, anoTitulo + ": " + jogadorAlvo[2]);
 }
 
@@ -296,7 +300,8 @@ function montarHistorico() {
 
   if (modo == 0 || modo == 2) {
     cabecalho = '<span class="clue-heading">' + (modo == 0 ? "Enxadrista" : "Autor") +
-      "</span><span class=\"clue-heading\">País</span><span class=\"clue-heading\">Nascimento</span>";
+      "</span><span class=\"clue-heading\">País</span><span class=\"clue-heading\">Continente</span>" +
+      "<span class=\"clue-heading\">Nascimento</span>";
   }
   if (modo == 1) {
     animarPalpiteAbertura = false;

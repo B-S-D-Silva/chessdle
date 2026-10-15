@@ -35,7 +35,8 @@ function listar(req, res) {
                 conteudo.jogadores.length > 0 &&
                 conteudo.aberturas.length > 0 &&
                 conteudo.jogadores.every(function(jogador) {
-                    return jogador.nome && jogador.dica && jogador.nascimento && jogador.pais;
+                    return jogador.nome && jogador.dica && jogador.nascimento &&
+                        jogador.pais && jogador.continente;
                 }) &&
                 conteudo.aberturas.every(function(abertura) {
                     return abertura.nome && abertura.classificacao &&

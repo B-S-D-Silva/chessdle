@@ -102,7 +102,8 @@ CREATE TABLE jogador (
     nome VARCHAR(100) NOT NULL UNIQUE,
     dica VARCHAR(255) NOT NULL,
     nascimento SMALLINT UNSIGNED NOT NULL,
-    pais VARCHAR(100) NOT NULL
+    pais VARCHAR(100) NOT NULL,
+    continente VARCHAR(32) NOT NULL DEFAULT 'Não informado'
 );
 
 CREATE TABLE citacao_desafio (
@@ -160,15 +161,15 @@ INSERT INTO dica_desafio (modo, ordem, texto) VALUES
 ('citacao', 1, 'Nasceu em Cuba.'),
 ('citacao', 2, 'Foi campeão mundial entre 1921 e 1927.');
 
-INSERT INTO jogador (nome, dica, nascimento, pais) VALUES
-('Magnus Carlsen', 'É um grande mestre norueguês.', 1990, 'Noruega'),
-('Garry Kasparov', 'Foi campeão mundial por quinze anos.', 1963, 'Rússia'),
-('Bobby Fischer', 'Enfrentou Spassky no match de 1972.', 1943, 'Estados Unidos'),
-('Judit Polgár', 'É considerada a maior enxadrista da história.', 1976, 'Hungria'),
-('Hikaru Nakamura', 'É um dos maiores nomes do xadrez online.', 1987, 'Estados Unidos'),
-('José Raúl Capablanca', 'Foi um grande enxadrista cubano.', 1888, 'Cuba'),
-('Viswanathan Anand', 'Foi o primeiro campeão mundial indiano.', 1969, 'Índia'),
-('Fabiano Caruana', 'Disputou o título mundial em 2018.', 1992, 'Estados Unidos');
+INSERT INTO jogador (nome, dica, nascimento, pais, continente) VALUES
+('Magnus Carlsen', 'É um grande mestre norueguês.', 1990, 'Noruega', 'Europa'),
+('Garry Kasparov', 'Foi campeão mundial por quinze anos.', 1963, 'Rússia', 'Eurásia'),
+('Bobby Fischer', 'Enfrentou Spassky no match de 1972.', 1943, 'Estados Unidos', 'América do Norte'),
+('Judit Polgár', 'É considerada a maior enxadrista da história.', 1976, 'Hungria', 'Europa'),
+('Hikaru Nakamura', 'É um dos maiores nomes do xadrez online.', 1987, 'Estados Unidos', 'América do Norte'),
+('José Raúl Capablanca', 'Foi um grande enxadrista cubano.', 1888, 'Cuba', 'América Central e Caribe'),
+('Viswanathan Anand', 'Foi o primeiro campeão mundial indiano.', 1969, 'Índia', 'Ásia'),
+('Fabiano Caruana', 'Disputou o título mundial em 2018.', 1992, 'Estados Unidos', 'América do Norte');
 
 INSERT INTO citacao_desafio (autor, texto, dica1, dica2) VALUES
 ('José Raúl Capablanca', '“O xadrez é a vida em miniatura.”',

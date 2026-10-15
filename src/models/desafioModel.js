@@ -61,7 +61,7 @@ function buscarConteudo(dataHoje) {
         "SELECT modo, titulo, descricao, pergunta, resposta, conteudo FROM desafio_config ORDER BY FIELD(modo, 'jogador', 'abertura', 'citacao')",
         "SELECT modo, valor FROM opcao_desafio ORDER BY id",
         "SELECT modo, ordem, texto FROM dica_desafio ORDER BY modo, ordem",
-        "SELECT nome, dica, nascimento, pais FROM jogador ORDER BY id",
+        "SELECT nome, dica, nascimento, pais, continente FROM jogador ORDER BY id",
         "SELECT nome, classificacao, primeiro_lance, resposta_pretas, lances, eco FROM abertura ORDER BY id"
     ];
 
@@ -96,7 +96,8 @@ function buscarConteudo(dataHoje) {
                     nome: jogador.nome,
                     dica: jogador.dica,
                     nascimento: Number(jogador.nascimento),
-                    pais: jogador.pais
+                    pais: jogador.pais,
+                    continente: jogador.continente
                 };
             }),
             aberturas: resultados[4].map(function(abertura) {
