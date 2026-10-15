@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14231d">
+  <meta name="description" content="Acompanhe seu desempenho e sua atividade no Chessdle.">
+  <title>Estatísticas — Chessdle</title>
+  <link rel="stylesheet" href="css/chessdle.css">
+  <link rel="stylesheet" href="css/streak.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Chessdle, início">
+        <span class="brand-mark" aria-hidden="true">♞</span>
+        <span>chessdle</span>
+      </a>
+      <div class="streak-widget" id="streak-widget">
+        <button class="streak-button zero" id="streak-button" type="button"
+          aria-label="Sequência de 0 dias" aria-controls="streak-popover" aria-expanded="false">
+          <svg class="streak-flame" viewBox="0 0 32 40" aria-hidden="true" focusable="false">
+            <path class="flame-outer" d="M17.4 1.5c1.2 7.6-1.1 10.5-4.6 14.1-2.2 2.3-3.8 4.8-3.8 8.3a7 7 0 0 0 14 0c0-2.8-1.2-5.2-3.2-7.6 6.4 2.7 10.1 8.1 10.1 14.1A13.9 13.9 0 0 1 16 44.3 13.9 13.9 0 0 1 2.1 30.4c0-7.6 4.1-12.5 8.8-17.2 2.7-2.7 5.1-6.1 6.5-11.7Z" transform="translate(0 -4)" />
+            <path class="flame-inner" d="M16 22.5c2.8 3.2 4.4 5.4 4.4 8a4.4 4.4 0 0 1-8.8 0c0-2.7 1.6-5 4.4-8Z" />
+          </svg>
+          <span class="streak-count" id="streak-count">0</span>
+        </button>
+        <section class="streak-popover" id="streak-popover" aria-labelledby="streak-title" hidden>
+          <button class="streak-close" id="streak-close" type="button" aria-label="Fechar sequência">×</button>
+          <h2 id="streak-title">Sua sequência</h2>
+          <div class="streak-stats">
+            <p><strong id="streak-current">0</strong><span>dias atuais</span></p>
+            <p><strong id="streak-best">0</strong><span>maior sequência</span></p>
+          </div>
+          <p class="streak-week-label">Últimos 7 dias</p>
+          <div class="streak-week" id="streak-week" aria-label="Atividade nos últimos sete dias"></div>
+          <p class="streak-message" id="streak-message" aria-live="polite"></p>
+        </section>
+      </div>
+      <div class="header-right">
+        <a class="stats-nav-link" href="dashboard.html" aria-current="page">Estatísticas</a>
+        <a class="header-user" id="header-user" href="perfil.html" aria-label="Abrir perfil" hidden></a>
+        <button class="logout-button" type="button" data-redirect="login.html" hidden>Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="dashboard-intro" aria-labelledby="page-title">
+      <p class="eyebrow">Seu jogo em números</p>
+      <h1 id="page-title">Dashboard de desempenho</h1>
+      <p class="intro-copy">Acompanhe sua evolução nos desafios diários do Chessdle.</p>
+    </section>
+
+    <section class="login-prompt" id="login-prompt" aria-labelledby="login-title" hidden>
+      <h2 id="login-title">Entre para ver suas estatísticas</h2>
+      <p>Suas partidas e sua evolução ficam disponíveis depois que você entrar na sua conta.</p>
+      <div class="prompt-actions">
+        <a class="primary-link" href="login.html">Entrar</a>
+        <a class="secondary-link" href="cadastro.html">Criar conta</a>
+      </div>
+    </section>
+
+    <section class="loading-state" id="loading-state" aria-label="Carregando estatísticas" hidden>
+      <p class="loading-label" role="status">Carregando suas estatísticas…</p>
+      <div class="summary-grid" aria-hidden="true">
+        <div class="skeleton summary-skeleton"></div><div class="skeleton summary-skeleton"></div>
+        <div class="skeleton summary-skeleton"></div><div class="skeleton summary-skeleton"></div>
+        <div class="skeleton summary-skeleton"></div>
+      </div>
+      <div class="chart-grid" aria-hidden="true">
+        <div class="skeleton chart-skeleton"></div><div class="skeleton chart-skeleton"></div>
+        <div class="skeleton chart-skeleton"></div><div class="skeleton chart-skeleton"></div>
+      </div>
+    </section>
+
+    <section class="request-error" id="request-error" role="alert" hidden>
+      <p>Não foi possível carregar suas estatísticas agora.</p>
+      <button class="retry-button" id="retry-button" type="button">Tentar de novo</button>
+    </section>
+
+    <div class="dashboard-content" id="dashboard-content" hidden>
+      <section class="summary-grid" aria-label="Resumo de desempenho">
+        <article class="summary-card">
+          <span class="summary-label">Partidas jogadas</span>
+          <strong class="summary-value" id="summary-games">0</strong>
+          <span class="summary-note">No período selecionado</span>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Taxa de acerto</span>
+          <strong class="summary-value" id="summary-rate">0%</strong>
+          <span class="summary-note">Nos três modos de jogo</span>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Tentativas nas vitórias</span>
+          <strong class="summary-value" id="summary-attempts">—</strong>
+          <span class="summary-note">Média de palpites por acerto</span>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Sequência atual</span>
+          <strong class="summary-value" id="summary-streak">0 dias</strong>
+          <span class="summary-note">Dias consecutivos jogados</span>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label">Maior sequência</span>
+          <strong class="summary-value" id="summary-best-streak">0 dias</strong>
+          <span class="summary-note">Seu recorde pessoal</span>
+        </article>
+      </section>
+
+      <section class="chart-grid" aria-label="Gráficos de desempenho">
+        <article class="chart-card chart-card-wide">
+          <div class="chart-heading">
+            <div>
+              <h2>Desempenho ao longo do tempo</h2>
+              <p>Taxa de acerto e tentativas médias nas vitórias por dia.</p>
+            </div>
+            <label class="period-control" for="period-select">
+              <span>Período</span>
+              <select id="period-select">
+                <option value="7">7 dias</option>
+                <option value="30" selected>30 dias</option>
+                <option value="90">90 dias</option>
+                <option value="todos">Tudo</option>
+              </select>
+            </label>
+          </div>
+          <p class="chart-empty" data-empty="series" hidden>Jogue seu primeiro desafio para ver seus dados aqui.</p>
+          <div class="chart-plot" data-plot="series">
+            <canvas id="series-chart" role="img" aria-label="Gráfico de linhas com taxa de acerto e tentativas médias por dia"></canvas>
+          </div>
+          <table class="visually-hidden" id="series-table">
+            <caption>Desempenho diário: taxa de acerto e tentativas médias</caption>
+            <thead><tr><th scope="col">Data</th><th scope="col">Partidas</th><th scope="col">Acertos</th><th scope="col">Taxa de acerto</th><th scope="col">Média de tentativas nas vitórias</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-heading">
+            <div>
+              <h2>Distribuição de tentativas</h2>
+              <p>Vitórias por número de tentativas e desafios não acertados.</p>
+            </div>
+          </div>
+          <p class="chart-empty" data-empty="distribution" hidden>Jogue seu primeiro desafio para ver seus dados aqui.</p>
+          <div class="chart-plot" data-plot="distribution">
+            <canvas id="distribution-chart" role="img" aria-label="Gráfico de barras com a quantidade de vitórias por número de tentativas e desafios não acertados"></canvas>
+          </div>
+          <table class="visually-hidden" id="distribution-table">
+            <caption>Distribuição de resultados por tentativas</caption>
+            <thead><tr><th scope="col">Resultado</th><th scope="col">Quantidade</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-heading">
+            <div>
+              <h2>Desempenho por modo</h2>
+              <p>Percentual de acerto em cada tipo de desafio.</p>
+            </div>
+          </div>
+          <p class="chart-empty" data-empty="modes" hidden>Jogue seu primeiro desafio para ver seus dados aqui.</p>
+          <div class="chart-plot" data-plot="modes">
+            <canvas id="modes-chart" role="img" aria-label="Gráfico de barras com a taxa de acerto nos três modos do Chessdle"></canvas>
+          </div>
+          <table class="visually-hidden" id="modes-table">
+            <caption>Taxa de acerto por modo de jogo</caption>
+            <thead><tr><th scope="col">Modo</th><th scope="col">Partidas</th><th scope="col">Acertos</th><th scope="col">Taxa de acerto</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </article>
+
+        <article class="chart-card chart-card-wide activity-card">
+          <div class="chart-heading">
+            <div>
+              <h2>Atividade recente</h2>
+              <p>Cada quadrado representa um dia; tons mais fortes indicam mais partidas.</p>
+            </div>
+          </div>
+          <p class="chart-empty" data-empty="activity" hidden>Jogue seu primeiro desafio para ver seus dados aqui.</p>
+          <div class="activity-wrap" data-plot="activity">
+            <div class="activity-weekdays" aria-hidden="true">
+              <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+            </div>
+            <div class="activity-grid" id="activity-grid" role="grid" aria-label="Calendário de atividade dos últimos 12 semanas"></div>
+          </div>
+          <table class="visually-hidden" id="activity-table">
+            <caption>Partidas concluídas por dia nos últimos 12 semanas</caption>
+            <thead><tr><th scope="col">Data</th><th scope="col">Partidas</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <p class="activity-legend"><span>Menos</span><i class="level-0" aria-hidden="true"></i><i class="level-1" aria-hidden="true"></i><i class="level-2" aria-hidden="true"></i><i class="level-3" aria-hidden="true"></i><span>Mais</span></p>
+        </article>
+      </section>
+    </div>
+
+    <footer class="site-footer">
+      <p>Feito para quem ama xadrez. ♞</p>
+      <p>Chessdle não é afiliado ao Chess.com.</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="js/streak.js" defer></script>
+  <script src="js/logout.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>

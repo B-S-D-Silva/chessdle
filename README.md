@@ -32,6 +32,51 @@ O projeto parte da estrutura da API Web Data Viz, utilizada como referência aca
 
 A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, as conclusões individuais atualizam a sequência por `POST /partidas/concluir`, e a partida completa continua sendo salva por `POST /partidas`. `GET /streak?usuarioId=<id>` retorna a sequência e os últimos sete dias.
 
+### Estatísticas do Chessdle
+
+O endpoint `GET /estatisticas?usuarioId=<id>&dias=30` agrega as partidas no MySQL e alimenta `public/dashboard.html` com Chart.js v4. `usuarioId` segue o padrão de identidade já usado pelo projeto; `dias` aceita `7`, `30`, `90` ou `todos` (padrão: `30`). A série, distribuição e desempenho por modo respeitam o período; atividade mostra aproximadamente 12 semanas. As datas usam o dia civil de `America/Sao_Paulo`.
+
+Exemplo resumido de resposta:
+
+```json
+{
+  "resumo": {
+    "partidas": 12,
+    "taxaAcerto": 72.22,
+    "mediaTentativasVitorias": 2.46,
+    "sequenciaAtual": 4,
+    "maiorSequencia": 9
+  },
+  "serie": [
+    {
+      "data": "2026-10-14",
+      "partidas": 1,
+      "acertos": 2,
+      "taxaAcerto": 66.67,
+      "mediaTentativas": 2.5
+    }
+  ],
+  "distribuicao": [
+    { "tentativas": 1, "rotulo": "1 tentativa", "quantidade": 3 },
+    { "tentativas": null, "rotulo": "Não acertou", "quantidade": 5 }
+  ],
+  "porModo": [
+    {
+      "modo": "jogador",
+      "partidas": 12,
+      "acertos": 9,
+      "taxaAcerto": 75,
+      "mediaTentativas": 2.4
+    }
+  ],
+  "atividade": [
+    { "data": "2026-10-14", "partidas": 1 }
+  ]
+}
+```
+
+O dashboard relaciona a origem acadêmica Web Data Viz com o Chessdle ao transformar os registros persistidos em visualizações de dados: as consultas agregam por data, modo e tentativas no backend, enquanto a página apresenta os resultados em gráficos e calendário de atividade.
+
 ## Como executar
 
 1. Instale o [Node.js](https://nodejs.org/) e o MySQL.
@@ -51,6 +96,10 @@ A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como 
    ```
 
 7. Abra no navegador o endereço exibido no terminal, normalmente `http://localhost:8080`.
+
+### Demonstrar o dashboard
+
+Crie uma conta de demonstração pelo fluxo normal de cadastro usando o e-mail `dashboard.demo@chessdle.local` e entre nela. Em um banco local/de teste, execute uma vez `src/database/seed-partidas-demo.sql` para inserir até seis semanas de partidas fictícias, com variação entre modos, acertos e tentativas, além de popular a sequência. O script não apaga partidas e ignora datas que já têm registros. Acesse **Estatísticas** na página inicial. Não use essa massa de dados em produção.
 
 ### Testar a sequência
 

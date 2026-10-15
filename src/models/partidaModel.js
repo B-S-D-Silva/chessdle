@@ -257,6 +257,169 @@ function buscarHistoricoPorUsuario(usuarioId) {
         });
 }
 
+function gerarConsultaResultados(usuarioId, inicio, fim) {
+    var filtroData = inicio ? " AND data_partida BETWEEN ? AND ?" : "";
+    var parametros = [usuarioId];
+    if (inicio) {
+        parametros.push(inicio, fim);
+    }
+
+    var sql = `
+        SELECT usuario_id, id AS partida_id, data_partida, 'jogador' AS modo,
+            jogador_tentativas AS tentativas, jogador_acertou AS acertou
+        FROM partida
+        WHERE usuario_id = ?${filtroData}
+        UNION ALL
+        SELECT usuario_id, id AS partida_id, data_partida, 'abertura' AS modo,
+            abertura_tentativas AS tentativas, abertura_acertou AS acertou
+        FROM partida
+        WHERE usuario_id = ?${filtroData}
+        UNION ALL
+        SELECT usuario_id, id AS partida_id, data_partida, 'citacao' AS modo,
+            citacao_tentativas AS tentativas, citacao_acertou AS acertou
+        FROM partida
+        WHERE usuario_id = ?${filtroData}
+    `;
+
+    return {
+        sql: sql,
+        valores: parametros.concat(parametros, parametros)
+    };
+}
+
+function dataHaDias(hoje, quantidade) {
+    var data = new Date(hoje + "T00:00:00Z");
+    data.setUTCDate(data.getUTCDate() - quantidade);
+    return data.toISOString().slice(0, 10);
+}
+
+function numeroOuNulo(valor) {
+    return valor == null ? null : Number(valor);
+}
+
+function buscarEstatisticas(usuarioId, dias) {
+    var hoje = dataAtualSaoPaulo();
+    var inicio = dias == "todos" ? null : dataHaDias(hoje, Number(dias) - 1);
+    var conjunto = gerarConsultaResultados(usuarioId, inicio, hoje);
+    var parametrosAtividade = [usuarioId, dataHaDias(hoje, 89), hoje];
+
+    var consultaResumo = database.executar(`
+        SELECT
+            COUNT(DISTINCT partida_id) AS partidas,
+            COUNT(*) AS desafios,
+            SUM(acertou = 1) AS acertos,
+            ROUND(AVG(CASE WHEN acertou = 1 THEN tentativas END), 2) AS mediaTentativasVitorias
+        FROM (${conjunto.sql}) AS resultados
+    `, conjunto.valores);
+
+    var consultaSerie = database.executar(`
+        SELECT
+            DATE_FORMAT(data_partida, '%Y-%m-%d') AS data,
+            COUNT(DISTINCT partida_id) AS partidas,
+            SUM(acertou = 1) AS acertos,
+            ROUND(100 * SUM(acertou = 1) / COUNT(*), 2) AS taxaAcerto,
+            ROUND(AVG(CASE WHEN acertou = 1 THEN tentativas END), 2) AS mediaTentativas
+        FROM (${conjunto.sql}) AS resultados
+        GROUP BY data_partida
+        ORDER BY data_partida
+    `, conjunto.valores);
+
+    var consultaDistribuicao = database.executar(`
+        SELECT
+            CASE WHEN acertou = 1 THEN tentativas ELSE 0 END AS tentativas,
+            COUNT(*) AS quantidade
+        FROM (${conjunto.sql}) AS resultados
+        GROUP BY CASE WHEN acertou = 1 THEN tentativas ELSE 0 END
+    `, conjunto.valores);
+
+    var consultaModos = database.executar(`
+        SELECT
+            modo,
+            COUNT(*) AS partidas,
+            SUM(acertou = 1) AS acertos,
+            ROUND(100 * SUM(acertou = 1) / COUNT(*), 2) AS taxaAcerto,
+            ROUND(AVG(CASE WHEN acertou = 1 THEN tentativas END), 2) AS mediaTentativas
+        FROM (${conjunto.sql}) AS resultados
+        GROUP BY modo
+    `, conjunto.valores);
+
+    var consultaAtividade = database.executar(`
+        SELECT
+            DATE_FORMAT(data_partida, '%Y-%m-%d') AS data,
+            COUNT(DISTINCT id) AS partidas
+        FROM partida
+        WHERE usuario_id = ? AND data_partida BETWEEN ? AND ?
+        GROUP BY data_partida
+        ORDER BY data_partida
+    `, parametrosAtividade);
+
+    return Promise.all([
+        consultaResumo,
+        consultaSerie,
+        consultaDistribuicao,
+        consultaModos,
+        consultaAtividade,
+        buscarSequencia(usuarioId)
+    ]).then(function(resultados) {
+        if (resultados[5] == null) {
+            return null;
+        }
+        var resumoBanco = resultados[0][0];
+        var totalDesafios = Number(resumoBanco.desafios) || 0;
+        var distribuicaoBanco = resultados[2];
+        var quantidades = {};
+        distribuicaoBanco.forEach(function(item) {
+            quantidades[Number(item.tentativas)] = Number(item.quantidade);
+        });
+
+        var modosBanco = {};
+        resultados[3].forEach(function(item) {
+            modosBanco[item.modo] = item;
+        });
+
+        return {
+            resumo: {
+                partidas: Number(resumoBanco.partidas) || 0,
+                taxaAcerto: totalDesafios == 0 ? 0 :
+                    Math.round(Number(resumoBanco.acertos || 0) * 10000 / totalDesafios) / 100,
+                mediaTentativasVitorias: numeroOuNulo(resumoBanco.mediaTentativasVitorias),
+                sequenciaAtual: resultados[5].atual,
+                maiorSequencia: resultados[5].maior
+            },
+            serie: resultados[1].map(function(item) {
+                return {
+                    data: item.data,
+                    partidas: Number(item.partidas),
+                    acertos: Number(item.acertos),
+                    taxaAcerto: Number(item.taxaAcerto),
+                    mediaTentativas: numeroOuNulo(item.mediaTentativas)
+                };
+            }),
+            distribuicao: [1, 2, 3, 4, 5, 6, 0].map(function(tentativas) {
+                return {
+                    tentativas: tentativas == 0 ? null : tentativas,
+                    rotulo: tentativas == 0 ? "Não acertou" :
+                        tentativas + (tentativas == 1 ? " tentativa" : " tentativas"),
+                    quantidade: quantidades[tentativas] || 0
+                };
+            }),
+            porModo: modosOrdenados.map(function(modo) {
+                var item = modosBanco[modo];
+                return {
+                    modo: modo,
+                    partidas: item ? Number(item.partidas) : 0,
+                    acertos: item ? Number(item.acertos) : 0,
+                    taxaAcerto: item ? Number(item.taxaAcerto) : 0,
+                    mediaTentativas: item ? numeroOuNulo(item.mediaTentativas) : null
+                };
+            }),
+            atividade: resultados[4].map(function(item) {
+                return { data: item.data, partidas: Number(item.partidas) };
+            })
+        };
+    });
+}
+
 module.exports = {
     criar,
     registrarConclusao,
@@ -264,5 +427,6 @@ module.exports = {
     dataAtualSaoPaulo,
     buscarPorId,
     buscarHistoricoPorUsuario,
+    buscarEstatisticas,
     modosOrdenados
 };
