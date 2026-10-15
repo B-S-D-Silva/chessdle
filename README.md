@@ -18,7 +18,7 @@ O projeto está em desenvolvimento. Atualmente, a página principal apresenta tr
 - **Adivinhe a abertura:** identifique a abertura a partir dos lances apresentados.
 - **Citação:** descubra qual enxadrista disse uma frase famosa.
 
-A aplicação também conta com telas de cadastro e login. O nome da pessoa autenticada é exibido no cabeçalho da página inicial.
+A aplicação também conta com telas de cadastro e login. É necessário entrar na conta para acessar os desafios; quem abrir o jogo sem autenticação é encaminhado diretamente para o login. Após autenticar, a pessoa retorna ao jogo, e seu nome é exibido no cabeçalho.
 
 O campo de resposta dos desafios oferece busca instantânea e navegação por teclado nas opções carregadas do endpoint `/desafios`; digitar uma resposta manualmente continua permitido.
 

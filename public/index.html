@@ -6,6 +6,13 @@
   <meta name="theme-color" content="#14231d">
   <meta name="description" content="Três desafios diários para quem ama xadrez. Jogue Chessdle de graça.">
   <title>Chessdle — desafios diários de xadrez</title>
+  <script>
+    if (!sessionStorage.getItem("ID_USUARIO") ||
+        !sessionStorage.getItem("EMAIL_USUARIO") ||
+        !sessionStorage.getItem("NOME_USUARIO")) {
+      window.location.replace("login.html");
+    }
+  </script>
   <link rel="stylesheet" href="css/chessdle.css">
   <link rel="stylesheet" href="css/streak.css">
 </head>
@@ -92,7 +99,7 @@
     <section class="daily-footer" aria-label="Resumo diário">
       <div>
         <strong>♙ Três desafios de xadrez</strong>
-        <p>Novos desafios todos os dias. Sem cadastro e sem instalar nada.</p>
+        <p>Novos desafios todos os dias. Entre na sua conta para jogar.</p>
       </div>
       <div class="daily-meta">
         Desafio de hoje

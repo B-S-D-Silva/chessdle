@@ -32,3 +32,4 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 20. Melhorar o seletor de respostas com uma lista personalizada, busca instantânea, opções ordenadas alfabeticamente, rolagem limitada, navegação por teclado e layout responsivo, mantendo a lista dinâmica da API e permitindo digitação manual.
 21. Ao clicar em “Enviar” no último desafio, aguardar cinco segundos antes de sair da tela do jogo e exibir o gráfico de resultados.
 22. Limitar o histórico do perfil a dez partidas por vez e adicionar um botão para carregar mais dez partidas.
+23. Exigir autenticação para jogar no Chessdle e encaminhar diretamente ao login quem tentar acessar os desafios sem entrar na conta.
