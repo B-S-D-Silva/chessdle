@@ -30,7 +30,7 @@ A aplicação também conta com telas de cadastro e login. O nome da pessoa aute
 
 O projeto parte da estrutura da API Web Data Viz, utilizada como referência acadêmica, e adapta essa base para o Chessdle. A estrutura do servidor Express e a organização em **routes**, **controllers** e **models** foram aproveitadas como ponto de partida. As telas e a identidade visual foram modificadas para o tema de xadrez, e os fluxos de cadastro e autenticação foram conectados à interface do Chessdle.
 
-A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, e as partidas concluídas são salvas pelo endpoint `/partidas`. Os dados das aberturas incluem a linha principal em notação algébrica portuguesa e o código ECO.
+A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como empresas, aquários, avisos e medidas. Esses elementos fazem parte da base adaptada e não representam modos de jogo do Chessdle. Os desafios da página principal são carregados pelo endpoint `/desafios`, as conclusões individuais atualizam a sequência por `POST /partidas/concluir`, e a partida completa continua sendo salva por `POST /partidas`. `GET /streak?usuarioId=<id>` retorna a sequência e os últimos sete dias.
 
 ## Como executar
 
@@ -43,7 +43,7 @@ A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como 
 
 3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
 4. Configure o ambiente usado pelo servidor em `app.js`.
-5. Prepare o banco de dados e as tabelas necessárias. Para criar um banco novo, use `src/database/script-tabelas.sql`. Para atualizar um banco existente, execute uma vez `src/database/migracao-lances-abertura.sql`, que adiciona as linhas principais e os códigos ECO às aberturas.
+5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql`. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas).
 6. Inicie o servidor:
 
    ```bash
@@ -51,6 +51,26 @@ A API ainda contém nomes e recursos herdados da aplicação Web Data Viz, como 
    ```
 
 7. Abra no navegador o endereço exibido no terminal, normalmente `http://localhost:8080`.
+
+### Testar a sequência
+
+Entre com uma conta, conclua qualquer um dos três modos e abra o indicador de chama no cabeçalho: o dia deve aparecer como garantido. Concluir outros modos na mesma data não adiciona outro dia. Para simular que a última conclusão foi ontem ou anteontem, ajuste a data da conta no MySQL e atualize a página:
+
+```sql
+-- Substitua as datas pelas datas atuais em America/Sao_Paulo.
+-- Remova o marcador de hoje apenas no ambiente de teste.
+DELETE FROM streak_dia
+WHERE usuario_id = 1 AND data_conclusao = '2026-10-14';
+
+-- Defina a última conclusão como ontem para testar o estado "em risco".
+UPDATE usuario
+SET streak_atual = 4, streak_maior = 8, streak_ultima_data = '2026-10-13'
+WHERE id = 1;
+```
+
+Uma data de ontem deve exibir a sequência em risco; uma data anterior a ontem deve exibir sequência atual 0. Ao concluir um modo, a primeira condição incrementa a sequência e a segunda reinicia em 1. Os exemplos de datas precisam ser adaptados ao dia atual de Brasília.
+
+O projeto mantém a identidade do usuário no `sessionStorage` e ainda não tem sessão ou token validado no servidor. Os endpoints de sequência seguem o padrão existente de receber `usuarioId`; isso atende à integração atual, mas não equivale a autenticação segura no backend.
 
 ## Estrutura principal
 

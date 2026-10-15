@@ -6,6 +6,10 @@ router.post("/", function(req, res) {
     partidaController.registrar(req, res);
 });
 
+router.post("/concluir", function(req, res) {
+    partidaController.registrarConclusaoDesafio(req, res);
+});
+
 router.get("/historico/:usuarioId", function(req, res) {
     partidaController.obterHistorico(req, res);
 });

@@ -10,7 +10,10 @@ CREATE TABLE usuario (
     email VARCHAR(254) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     descricao VARCHAR(500) NOT NULL DEFAULT '',
-    rating_chess_com SMALLINT UNSIGNED NULL
+    rating_chess_com SMALLINT UNSIGNED NULL,
+    streak_atual INT UNSIGNED NOT NULL DEFAULT 0,
+    streak_maior INT UNSIGNED NOT NULL DEFAULT 0,
+    streak_ultima_data DATE NULL
 );
 
 -- Uma linha representa uma partida completa com os tres desafios diarios.
@@ -30,6 +33,13 @@ CREATE TABLE partida (
     criada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE,
     INDEX (usuario_id, data_partida)
+);
+
+CREATE TABLE streak_dia (
+    usuario_id INT NOT NULL,
+    data_conclusao DATE NOT NULL,
+    PRIMARY KEY (usuario_id, data_conclusao),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
 CREATE TABLE desafio_config (
@@ -124,7 +134,3 @@ INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas, lanc
  '["e4","e5","Cf3","Cc6","Bb5","a6","Ba4","Cf6","O-O","Be7","Te1","b5","Bb3","d6"]', 'C60'),
 ('Gambito da Dama', 'Fechada', '1. d4', '1... d5',
  '["d4","d5","c4","e6","Cc3","Cf6","Bg5","Be7","e3","O-O","Cf3","h6"]', 'D06');
-
-ALTER TABLE usuario
-    ADD COLUMN descricao VARCHAR(500) NOT NULL DEFAULT '',
-    ADD COLUMN rating_chess_com SMALLINT UNSIGNED NULL;

@@ -8,6 +8,8 @@ var tentativas = [0, 0, 0];
 var pistasUsadas = [0, 0, 0];
 // Indica se o jogador já concluiu cada desafio.
 var terminou = [false, false, false];
+// Evita repetir o registro de conclusão de um modo na mesma página.
+var conclusoesEnviadas = [false, false, false];
 // Guarda as respostas enviadas em cada modo para montar o histórico visual.
 var palpites = [[], [], []];
 var enviandoResultado = false;
@@ -29,7 +31,19 @@ var jogadoresPorNome = {};
 // IDs das abas no HTML, na mesma ordem dos índices de modo.
 var abas = ["tab-player", "tab-opening", "tab-quote"];
 // Data local usada para mostrar a data e selecionar o desafio diário.
-var hoje = new Date();
+var partesHojeSaoPaulo = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+}).formatToParts(new Date());
+var dataHojeSaoPaulo = {};
+partesHojeSaoPaulo.forEach(function(parte) {
+  dataHojeSaoPaulo[parte.type] = parte.value;
+});
+var anoHoje = Number(dataHojeSaoPaulo.year);
+var mesHoje = Number(dataHojeSaoPaulo.month);
+var diaHoje = Number(dataHojeSaoPaulo.day);
 // Nome da pessoa armazenado durante a sessão de acesso.
 var nomeUsuario = sessionStorage.getItem("NOME_USUARIO");
 // Nomes dos meses e quantidade de dias de cada mês para calcular o dia do ano.
@@ -80,8 +94,8 @@ function carregarConteudoDoBanco(conteudo) {
     jogadoresPorNome[jogador[0]] = jogador;
   });
 
-  var diaDoAno = Math.floor((Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) -
-    Date.UTC(hoje.getFullYear(), 0, 0)) / 86400000);
+  var diaDoAno = Math.floor((Date.UTC(anoHoje, mesHoje - 1, diaHoje) -
+    Date.UTC(anoHoje, 0, 0)) / 86400000);
   jogadorDoDia = diaDoAno % jogadores.length;
 }
 
@@ -428,15 +442,71 @@ function enviarResposta() {
   }
   mostrarJogo();
 
-  if (terminou[0] && terminou[1] && terminou[2]) {
-    exibirResultadoDiario();
+  registrarConclusoesPendentes().then(function() {
+    if (terminou[0] && terminou[1] && terminou[2]) {
+      exibirResultadoDiario();
+    }
+  });
+}
+
+function registrarConclusoesPendentes() {
+  var usuarioId = Number(sessionStorage.getItem("ID_USUARIO"));
+  var nomesModos = ["jogador", "abertura", "citacao"];
+  var requisicoes = [];
+  var indice = 0;
+
+  if (!Number.isSafeInteger(usuarioId) || usuarioId < 1) {
+    return Promise.resolve();
   }
+
+  while (indice < terminou.length) {
+    if (terminou[indice] && !conclusoesEnviadas[indice]) {
+      conclusoesEnviadas[indice] = true;
+      (function(indiceAtual) {
+        var requisicao = fetch("/partidas/concluir", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuarioId: usuarioId, modo: nomesModos[indiceAtual] })
+        }).then(function(resposta) {
+          if (!resposta.ok) {
+            return resposta.text().then(function(texto) {
+              throw new Error(texto || "Não foi possível salvar a conclusão do desafio.");
+            });
+          }
+          return resposta.json();
+        }).then(function(resultado) {
+          if (!resultado || !resultado.sequencia) {
+            throw new Error("A resposta do servidor não informou a sequência atualizada.");
+          }
+          if (window.ChessdleStreak) {
+            window.ChessdleStreak.atualizar(resultado.sequencia, resultado.sequencia.aumentou);
+          }
+        }).catch(function(erro) {
+          conclusoesEnviadas[indiceAtual] = false;
+          console.error("Não foi possível registrar a conclusão do desafio.", erro);
+          if (window.ChessdleStreak) {
+            window.ChessdleStreak.mostrarErro("Não foi possível salvar sua sequência. Ela será tentada novamente ao concluir outro desafio.");
+          }
+        });
+        requisicoes.push(requisicao);
+      })(indice);
+    }
+    indice++;
+  }
+
+  return Promise.all(requisicoes);
 }
 
 // Salva o desempenho da sessão e abre o dashboard assim que os três modos
 // forem concluídos.
 function exibirResultadoDiario() {
   if (enviandoResultado) {
+    return;
+  }
+  if (!sessionStorage.getItem("ID_USUARIO")) {
+    mensagem = "Você concluiu os desafios! Entre na sua conta para salvar sua sequência.";
+    tipoMensagem = "success";
+    mostrarJogo();
     return;
   }
   enviandoResultado = true;
@@ -460,8 +530,8 @@ function exibirResultadoDiario() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       usuarioId: Number(sessionStorage.getItem("ID_USUARIO")),
-      data: hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0") +
-        "-" + String(hoje.getDate()).padStart(2, "0"),
+      data: anoHoje + "-" + String(mesHoje).padStart(2, "0") +
+        "-" + String(diaHoje).padStart(2, "0"),
       resultados: resultados
     })
   }).then(function(resposta) {
@@ -477,7 +547,17 @@ function exibirResultadoDiario() {
     if (!partida || !Number.isSafeInteger(Number(partida.id)) || Number(partida.id) < 1) {
       throw new Error("A resposta do servidor não informou a partida salva.");
     }
-    window.location.href = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
+    if (partida.sequencia && window.ChessdleStreak) {
+      window.ChessdleStreak.atualizar(partida.sequencia, partida.sequencia.aumentou);
+    }
+    var destino = "dashboard/resultado.html?id=" + encodeURIComponent(partida.id);
+    if (partida.sequencia && partida.sequencia.aumentou) {
+      window.setTimeout(function() {
+        window.location.href = destino;
+      }, 700);
+    } else {
+      window.location.href = destino;
+    }
   }).catch(function(erro) {
     enviandoResultado = false;
     if (erro.status == 401) {
@@ -497,6 +577,7 @@ function exibirResultadoDiario() {
     document.getElementById("reset-button").textContent = "Tentar salvar resultado";
   });
 }
+
 
 // Retorna a resposta associada a um modo sem depender da aba atualmente aberta.
 function respostaDoModo(numero) {
@@ -538,14 +619,15 @@ function inicializarJogo() {
   document.getElementById("tab-opening").onclick = function() { trocarModo(1); };
   document.getElementById("tab-quote").onclick = function() { trocarModo(2); };
 
-  document.getElementById("today-date").textContent = hoje.getDate() + " de " +
-    meses[hoje.getMonth()] + " de " + hoje.getFullYear();
+  document.getElementById("today-date").textContent = diaHoje + " de " +
+    meses[mesHoje - 1] + " de " + anoHoje;
   mostrarJogo();
 }
 
 if (nomeUsuario != null && nomeUsuario != "") {
   document.getElementById("header-user").textContent = "Olá, " + nomeUsuario;
   document.getElementById("header-user").hidden = false;
+  document.querySelector(".logout-button").hidden = false;
 }
 document.getElementById("challenge-content").textContent = "Carregando desafios...";
 fetch("/desafios", { cache: "no-store" })

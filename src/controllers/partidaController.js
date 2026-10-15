@@ -44,9 +44,9 @@ function registrar(req, res) {
         return;
     }
 
-    partidaModel.criar(usuarioId, dataPartida, resultados)
-        .then(function(partidaId) {
-            res.status(201).json({ id: partidaId });
+    partidaModel.criar(usuarioId, resultados)
+        .then(function(partida) {
+            res.status(201).json(partida);
         })
         .catch(function(erro) {
             if (erro.errno == 1216 || erro.errno == 1452 ||
@@ -56,6 +56,52 @@ function registrar(req, res) {
             }
             console.error("Não foi possível salvar a partida.", erro);
             res.status(500).send("Não foi possível salvar o resultado da partida.");
+        });
+}
+
+function registrarConclusaoDesafio(req, res) {
+    var usuarioId = Number(req.body.usuarioId);
+    var modo = req.body.modo;
+
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1 ||
+        modosPermitidos.indexOf(modo) < 0) {
+        res.status(400).send("Dados da conclusão do desafio inválidos.");
+        return;
+    }
+
+    partidaModel.registrarConclusao(usuarioId)
+        .then(function(sequencia) {
+            res.status(200).json({ sequencia: sequencia });
+        })
+        .catch(function(erro) {
+            if (erro.errno == 1216 || erro.errno == 1452 ||
+                erro.code == "ER_NO_REFERENCED_ROW" || erro.code == "ER_NO_REFERENCED_ROW_2") {
+                res.status(401).send("Sua conta não existe no banco atual. Entre novamente para salvar sua sequência.");
+                return;
+            }
+            console.error("Não foi possível registrar a conclusão do desafio.", erro);
+            res.status(500).send("Não foi possível salvar sua sequência.");
+        });
+}
+
+function obterSequencia(req, res) {
+    var usuarioId = Number(req.query.usuarioId);
+    if (!Number.isSafeInteger(usuarioId) || usuarioId < 1) {
+        res.status(401).send("Entre na sua conta para consultar sua sequência.");
+        return;
+    }
+
+    partidaModel.buscarSequencia(usuarioId)
+        .then(function(sequencia) {
+            if (sequencia == null) {
+                res.status(404).send("Usuário não encontrado.");
+                return;
+            }
+            res.json(sequencia);
+        })
+        .catch(function(erro) {
+            console.error("Não foi possível consultar a sequência.", erro);
+            res.status(500).send("Não foi possível carregar a sequência.");
         });
 }
 
@@ -101,6 +147,8 @@ function obterHistorico(req, res) {
 
 module.exports = {
     registrar,
+    registrarConclusaoDesafio,
+    obterSequencia,
     obterPorId,
     obterHistorico
 };

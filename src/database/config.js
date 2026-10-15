@@ -25,6 +25,50 @@ function executar(instrucao, valores) {
         });
 }
 
+function executarTransacao(operacao) {
+    if (process.env.AMBIENTE_PROCESSO !== "producao" && process.env.AMBIENTE_PROCESSO !== "desenvolvimento") {
+        console.log("\nO AMBIENTE (produção OU desenvolvimento) NÃO FOI DEFINIDO EM .env OU dev.env OU app.js\n");
+        return Promise.reject(new Error("AMBIENTE NÃO CONFIGURADO"));
+    }
+
+    var conexao = mysql.createConnection(mySqlConfig).promise();
+    var transacaoIniciada = false;
+
+    return conexao.beginTransaction()
+        .then(function() {
+            transacaoIniciada = true;
+            return operacao(function(instrucao, valores) {
+                return conexao.query(instrucao, valores || [])
+                    .then(function(resultado) {
+                        return resultado[0];
+                    });
+            });
+        })
+        .then(function(resultado) {
+            return conexao.commit().then(function() {
+                transacaoIniciada = false;
+                return resultado;
+            });
+        })
+        .catch(function(erro) {
+            if (!transacaoIniciada) {
+                throw erro;
+            }
+            return conexao.rollback()
+                .catch(function(erroRollback) {
+                    erro.erroRollback = erroRollback;
+                })
+                .then(function() {
+                    transacaoIniciada = false;
+                    throw erro;
+                });
+        })
+        .finally(function() {
+            return conexao.end();
+        });
+}
+
 module.exports = {
-    executar
+    executar,
+    executarTransacao
 };

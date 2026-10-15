@@ -6,12 +6,8 @@
   <meta name="theme-color" content="#14231d">
   <meta name="description" content="Três desafios diários para quem ama xadrez. Jogue Chessdle de graça.">
   <title>Chessdle — desafios diários de xadrez</title>
-  <script>
-    if (!sessionStorage.getItem("EMAIL_USUARIO") || !sessionStorage.getItem("NOME_USUARIO")) {
-      window.location.replace("login.html");
-    }
-  </script>
   <link rel="stylesheet" href="css/chessdle.css">
+  <link rel="stylesheet" href="css/streak.css">
 </head>
 <body>
   <header class="site-header">
@@ -20,10 +16,31 @@
         <span class="brand-mark" aria-hidden="true">♞</span>
         <span>chessdle</span>
       </a>
+      <div class="streak-widget" id="streak-widget">
+        <button class="streak-button zero" id="streak-button" type="button"
+          aria-label="Sequência de 0 dias" aria-controls="streak-popover" aria-expanded="false">
+          <svg class="streak-flame" viewBox="0 0 32 40" aria-hidden="true" focusable="false">
+            <path class="flame-outer" d="M17.4 1.5c1.2 7.6-1.1 10.5-4.6 14.1-2.2 2.3-3.8 4.8-3.8 8.3a7 7 0 0 0 14 0c0-2.8-1.2-5.2-3.2-7.6 6.4 2.7 10.1 8.1 10.1 14.1A13.9 13.9 0 0 1 16 44.3 13.9 13.9 0 0 1 2.1 30.4c0-7.6 4.1-12.5 8.8-17.2 2.7-2.7 5.1-6.1 6.5-11.7Z" transform="translate(0 -4)" />
+            <path class="flame-inner" d="M16 22.5c2.8 3.2 4.4 5.4 4.4 8a4.4 4.4 0 0 1-8.8 0c0-2.7 1.6-5 4.4-8Z" />
+          </svg>
+          <span class="streak-count" id="streak-count">0</span>
+        </button>
+        <section class="streak-popover" id="streak-popover" aria-labelledby="streak-title" hidden>
+          <button class="streak-close" id="streak-close" type="button" aria-label="Fechar sequência">×</button>
+          <h2 id="streak-title">Sua sequência</h2>
+          <div class="streak-stats">
+            <p><strong id="streak-current">0</strong><span>dias atuais</span></p>
+            <p><strong id="streak-best">0</strong><span>maior sequência</span></p>
+          </div>
+          <p class="streak-week-label">Últimos 7 dias</p>
+          <div class="streak-week" id="streak-week" aria-label="Atividade nos últimos sete dias"></div>
+          <p class="streak-message" id="streak-message" aria-live="polite"></p>
+        </section>
+      </div>
       <div class="header-right">
         <span class="header-note">Três desafios. Um novo dia.</span>
         <a class="header-user" id="header-user" href="perfil.html" aria-label="Abrir perfil" hidden></a>
-        <button class="logout-button" type="button" data-redirect="login.html">Sair</button>
+        <button class="logout-button" type="button" data-redirect="login.html" hidden>Sair</button>
       </div>
     </div>
   </header>
@@ -91,6 +108,7 @@
   <datalist id="guess-options"></datalist>
 
   <script src="js/chessdle.js" defer></script>
+  <script src="js/streak.js" defer></script>
   <script src="js/logout.js" defer></script>
 </body>
 </html>
