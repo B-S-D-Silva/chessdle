@@ -81,6 +81,24 @@ O dashboard relaciona a origem acadêmica Web Data Viz com o Chessdle ao transfo
 
 `GET /conquistas?usuarioId=<id>` retorna `{ conquistas: [...], resumo: { total, desbloqueadas } }` para o usuário informado, seguindo o padrão de identificação atual do projeto. Cada item contém `codigo`, `nome`, `descricao`, `icone`, `desbloqueada` e `dataDesbloqueio`. Ao salvar uma partida completa em `POST /partidas`, as regras são avaliadas no MySQL dentro da mesma transação e a resposta inclui `novasConquistas`, uma lista vazia ou com `{ codigo, nome, descricao, icone }`. Os cartões e as descrições de cada regra ficam no perfil; para ampliar o catálogo, adicione uma entrada com sua regra em `src/models/conquistasCatalogo.js` e inclua o mesmo código e seus metadados em `src/database/migracao-conquistas.sql` e `src/database/script-tabelas.sql`.
 
+### Citações diárias
+
+O modo **Citação** escolhe uma linha de `citacao_desafio` por dia, usando a data de `America/Sao_Paulo`. A escolha fica gravada em `citacao_desafio_diario`, então inserir novas citações não troca o desafio que já foi atribuído à data atual. Para bancos existentes, execute `src/database/migracao-citacoes.sql` uma vez; ela copia a frase atual de `desafio_config` e cria pistas com os dados do autor. Em bancos novos, as tabelas e a citação inicial já estão em `src/database/script-tabelas.sql`.
+
+Cadastre cada nova citação com um autor que já exista em `jogador` e duas pistas específicas:
+
+```sql
+INSERT INTO citacao_desafio (autor, texto, dica1, dica2)
+VALUES (
+    'Nome já cadastrado em jogador',
+    'Texto da citação',
+    'Primeira pista sobre o autor.',
+    'Segunda pista sobre o autor.'
+);
+```
+
+As opções de resposta do modo passam a incluir os nomes cadastrados em `jogador`. O jogo alterna diariamente entre as citações cadastradas, e novas citações ficam disponíveis para os próximos dias ainda não atribuídos.
+
 ## Como executar
 
 1. Instale o [Node.js](https://nodejs.org/) e o MySQL.
@@ -92,7 +110,7 @@ O dashboard relaciona a origem acadêmica Web Data Viz com o Chessdle ao transfo
 
 3. Configure as credenciais de conexão com o banco no arquivo `.env.dev` para desenvolvimento ou `.env` para produção. Não publique esses arquivos nem compartilhe suas credenciais.
 4. Configure o ambiente usado pelo servidor em `app.js`.
-5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql` e `src/database/migracao-conquistas.sql`, nessa ordem. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas). A migração de conquistas cria o catálogo e concede retroativamente os marcos já atingidos; a data registrada para esses desbloqueios é o dia em que a migração foi executada.
+5. Prepare o banco de dados e as tabelas necessárias. Para criar o banco do zero, use `src/database/script-tabelas.sql` **somente em desenvolvimento**, pois o script apaga o banco `chessdle`. Em bancos existentes, execute `src/database/migracao-lances-abertura.sql` somente se as colunas `lances` e `eco` ainda não existirem; depois execute uma vez `src/database/migracao-streak.sql`, `src/database/migracao-conquistas.sql` e `src/database/migracao-citacoes.sql`. A migração de sequência requer MySQL 8.0+ e inicializa os valores com as datas históricas existentes em `partida` (a melhor estimativa disponível para partidas antigas). A migração de conquistas cria o catálogo e concede retroativamente os marcos já atingidos; a data registrada para esses desbloqueios é o dia em que a migração foi executada. A migração de citações cria as tabelas e importa a frase atual se o autor já estiver cadastrado em `jogador`.
 6. Inicie o servidor:
 
    ```bash

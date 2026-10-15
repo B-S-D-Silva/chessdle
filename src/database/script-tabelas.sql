@@ -105,6 +105,22 @@ CREATE TABLE jogador (
     pais VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE citacao_desafio (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    autor VARCHAR(100) NOT NULL,
+    texto VARCHAR(500) NOT NULL,
+    dica1 VARCHAR(255) NOT NULL,
+    dica2 VARCHAR(255) NOT NULL,
+    UNIQUE KEY (autor, texto),
+    FOREIGN KEY (autor) REFERENCES jogador(nome) ON UPDATE CASCADE
+);
+
+CREATE TABLE citacao_desafio_diario (
+    data_desafio DATE PRIMARY KEY,
+    citacao_id INT NOT NULL,
+    FOREIGN KEY (citacao_id) REFERENCES citacao_desafio(id)
+);
+
 CREATE TABLE abertura (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL UNIQUE,
@@ -153,6 +169,10 @@ INSERT INTO jogador (nome, dica, nascimento, pais) VALUES
 ('José Raúl Capablanca', 'Foi um grande enxadrista cubano.', 1888, 'Cuba'),
 ('Viswanathan Anand', 'Foi o primeiro campeão mundial indiano.', 1969, 'Índia'),
 ('Fabiano Caruana', 'Disputou o título mundial em 2018.', 1992, 'Estados Unidos');
+
+INSERT INTO citacao_desafio (autor, texto, dica1, dica2) VALUES
+('José Raúl Capablanca', '“O xadrez é a vida em miniatura.”',
+ 'Nasceu em Cuba.', 'Foi campeão mundial entre 1921 e 1927.');
 
 INSERT INTO abertura (nome, classificacao, primeiro_lance, resposta_pretas, lances, eco) VALUES
 ('Abertura Italiana', 'Aberta', '1. e4', '1... e5',

@@ -1,7 +1,21 @@
 var desafioModel = require("../models/desafioModel");
 
+function dataAtualSaoPaulo() {
+    var partes = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(new Date());
+    var data = {};
+    partes.forEach(function(parte) {
+        data[parte.type] = parte.value;
+    });
+    return data.year + "-" + data.month + "-" + data.day;
+}
+
 function listar(req, res) {
-    desafioModel.buscarConteudo()
+    desafioModel.buscarConteudo(dataAtualSaoPaulo())
         .then(function(conteudo) {
             var modosEsperados = ["jogador", "abertura", "citacao"];
             var configuracoesValidas = conteudo.desafios.length == modosEsperados.length &&
