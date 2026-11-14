@@ -1,90 +1,152 @@
-const areaQuestoes = document.querySelector("#questoes");
-const formQuiz = document.querySelector("#form-quiz");
-const resultadoQuiz = document.querySelector("#resultado");
-const reiniciar = document.querySelector("#reiniciar");
-async function verificarSessaoQuiz() {
-    const resposta = await fetch("/usuarios/sessao", { cache: "no-store", credentials: "same-origin" });
-    if (resposta.status === 401) {
-        window.location.assign("/login.html");
-        return false;
-    }
-    if (resposta.status === 404) {
-        throw new Error("O servidor está desatualizado. Reinicie a aplicação e entre novamente.");
-    }
-    if (!resposta.ok) {
-        throw new Error("O serviço de login está temporariamente indisponível. Tente novamente.");
-    }
-    const tipo = resposta.headers.get("content-type") || "";
-    if (!tipo.includes("application/json")) {
-        throw new Error("O servidor está desatualizado. Reinicie a aplicação e entre novamente.");
-    }
-    return true;
-}
-function renderizarQuestoes() {
-    areaQuestoes.replaceChildren();
+let areaQuestoes = document.querySelector("#questoes");
+let formularioQuiz = document.querySelector("#form-quiz");
+let resultadoQuiz = document.querySelector("#resultado");
+let avisoQuiz = document.querySelector("#aviso-quiz");
+let botaoCorrigir = document.querySelector("#corrigir");
+let botaoReiniciar = document.querySelector("#reiniciar");
+let chaveTentativa = `${Date.now()}-${Math.floor(Math.random() * 1000000000)}`;
+
+function mostrarQuestoes() {
+    let html = "";
+
     for (let i = 0; i < questoes.length; i++) {
-        const questao = questoes[i];
-        const grupo = document.createElement("fieldset");
-        grupo.className = "questao";
-        const legenda = document.createElement("legend");
-        legenda.textContent = String(i + 1).padStart(2, "0") + ". " + questao.enunciado;
-        grupo.append(legenda);
-        for (let j = 0; j < questao.alternativas.length; j++) {
-            const label = document.createElement("label");
-            label.className = "opcao";
-            const radio = document.createElement("input");
-            radio.type = "radio"; radio.name = "questao-" + i; radio.value = j; radio.required = true;
-            label.append(radio, document.createTextNode(questao.alternativas[j]));
-            grupo.append(label);
+        html = `${html}
+            <fieldset class="questao">
+                <legend>${i + 1}. ${questoes[i].enunciado}</legend>`;
+
+        for (let j = 0; j < questoes[i].alternativas.length; j++) {
+            html = `${html}
+                <label class="opcao">
+                    <input type="radio" name="questao-${i}" value="${j}" required>
+                    ${questoes[i].alternativas[j]}
+                </label>`;
         }
-        const explicacao = document.createElement("p");
-        explicacao.className = "explicacao";
-        explicacao.hidden = true;
-        grupo.append(explicacao);
-        areaQuestoes.append(grupo);
+
+        html = `${html}
+                <p class="explicacao" hidden></p>
+            </fieldset>`;
     }
+
+    areaQuestoes.innerHTML = html;
 }
-formQuiz.addEventListener("submit", async evento => {
-    evento.preventDefault();
-    const aviso = document.querySelector("#aviso-quiz");
-    try {
-        if (!await verificarSessaoQuiz()) return;
-    } catch (erro) {
-        aviso.textContent = erro instanceof TypeError
-            ? "Não foi possível conectar ao servidor. Verifique a conexão e tente novamente."
-            : erro.message;
-        return;
-    }
-    let acertos = 0;
-    const grupos = areaQuestoes.querySelectorAll("fieldset");
+
+function corrigirRespostas(resultadoSalvo) {
+    let acertos = resultadoSalvo.acertos;
+    let grupos = areaQuestoes.querySelectorAll("fieldset");
+
     for (let i = 0; i < questoes.length; i++) {
-        const selecionada = formQuiz.querySelector('input[name="questao-' + i + '"]:checked');
-        if (!selecionada) return;
-        const correta = Number(selecionada.value) === questoes[i].respostaCorreta;
-        if (correta) acertos++;
-        const opcoes = grupos[i].querySelectorAll("label");
+        let resposta = formularioQuiz.querySelector(`input[name="questao-${i}"]:checked`);
+
+        if (!resposta) {
+            avisoQuiz.innerHTML = "Responda todas as perguntas.";
+            return;
+        }
+    }
+
+    for (let i = 0; i < questoes.length; i++) {
+        let resposta = formularioQuiz.querySelector(`input[name="questao-${i}"]:checked`);
+        let escolha = Number(resposta.value);
+        let correta = questoes[i].respostaCorreta;
+        let opcoes = grupos[i].querySelectorAll("label");
+        let explicacao = grupos[i].querySelector(".explicacao");
+
         for (let j = 0; j < opcoes.length; j++) {
             opcoes[j].querySelector("input").disabled = true;
-            if (j === questoes[i].respostaCorreta) opcoes[j].classList.add("correta");
-            else if (j === Number(selecionada.value)) opcoes[j].classList.add("incorreta");
+
+            if (j === correta) {
+                opcoes[j].className = "opcao correta";
+            } else if (j === escolha) {
+                opcoes[j].className = "opcao incorreta";
+            }
         }
-        const explicacao = grupos[i].querySelector(".explicacao");
+
+        if (escolha === correta) {
+            explicacao.innerHTML = `Você acertou. ${questoes[i].explicacao}`;
+        } else {
+            explicacao.innerHTML = `Resposta correta: ${questoes[i].alternativas[correta]}. ${questoes[i].explicacao}`;
+        }
+
         explicacao.hidden = false;
-        explicacao.textContent = (correta ? "Você acertou. " : "Resposta correta: " + questoes[i].alternativas[questoes[i].respostaCorreta] + ". ") + questoes[i].explicacao;
     }
-    aviso.textContent = "";
-    document.querySelector("#corrigir").hidden = true;
-    reiniciar.hidden = false;
-    document.querySelector("#titulo-resultado").textContent = acertos + " de " + questoes.length + " respostas certas.";
-    document.querySelector("#texto-resultado").textContent = acertos === questoes.length ? "Belo jogo! Todas as ideias fizeram sentido. Que tal compartilhar o que aprendeu?" : "As explicações estão logo abaixo de cada pergunta. Rever uma ideia também faz parte do jogo.";
+
+    avisoQuiz.innerHTML = "";
+    document.querySelector("#titulo-resultado").innerHTML = `${acertos} de ${questoes.length} respostas certas.`;
+    document.querySelector("#texto-resultado").innerHTML = "Resultado salvo no seu histórico. Confira as explicações ou veja seu desempenho no dashboard.";
     resultadoQuiz.hidden = false;
+    botaoCorrigir.hidden = true;
+    botaoReiniciar.hidden = false;
     resultadoQuiz.focus();
-});
-reiniciar.addEventListener("click", () => {
-    renderizarQuestoes();
+}
+
+function receberResultado(resposta) {
+    if (resposta.status === 401) {
+        window.location.href = "/login.html";
+    } else if (resposta.status === 404) {
+        avisoQuiz.innerHTML = "O servidor está desatualizado. Reinicie a aplicação e entre novamente.";
+    } else {
+        let tipo = resposta.headers.get("content-type");
+
+        if (tipo && tipo.indexOf("application/json") !== -1) {
+            resposta.json().then(function (dados) {
+                if (resposta.ok) {
+                    corrigirRespostas(dados);
+                } else {
+                    avisoQuiz.textContent = dados.mensagem;
+                }
+                botaoCorrigir.disabled = false;
+            }, function () {
+                avisoQuiz.textContent = "Não foi possível ler o resultado. Tente novamente.";
+                botaoCorrigir.disabled = false;
+            });
+        } else {
+            avisoQuiz.innerHTML = "O servidor está desatualizado. Reinicie a aplicação e entre novamente.";
+        }
+    }
+
+    botaoCorrigir.disabled = false;
+}
+
+function enviarQuiz(evento) {
+    evento.preventDefault();
+    let respostas = [];
+
+    for (let i = 0; i < questoes.length; i++) {
+        let resposta = formularioQuiz.querySelector(`input[name="questao-${i}"]:checked`);
+
+        if (!resposta) {
+            avisoQuiz.innerHTML = "Responda todas as perguntas.";
+            return;
+        }
+
+        respostas.push(Number(resposta.value));
+    }
+
+    botaoCorrigir.disabled = true;
+    avisoQuiz.innerHTML = "Salvando seu resultado…";
+
+    fetch("/quiz/resultados", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            respostas: respostas,
+            chaveTentativa: chaveTentativa
+        })
+    }).then(receberResultado, function () {
+        avisoQuiz.innerHTML = "Não foi possível salvar. Suas respostas foram mantidas; tente novamente.";
+        botaoCorrigir.disabled = false;
+    });
+}
+
+function reiniciarQuiz() {
+    chaveTentativa = `${Date.now()}-${Math.floor(Math.random() * 1000000000)}`;
+    mostrarQuestoes();
     resultadoQuiz.hidden = true;
-    reiniciar.hidden = true;
-    document.querySelector("#corrigir").hidden = false;
+    botaoReiniciar.hidden = true;
+    botaoCorrigir.hidden = false;
+    avisoQuiz.innerHTML = "";
     areaQuestoes.querySelector("input").focus();
-});
-renderizarQuestoes();
+}
+
+formularioQuiz.onsubmit = enviarQuiz;
+botaoReiniciar.onclick = reiniciarQuiz;
+mostrarQuestoes();

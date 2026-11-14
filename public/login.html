@@ -1,14 +1,147 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#eee9df"><meta name="description" content="Sua conta para participar do quiz de xadrez."><title>Entrar — Entre lances</title><link rel="stylesheet" href="/css/site.css"><script src="/js/site.js" defer></script></head>
-<body id="topo"><a class="pular" href="#conteudo">Pular para o conteúdo</a><header class="cabecalho"><a class="marca" href="/"><span aria-hidden="true">♞</span> entre lances<span class="marca-ponto">.</span></a><nav aria-label="Principal"><a href="/#aprender">O jogo</a><a href="/#historia">Minha história</a><a href="/ranking.html">Favoritos</a><a href="/quiz.html">Quiz ↗</a></nav><div class="conta"><a href="/login.html" data-entrar>Entrar</a><span data-nome hidden></span><button class="link-botao" data-sair hidden>Sair</button></div></header><main id="conteudo" class="margem pagina-conta">
-<section class="conta-editorial"><p class="etiqueta">UM CONVITE PARA PENSAR</p><span class="grande-peca" aria-hidden="true">♘</span><h1>Todo encontro<br> começa com<br> <em>um movimento.</em></h1><p>Crie um pequeno espaço para a curiosidade.<br>O próximo lance pode ser seu.</p><a class="link-seta" href="/">← Voltar ao meu caderno</a></section>
-<section class="painel-conta" aria-labelledby="titulo-formulario"><p class="etiqueta">BOM TER VOCÊ AQUI</p><h2 id="titulo-formulario">Entrar</h2><p>Entre na sua conta e experimente o quiz.</p>
-<form id="form-conta" data-modo="login">
+<html lang="pt-BR">
 
-<label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
-<label for="senha">Senha</label><input id="senha" name="senha" type="password" autocomplete="current-password"  maxlength="128" required aria-describedby="ajuda-senha">
-<p class="ajuda" id="ajuda-senha">Informe a senha da sua conta.</p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#e7ddc7">
+        <meta name="description" content="Sua conta para participar do quiz de xadrez.">
+        <title>
+            Entrar — Entre lances
+        </title>
+        <link rel="stylesheet" href="/css/site.css">
+        <script src="/js/site.js" defer>
+        </script>
+    </head>
 
-<p id="mensagem-form" class="mensagem" role="status" aria-live="polite"></p>
-<button class="botao" type="submit">Entrar e ir ao quiz <span aria-hidden="true">→</span></button></form>
-<p class="alternativa">Primeira visita? <a href="/cadastro.html">Crie sua conta</a></p></section></main><footer class="rodape"><a class="marca" href="/">♞ entre lances.</a><p>Um olhar pessoal sobre o jogo e o que fica além dele.</p><a href="/#topo">Voltar ao topo ↑</a></footer><script src="/js/autenticacao.js" defer></script></body></html>
+    <body id="topo">
+        <a class="pular" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+
+        <header class="cabecalho">
+            <a class="marca" href="/">
+                <span aria-hidden="true">
+                    ♞
+                </span>
+                entre lances
+                <span class="marca-ponto">
+                    .
+                </span>
+            </a>
+
+            <nav aria-label="Principal">
+                <a href="/#aprender">
+                    O jogo
+                </a>
+                <a href="/historia.html">
+                    Minha história
+                </a>
+                <a href="/ranking.html">
+                    Favoritos
+                </a>
+                <a href="/quiz.html">
+                    Quiz ↗
+                </a>
+            </nav>
+
+            <div class="conta">
+                <a href="/login.html" data-entrar>
+                    Entrar
+                </a>
+                <span data-nome hidden>
+                </span>
+                <button class="link-botao" data-sair hidden>
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <main id="conteudo" class="margem pagina-conta">
+
+            <section class="conta-editorial">
+                <p class="etiqueta">
+                    UM CONVITE PARA PENSAR
+                </p>
+                <span class="grande-peca" aria-hidden="true">
+                    ♘
+                </span>
+                <h1>
+                    Todo encontro
+                    <br>
+                    começa com
+                    <br>
+                    <em>
+                        um movimento.
+                    </em>
+                </h1>
+                <p>
+                    Crie um pequeno espaço para a curiosidade.
+                    <br>
+                    O próximo lance pode ser seu.
+                </p>
+                <a class="link-seta" href="/">
+                    ← Voltar ao meu caderno
+                </a>
+            </section>
+
+            <section class="painel-conta" aria-labelledby="titulo-formulario">
+                <p class="etiqueta">
+                    BOM TER VOCÊ AQUI
+                </p>
+                <h2 id="titulo-formulario">
+                    Entrar
+                </h2>
+                <p>
+                    Entre na sua conta e experimente o quiz.
+                </p>
+
+                <form id="form-conta" data-modo="login">
+                    <label for="email">
+                        E-mail
+                    </label>
+                    <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                    <label for="senha">
+                        Senha
+                    </label>
+                    <input id="senha" name="senha" type="password" autocomplete="current-password"  maxlength="128" required aria-describedby="ajuda-senha">
+                    <p class="ajuda" id="ajuda-senha">
+                        Informe a senha da sua conta.
+                    </p>
+                    <div id="mensagem-form" class="mensagem" role="status" aria-live="polite">
+                    </div>
+                    <button class="botao" type="submit">
+                        Entrar e ir ao quiz
+                        <span aria-hidden="true">
+                            →
+                        </span>
+                    </button>
+                </form>
+
+                <p class="alternativa">
+                    Primeira visita?
+                    <a href="/cadastro.html">
+                        Crie sua conta
+                    </a>
+                </p>
+            </section>
+
+        </main>
+
+        <footer class="rodape">
+            <a class="marca" href="/">
+                ♞ entre lances.
+            </a>
+            <p>
+                Um olhar pessoal sobre o jogo e o que fica além dele.
+            </p>
+            <a href="/#topo">
+                Voltar ao topo ↑
+            </a>
+        </footer>
+
+        <script src="/js/autenticacao.js" defer>
+        </script>
+    </body>
+
+</html>

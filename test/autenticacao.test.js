@@ -36,6 +36,7 @@ test("hash tem sal próprio, valida senha e rejeita senha incorreta", async () =
 test("cadastro, validações, sessão protegida, repetição e logout", async () => {
     assert.equal((await requisicao("/")).status, 200);
     assert.equal((await requisicao("/ranking.html")).status, 200);
+    assert.equal((await requisicao("/historia.html")).status, 200);
     const retrato = await requisicao("/assets/jogadores/hikaru-nakamura.jpg");
     assert.equal(retrato.status, 200);
     assert.match(retrato.headers.get("content-type"), /image\/jpeg/);

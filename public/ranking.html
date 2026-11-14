@@ -1,33 +1,313 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#eee9df">
-  <meta name="description" content="Meus cinco enxadristas favoritos: Judit Polgár, Capablanca, Mikhail Tal, Magnus Carlsen e Hikaru Nakamura.">
-  <title>Meus favoritos — Entre lances</title>
-  <link rel="stylesheet" href="/css/site.css">
-  <script src="/js/site.js" defer></script>
-</head>
-<body id="topo">
-  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
-  <header class="cabecalho">
-    <a class="marca" href="/"><span aria-hidden="true">♞</span> entre lances<span class="marca-ponto">.</span></a>
-    <nav aria-label="Principal"><a href="/#aprender">O jogo</a><a href="/#historia">Minha história</a><a href="/ranking.html" aria-current="page">Favoritos</a><a href="/quiz.html">Quiz ↗</a></nav>
-    <div class="conta"><a href="/login.html" data-entrar>Entrar</a><span data-nome hidden></span><button class="link-botao" data-sair hidden>Sair</button></div>
-  </header>
-  <main id="conteudo" class="margem secao pagina-ranking">
-    <div class="titulo-secao">
-      <p class="etiqueta">03 / MINHAS REFERÊNCIAS</p>
-      <h1>Cinco jeitos de<br><em>enxergar o jogo.</em></h1>
-      <p>Meu ranking é uma questão de afinidade: criatividade, coragem e maneiras diferentes de pensar o xadrez. Estes são os jogadores que me inspiram.</p>
-    </div>
-    <p class="aviso-exemplo">Os motivos são textos de exemplo, prontos para receber o seu olhar pessoal.</p>
-    <div id="ranking" class="ranking"></div>
-    <noscript>Ative o JavaScript para ver os cinco jogadores, suas fotos e seus créditos.</noscript>
-    <p class="nota-fotos">Fotografias da Wikimedia Commons. Cada retrato tem um link para a fonte e a licença de uso; o enquadramento é adaptado à página.</p>
-    <div class="acoes"><a class="link-seta" href="/#historia">← Voltar à minha história</a><a class="botao" href="/quiz.html">Experimentar o quiz <span aria-hidden="true">↗</span></a></div>
-  </main>
-  <footer class="rodape"><a class="marca" href="/">♞ entre lances.</a><p>Um olhar pessoal sobre o jogo e o que fica além dele.</p><a href="#topo">Voltar ao topo ↑</a></footer>
-</body>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#e7ddc7">
+        <meta name="description" content="Meus cinco enxadristas favoritos: Bobby Fischer, Judit Polgár, Mikhail Tal, Magnus Carlsen e Hikaru Nakamura.">
+        <title>
+            Meus favoritos — Entre lances
+        </title>
+        <link rel="stylesheet" href="/css/site.css">
+        <script src="/js/site.js" defer>
+        </script>
+    </head>
+
+    <body id="topo">
+        <a class="pular" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+
+        <header class="cabecalho">
+            <a class="marca" href="/">
+                <span aria-hidden="true">
+                    ♞
+                </span>
+                entre lances
+                <span class="marca-ponto">
+                    .
+                </span>
+            </a>
+
+            <nav aria-label="Principal">
+                <a href="/#aprender">
+                    O jogo
+                </a>
+                <a href="/historia.html">
+                    Minha história
+                </a>
+                <a href="/ranking.html" aria-current="page">
+                    Favoritos
+                </a>
+                <a href="/quiz.html">
+                    Quiz ↗
+                </a>
+            </nav>
+
+            <div class="conta">
+                <a href="/login.html" data-entrar>
+                    Entrar
+                </a>
+                <span data-nome hidden>
+                </span>
+                <button class="link-botao" data-sair hidden>
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <main id="conteudo" class="margem secao pagina-ranking">
+            <div class="titulo-secao">
+                <p class="etiqueta">
+                    03 / MINHAS REFERÊNCIAS
+                </p>
+                <h1>
+                    Cinco jeitos de
+                    <br>
+                    <em>
+                        enxergar o jogo.
+                    </em>
+                </h1>
+                <p>
+                    Meu ranking é uma questão de afinidade: criatividade, coragem e maneiras diferentes de pensar o xadrez. Estes são os jogadores que me inspiram.
+                </p>
+            </div>
+            <p class="aviso-exemplo">
+                Os motivos são textos de exemplo, prontos para receber o seu olhar pessoal.
+            </p>
+            <div class="ranking">
+
+                <article class="favorito">
+                    <span class="posicao">
+                        1
+                    </span>
+
+                    <figure class="retrato-jogador">
+                        <img src="/assets/jogadores/bobby-fischer.jpg" alt="Retrato de Bobby Fischer" width="160" height="200" loading="lazy">
+                        <figcaption>
+                            <a href="https://commons.wikimedia.org/wiki/File:Bobby_Fischer_1960_in_Leipzig.jpg">
+                                Bundesarchiv, Bild 183-76052-0335 / Ulrich Kohls; recorte: Karpouzi
+                            </a>
+                            ·
+                            <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">
+                                CC BY-SA 3.0 DE
+                            </a>
+                        </figcaption>
+                    </figure>
+
+                    <div>
+                        <h2>
+                            Bobby Fischer
+                        </h2>
+                        <p class="pais">
+                            Estados Unidos
+                        </p>
+                    </div>
+                    <div class="comentario-jogador">
+                        <p>
+                            Admiro a precisão dos seus lances e a determinação com que buscava entender cada posição. Seu xadrez é minha principal referência no tabuleiro.
+                        </p>
+                        <p class="feito">
+                            <strong>
+                                Para lembrar
+                            </strong>
+                            Tornou-se campeão mundial em 1972, ao vencer Boris Spassky em Reykjavík.
+                            <a href="https://museum.fide.com/exhibits/icelandic-chess-federations-1972-world-championship-match-commemorative-program">
+                                Fonte: FIDE
+                            </a>
+                        </p>
+                    </div>
+                </article>
+
+                <article class="favorito">
+                    <span class="posicao">
+                        2
+                    </span>
+
+                    <figure class="retrato-jogador">
+                        <img src="/assets/jogadores/judit-polgar.jpg" alt="Retrato de Judit Polgár" width="160" height="200" loading="lazy">
+                        <figcaption>
+                            <a href="https://commons.wikimedia.org/wiki/File:Judit_Polg%C3%A1r_2013.jpg">
+                                Przemysław Jahr
+                            </a>
+                            ·
+                            <a href="https://creativecommons.org/licenses/by-sa/3.0/">
+                                CC BY-SA 3.0
+                            </a>
+                        </figcaption>
+                    </figure>
+
+                    <div>
+                        <h2>
+                            Judit Polgár
+                        </h2>
+                        <p class="pais">
+                            Hungria
+                        </p>
+                    </div>
+                    <div class="comentario-jogador">
+                        <p>
+                            Gosto da coragem de buscar a iniciativa e de tornar uma posição complicada em uma oportunidade.
+                        </p>
+                        <p class="feito">
+                            <strong>
+                                Para lembrar
+                            </strong>
+                            Em 2005, chegou ao oitavo lugar do ranking mundial absoluto.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="favorito">
+                    <span class="posicao">
+                        3
+                    </span>
+
+                    <figure class="retrato-jogador">
+                        <img src="/assets/jogadores/mikhail-tal.jpg" alt="Retrato de Mikhail Tal" width="160" height="200" loading="lazy">
+                        <figcaption>
+                            <a href="https://commons.wikimedia.org/wiki/File:Mikhail_Tal_1962.jpg">
+                                Harry Pot / Anefo
+                            </a>
+                            ·
+                            <a href="https://creativecommons.org/licenses/by-sa/3.0/nl/">
+                                CC BY-SA 3.0 NL
+                            </a>
+                        </figcaption>
+                    </figure>
+
+                    <div>
+                        <h2>
+                            Mikhail Tal
+                        </h2>
+                        <p class="pais">
+                            Letônia
+                        </p>
+                    </div>
+                    <div class="comentario-jogador">
+                        <p>
+                            Sua criatividade me inspira a olhar além do lance mais óbvio e a imaginar possibilidades.
+                        </p>
+                        <p class="feito">
+                            <strong>
+                                Para lembrar
+                            </strong>
+                            Conquistou o título mundial em 1960, contra Mikhail Botvinnik.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="favorito">
+                    <span class="posicao">
+                        4
+                    </span>
+
+                    <figure class="retrato-jogador">
+                        <img src="/assets/jogadores/magnus-carlsen.jpg" alt="Retrato de Magnus Carlsen" width="160" height="200" loading="lazy">
+                        <figcaption>
+                            <a href="https://commons.wikimedia.org/wiki/File:Magnus_Carlsen_Tata_2023_-_71_(cropped_v4).jpg">
+                                Frans Peeters Photography
+                            </a>
+                            ·
+                            <a href="https://creativecommons.org/licenses/by-sa/2.0/">
+                                CC BY-SA 2.0
+                            </a>
+                        </figcaption>
+                    </figure>
+
+                    <div>
+                        <h2>
+                            Magnus Carlsen
+                        </h2>
+                        <p class="pais">
+                            Noruega
+                        </p>
+                    </div>
+                    <div class="comentario-jogador">
+                        <p>
+                            Admiro a paciência de continuar procurando recursos em posições que parecem tranquilas.
+                        </p>
+                        <p class="feito">
+                            <strong>
+                                Para lembrar
+                            </strong>
+                            Conquistou seu primeiro título mundial clássico em 2013.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="favorito">
+                    <span class="posicao">
+                        5
+                    </span>
+
+                    <figure class="retrato-jogador">
+                        <img src="/assets/jogadores/hikaru-nakamura.jpg" alt="Retrato de Hikaru Nakamura" width="160" height="200" loading="lazy">
+                        <figcaption>
+                            <a href="https://commons.wikimedia.org/wiki/File:Hikaru_Nakamura_at_the_2026_Naroditsky_Memorial_Rapid_and_Blitz_(v2).jpg">
+                                ChessKelly
+                            </a>
+                            ·
+                            <a href="https://creativecommons.org/licenses/by/4.0/">
+                                CC BY 4.0
+                            </a>
+                        </figcaption>
+                    </figure>
+
+                    <div>
+                        <h2>
+                            Hikaru Nakamura
+                        </h2>
+                        <p class="pais">
+                            Estados Unidos
+                        </p>
+                    </div>
+                    <div class="comentario-jogador">
+                        <p>
+                            Admiro a rapidez com que encontra recursos e o jeito próximo e espontâneo de compartilhar o xadrez.
+                        </p>
+                        <p class="feito">
+                            <strong>
+                                Para lembrar
+                            </strong>
+                            Conquistou o Campeonato Mundial de Fischer Random em 2022.
+                            <a href="https://www.fide.com/new-us-world-champion-nakamura-follows-in-bobby-fischers-footsteps/">
+                                Fonte: FIDE
+                            </a>
+                        </p>
+                    </div>
+                </article>
+
+            </div>
+            <p class="nota-fotos">
+                Fotografias da Wikimedia Commons. Cada retrato tem um link para a fonte e a licença de uso; o enquadramento é adaptado à página.
+            </p>
+            <div class="acoes">
+                <a class="link-seta" href="/historia.html">
+                    ← Voltar à minha história
+                </a>
+                <a class="botao" href="/quiz.html">
+                    Experimentar o quiz
+                    <span aria-hidden="true">
+                        ↗
+                    </span>
+                </a>
+            </div>
+        </main>
+
+        <footer class="rodape">
+            <a class="marca" href="/">
+                ♞ entre lances.
+            </a>
+            <p>
+                Um olhar pessoal sobre o jogo e o que fica além dele.
+            </p>
+            <a href="#topo">
+                Voltar ao topo ↑
+            </a>
+        </footer>
+
+    </body>
+
 </html>

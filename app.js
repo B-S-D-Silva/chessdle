@@ -17,14 +17,17 @@ app.use((req, res, next) => {
     next();
 });
 app.use("/usuarios", require("./src/routes/usuarios"));
+app.use("/quiz", require("./src/routes/quiz"));
 app.get("/quiz.html", exigirSessao, (req, res) => res.sendFile(path.join(__dirname, "public/quiz.html")));
+app.get("/dashboard.html", exigirSessao, (req, res) => res.sendFile(path.join(__dirname, "public/dashboard.html")));
 app.get("/js/questoes.js", exigirSessao, (req, res) => res.sendFile(path.join(__dirname, "public/js/questoes.js")));
 // Rotas explícitas evitam expor o quiz por aliases de arquivos no Windows.
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
-for (const arquivo of ["index.html", "ranking.html", "login.html", "cadastro.html", "css/site.css", "js/site.js", "js/autenticacao.js", "js/quiz.js"]) {
+for (const arquivo of ["index.html", "historia.html", "ranking.html", "login.html", "cadastro.html", "css/site.css", "css/historia.css", "css/dashboard.css", "js/site.js", "js/autenticacao.js", "js/quiz.js", "js/dashboard.js"]) {
     app.get("/" + arquivo, (req, res) => res.sendFile(path.join(__dirname, "public", arquivo)));
 }
 app.use("/assets/jogadores", express.static(path.join(__dirname, "public/assets/jogadores"), { index: false, dotfiles: "deny" }));
+app.use("/assets/memorias", express.static(path.join(__dirname, "public/assets/memorias"), { index: false, dotfiles: "deny" }));
 app.use((req, res) => res.status(404).send("Página não encontrada. Volte ao início."));
 app.use((erro, req, res, next) => {
     res.status(erro.status === 400 ? 400 : 500).json({ mensagem: erro.status === 400 ? "Requisição inválida." : "Não foi possível concluir a operação." });

@@ -1,69 +1,104 @@
-const formulario = document.querySelector("#form-conta");
-async function lerResposta(resposta) {
-    const texto = await resposta.text();
-    const tipo = resposta.headers.get("content-type") || "";
-    let resultado;
-    if (tipo.includes("application/json")) {
-        try {
-            resultado = JSON.parse(texto);
-        } catch {
-            throw new Error("O servidor enviou uma resposta inválida. Atualize a página e tente novamente.");
-        }
-    } else {
-        // A API antiga devolvia erros em texto com Content-Type text/html.
-        const mensagemTexto = texto.trim();
-        const mensagem = mensagemTexto && !/[<>]/.test(mensagemTexto)
-            ? mensagemTexto.slice(0, 300)
-            : "O servidor não respondeu como esperado. Reinicie a aplicação e tente novamente.";
-        if (!resposta.ok) throw new Error(mensagem);
-        throw new Error("O servidor está desatualizado. Reinicie a aplicação para usar o novo cadastro e login.");
-    }
-    if (!resultado || typeof resultado !== "object") {
-        throw new Error("O servidor enviou uma resposta inválida. Tente novamente.");
-    }
-    if (!resposta.ok) throw new Error(resultado.mensagem || "Não foi possível continuar.");
-    return resultado;
-}
-formulario.addEventListener("submit", async evento => {
-    evento.preventDefault();
-    const cadastro = formulario.dataset.modo === "cadastro";
-    const mensagem = document.querySelector("#mensagem-form");
-    const botao = formulario.querySelector("button");
-    const dados = new FormData(formulario);
-    mensagem.classList.remove("sucesso");
-    if (cadastro && dados.get("senha") !== dados.get("confirmacao")) {
-        mensagem.textContent = "As senhas precisam ser iguais.";
-        document.querySelector("#confirmacao").focus();
-        return;
-    }
-    botao.disabled = true;
-    formulario.setAttribute("aria-busy", "true");
-    mensagem.textContent = cadastro ? "Criando sua conta…" : "Conferindo seus dados…";
-    try {
-        const resposta = await fetch(cadastro ? "/usuarios/cadastrar" : "/usuarios/autenticar", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nomeServer: dados.get("nome"), emailServer: dados.get("email"), senhaServer: dados.get("senha") })
+let formulario = document.querySelector("#form-conta");
+let mensagem = document.querySelector("#mensagem-form");
+let botao = formulario.querySelector("button");
+let cadastro = formulario.dataset.modo === "cadastro";
+
+function receberResposta(resposta, sucesso, falha) {
+    let tipo = resposta.headers.get("content-type");
+
+    if (tipo && tipo.indexOf("application/json") !== -1) {
+        resposta.json().then(function (dados) {
+            if (!dados || typeof dados !== "object") {
+                falha("O servidor enviou uma resposta inválida. Tente novamente.");
+            } else if (resposta.ok) {
+                sucesso(dados);
+            } else if (dados.mensagem) {
+                falha(dados.mensagem);
+            } else {
+                falha("Não foi possível continuar. Tente novamente.");
+            }
+        }, function () {
+            falha("O servidor enviou uma resposta inválida. Tente novamente.");
         });
-        const resultado = await lerResposta(resposta);
-        if (cadastro) {
-            formulario.reset();
-            mensagem.textContent = resultado.mensagem;
-            mensagem.classList.add("sucesso");
-            const link = document.createElement("a");
-            link.href = "/login.html";
-            link.textContent = " Ir para o login →";
-            mensagem.append(link);
-        } else {
-            // Só abre o quiz depois de confirmar que o servidor reconheceu o cookie.
-            const sessao = await fetch("/usuarios/sessao", { cache: "no-store", credentials: "same-origin" });
-            await lerResposta(sessao);
-            sessionStorage.clear();
-            window.location.assign("/quiz.html");
-        }
-    } catch (erro) {
-        mensagem.textContent = erro instanceof TypeError ? "Não foi possível conectar. Tente novamente." : erro.message;
-    } finally {
-        botao.disabled = false;
-        formulario.removeAttribute("aria-busy");
+    } else {
+        resposta.text().then(function (texto) {
+            if (!resposta.ok && texto && texto.indexOf("<") === -1) {
+                falha(texto);
+            } else {
+                falha("O servidor está desatualizado. Reinicie a aplicação e tente novamente.");
+            }
+        }, function () {
+            falha("Não foi possível ler a resposta do servidor.");
+        });
     }
-});
+}
+
+function mostrarErro(texto) {
+    mensagem.className = "mensagem";
+    mensagem.textContent = texto;
+    botao.disabled = false;
+}
+
+function concluirLogin() {
+    fetch("/usuarios/sessao", { cache: "no-store" }).then(function (resposta) {
+        receberResposta(resposta, function () {
+            window.location.href = "/quiz.html";
+        }, mostrarErro);
+    }, function () {
+        mostrarErro("Não foi possível conectar. Tente novamente.");
+    });
+}
+
+function concluirCadastro(dados) {
+    formulario.reset();
+    mensagem.className = "mensagem sucesso";
+    mensagem.textContent = dados.mensagem;
+
+    let linkLogin = document.createElement("a");
+    linkLogin.href = "/login.html";
+    linkLogin.textContent = " Ir para o login";
+    mensagem.appendChild(linkLogin);
+    botao.disabled = false;
+}
+
+function enviarFormulario(evento) {
+    evento.preventDefault();
+
+    let email = document.querySelector("#email").value.trim();
+    let senha = document.querySelector("#senha").value;
+    let nome = "";
+    let endereco = "/usuarios/autenticar";
+
+    if (cadastro) {
+        nome = document.querySelector("#nome").value.trim();
+        endereco = "/usuarios/cadastrar";
+
+        if (senha !== document.querySelector("#confirmacao").value) {
+            mostrarErro("As senhas precisam ser iguais.");
+            return;
+        }
+    }
+
+    botao.disabled = true;
+    mensagem.textContent = "Aguarde…";
+
+    fetch(endereco, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nomeServer: nome,
+            emailServer: email,
+            senhaServer: senha
+        })
+    }).then(function (resposta) {
+        if (cadastro) {
+            receberResposta(resposta, concluirCadastro, mostrarErro);
+        } else {
+            receberResposta(resposta, concluirLogin, mostrarErro);
+        }
+    }, function () {
+        mostrarErro("Não foi possível conectar. Tente novamente.");
+    });
+}
+
+formulario.onsubmit = enviarFormulario;

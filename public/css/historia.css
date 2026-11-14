@@ -1,0 +1,280 @@
+.abertura-historia {
+    padding: 55px 0;
+}
+
+.abertura-historia h1 {
+    max-width: 850px;
+    font-size: 60px;
+}
+
+.abertura-historia > p:not(.etiqueta) {
+    max-width: 600px;
+    margin-top: 25px;
+    font-size: 17px;
+}
+
+.convite-rolagem {
+    display: inline-block;
+    margin-top: 25px;
+    font-family: var(--mao);
+}
+
+.peca-abertura {
+    display: none;
+}
+
+.capitulos-nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+    border-top: 1px dashed var(--linha);
+    border-bottom: 1px dashed var(--linha);
+    font: bold 12px var(--maquina);
+}
+
+.album-trilha {
+    position: relative;
+}
+
+.trilha {
+    padding: 40px 0;
+    margin: 0;
+    list-style: none;
+}
+
+.caminho-desenhado {
+    position: absolute;
+    top: 0;
+    left: 4px;
+    width: 40px;
+    height: 100%;
+    pointer-events: none;
+}
+
+.caminho-base {
+    fill: none;
+    stroke: #b99570;
+    stroke-width: 16;
+    vector-effect: non-scaling-stroke;
+}
+
+.caminho-costura {
+    fill: none;
+    stroke: #fffaf0;
+    stroke-width: 2;
+    stroke-dasharray: 4 8;
+    vector-effect: non-scaling-stroke;
+}
+
+.capitulo {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 35px;
+    padding: 25px 0 60px 70px;
+    scroll-margin-top: 20px;
+}
+
+.marco-trilha {
+    position: absolute;
+    top: 25px;
+    left: 5px;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 2px solid var(--madeira);
+    border-radius: 50%;
+    background: var(--papel);
+    color: var(--madeira);
+    font-size: 25px;
+}
+
+.memoria-trilha {
+    padding: 25px;
+    background: var(--claro);
+    border: 1px solid var(--linha);
+}
+
+.memoria-trilha h2 {
+    font-size: 33px;
+}
+
+.memoria-trilha > p {
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+.memoria-trilha .etiqueta {
+    font-size: 10px;
+    margin-top: 0;
+}
+
+.frase-memoria, .brincadeira {
+    font-family: var(--mao);
+    color: var(--madeira);
+}
+
+.proximo-capitulo {
+    display: inline-block;
+    margin-top: 25px;
+    font-size: 13px;
+}
+
+.album-fotos {
+    align-self: center;
+    min-width: 0;
+    padding: 15px 5px;
+}
+
+.anotacao-album, .bilhete-album {
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--madeira);
+    font: 18px/1.7 var(--mao);
+}
+
+.foto-polaroid {
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto 30px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 3px 4px 0 #c3b79c;
+    transform: rotate(2deg);
+}
+
+.foto-polaroid::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 35%;
+    width: 30%;
+    height: 25px;
+    background: #c8ad7e99;
+}
+
+.foto-polaroid figcaption {
+    display: block;
+    text-align: center;
+    font: 15px/1.6 var(--mao);
+}
+
+.espaco-foto, .foto-memoria {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: #e8e1d2;
+}
+
+.espaco-foto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    border: 1px dashed var(--linha);
+    text-align: center;
+    color: var(--suave);
+}
+
+.espaco-foto > span {
+    font-size: 40px;
+}
+
+.espaco-foto > p {
+    font: 17px var(--mao);
+}
+
+.espaco-foto > small {
+    font-size: 11px;
+}
+
+.foto-pequena {
+    max-width: 240px;
+    transform: rotate(-3deg);
+}
+
+.bilhete-album {
+    padding: 20px;
+    background: #e9d8a4;
+}
+
+.citacao-trilha {
+    padding: 20px;
+    margin-bottom: 25px;
+    background: #dfd9bb;
+}
+
+.citacao-trilha blockquote {
+    margin: 0;
+    font: bold 20px/1.5 Georgia, serif;
+}
+
+.citacao-trilha figcaption {
+    display: block;
+    font-size: 11px;
+}
+
+.citacao-trilha details p {
+    font-size: 12px;
+}
+
+.fim-trilha {
+    padding: 35px 0;
+    border-top: 1px solid var(--linha);
+    text-align: center;
+}
+
+.fim-trilha > span {
+    display: block;
+    font-size: 50px;
+    color: var(--madeira);
+}
+
+.fim-trilha > p:not(.etiqueta) {
+    max-width: 550px;
+    margin: 20px auto;
+}
+
+.fim-trilha .acoes {
+    justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .abertura-historia h1 {
+        font-size: 43px;
+    }
+
+    .capitulos-nav {
+        gap: 15px;
+        padding: 18px 10px;
+        font-size: 10px;
+    }
+
+    .capitulo {
+        grid-template-columns: 1fr;
+        padding-left: 55px;
+        gap: 25px;
+    }
+
+    .memoria-trilha {
+        padding: 20px 15px;
+    }
+
+    .memoria-trilha h2 {
+        font-size: 28px;
+    }
+
+    .memoria-trilha > p {
+        font-size: 14px;
+    }
+
+    .foto-polaroid {
+        transform: none;
+    }
+
+}

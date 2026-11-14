@@ -1,3 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#eee9df"><meta name="description" content="Teste o que aprendeu sobre xadrez, com perguntas e explicações."><title>Quiz — Entre lances</title><link rel="stylesheet" href="/css/site.css"><script src="/js/site.js" defer></script></head>
-<body id="topo"><a class="pular" href="#conteudo">Pular para o conteúdo</a><header class="cabecalho"><a class="marca" href="/"><span aria-hidden="true">♞</span> entre lances<span class="marca-ponto">.</span></a><nav aria-label="Principal"><a href="/#aprender">O jogo</a><a href="/#historia">Minha história</a><a href="/ranking.html">Favoritos</a><a href="/quiz.html">Quiz ↗</a></nav><div class="conta"><a href="/login.html" data-entrar>Entrar</a><span data-nome hidden></span><button class="link-botao" data-sair hidden>Sair</button></div></header><main id="conteudo" class="margem pagina-quiz"><div class="titulo-secao"><p class="etiqueta">04 / EXPERIMENTAR</p><h1>Seu próximo<br><em>bom palpite.</em></h1><p>Sem relógio e sem pressa. Marque uma alternativa em cada questão; ao terminar, descubra as respostas e os porquês.</p></div><form id="form-quiz"><div id="questoes"></div><p id="aviso-quiz" class="mensagem" role="status"></p><div class="acoes"><button class="botao" id="corrigir" type="submit">Conferir respostas <span>→</span></button><button class="link-botao" id="reiniciar" type="button" hidden>Tentar de novo ↻</button></div></form><section id="resultado" class="resultado" tabindex="-1" aria-labelledby="titulo-resultado" hidden><p class="etiqueta">CADA RESPOSTA, UMA DESCOBERTA</p><h2 id="titulo-resultado"></h2><p id="texto-resultado"></p><a href="/#aprender">Rever o básico →</a></section><noscript>Ative o JavaScript para responder ao quiz.</noscript></main><footer class="rodape"><a class="marca" href="/">♞ entre lances.</a><p>Um olhar pessoal sobre o jogo e o que fica além dele.</p><a href="/#topo">Voltar ao topo ↑</a></footer><script src="/js/questoes.js" defer></script><script src="/js/quiz.js" defer></script></body></html>
+<html lang="pt-BR">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#e7ddc7">
+        <meta name="description" content="Teste o que aprendeu sobre xadrez, com perguntas e explicações.">
+        <title>
+            Quiz — Entre lances
+        </title>
+        <link rel="stylesheet" href="/css/site.css">
+        <script src="/js/site.js" defer>
+        </script>
+    </head>
+
+    <body id="topo">
+        <a class="pular" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+
+        <header class="cabecalho">
+            <a class="marca" href="/">
+                <span aria-hidden="true">
+                    ♞
+                </span>
+                entre lances
+                <span class="marca-ponto">
+                    .
+                </span>
+            </a>
+
+            <nav aria-label="Principal">
+                <a href="/#aprender">
+                    O jogo
+                </a>
+                <a href="/historia.html">
+                    Minha história
+                </a>
+                <a href="/ranking.html">
+                    Favoritos
+                </a>
+                <a href="/quiz.html">
+                    Quiz ↗
+                </a>
+            </nav>
+
+            <div class="conta">
+                <a href="/login.html" data-entrar>
+                    Entrar
+                </a>
+                <span data-nome hidden>
+                </span>
+                <button class="link-botao" data-sair hidden>
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <main id="conteudo" class="margem pagina-quiz">
+            <div class="titulo-secao">
+                <p class="etiqueta">
+                    04 / EXPERIMENTAR
+                </p>
+                <h1>
+                    Seu próximo
+                    <br>
+                    <em>
+                        bom palpite.
+                    </em>
+                </h1>
+                <p>
+                    Sem relógio e sem pressa. Marque uma alternativa em cada questão; ao terminar, descubra as respostas e os porquês.
+                </p>
+            </div>
+
+            <form id="form-quiz">
+                <div id="questoes">
+                </div>
+                <div id="aviso-quiz" class="mensagem" role="status">
+                </div>
+                <div class="acoes">
+                    <button class="botao" id="corrigir" type="submit">
+                        Conferir respostas
+                        <span>
+                            →
+                        </span>
+                    </button>
+                    <button class="link-botao" id="reiniciar" type="button" hidden>
+                        Tentar de novo ↻
+                    </button>
+                </div>
+            </form>
+
+            <section id="resultado" class="resultado" tabindex="-1" aria-labelledby="titulo-resultado" hidden>
+                <p class="etiqueta">
+                    CADA RESPOSTA, UMA DESCOBERTA
+                </p>
+                <h2 id="titulo-resultado">
+                </h2>
+                <p id="texto-resultado">
+                </p>
+                <a href="/#aprender">
+                    Rever o básico →
+                </a>
+            </section>
+
+            <noscript>
+                Ative o JavaScript para responder ao quiz.
+            </noscript>
+        </main>
+
+        <footer class="rodape">
+            <a class="marca" href="/">
+                ♞ entre lances.
+            </a>
+            <p>
+                Um olhar pessoal sobre o jogo e o que fica além dele.
+            </p>
+            <a href="/#topo">
+                Voltar ao topo ↑
+            </a>
+        </footer>
+
+        <script src="/js/questoes.js" defer>
+        </script>
+        <script src="/js/quiz.js" defer>
+        </script>
+    </body>
+
+</html>
