@@ -33,3 +33,13 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 21. Ao clicar em “Enviar” no último desafio, aguardar cinco segundos antes de sair da tela do jogo e exibir o gráfico de resultados.
 22. Limitar o histórico do perfil a dez partidas por vez e adicionar um botão para carregar mais dez partidas.
 23. Exigir autenticação para jogar no Chessdle e encaminhar diretamente ao login quem tentar acessar os desafios sem entrar na conta.
+
+## 2026-11-14
+
+24. Ler os arquivos Markdown e o código do projeto e criar uma home sobre a história do xadrez em formato de narrativa pessoal.
+25. Planejar, antes de alterar arquivos, uma refatoração completa do Chessdle para um site pessoal em primeira pessoa: introdução ao xadrez, minha história com textos de exemplo, ranking de jogadores favoritos e quiz. Manter apenas banco e autenticação essenciais; mover questões, alternativas e respostas para uma lista no código e usar laços for para exibir e corrigir. Remover perfil, sequência, progresso, tabelas e código sem uso. Redesenhar home, login e cadastro com identidade autoral inspirada no xadrez, CSS simples e layout responsivo. Mostrar o plano de remoções, alterações, criações e tabelas antes de implementar; aguardar aprovação e assumir a opção mais simples em ambiguidades, informando as escolhas.
+26. Aprovar o plano apresentado e autorizar sua implementação, com home pública, quiz protegido por login e somente a tabela usuario no banco.
+27. Investigar e corrigir o erro de JSON exibido no cadastro quando o servidor retorna uma mensagem em texto: Unexpected token 'N', "Não foi po"... is not valid JSON.
+28. Investigar e corrigir a mensagem do quiz: “Não foi possível verificar sua sessão. Tente novamente.”
+29. Resolver o erro EADDRINUSE na porta 8080 ao executar npm start, causado por uma instância do servidor já em execução.
+30. Mover o ranking de favoritos para uma página separada, incluir fotos de todos, substituir Garry Kasparov por Hikaru Nakamura e adicionar à minha história a frase sobre saber jogar xadrez ser sinal de um cavalheiro e jogar bem ser sinal de uma vida desperdiçada, pesquisando sua referência e indicando a atribuição adequada.

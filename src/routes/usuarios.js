@@ -1,23 +1,9 @@
-var express = require("express");
-var router = express.Router();
-
-var usuarioController = require("../controllers/usuarioController");
-
-//Recebendo os dados do html e direcionando para a função cadastrar de usuarioController.js
-router.post("/cadastrar", function (req, res) {
-    usuarioController.cadastrar(req, res);
-})
-
-router.post("/autenticar", function (req, res) {
-    usuarioController.autenticar(req, res);
-});
-
-router.get("/:id/perfil", function(req, res) {
-    usuarioController.obterPerfil(req, res);
-});
-
-router.put("/:id/perfil", function(req, res) {
-    usuarioController.atualizarPerfil(req, res);
-});
-
+const router = require("express").Router();
+const controller = require("../controllers/usuarioController");
+const { exigirSessao, encerrarSessao } = require("../middleware/sessao");
+router.use((req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
+router.post("/cadastrar", controller.cadastrar);
+router.post("/autenticar", controller.autenticar);
+router.get("/sessao", exigirSessao, (req, res) => res.json(req.usuario));
+router.post("/sair", (req, res) => { encerrarSessao(req, res); res.sendStatus(204); });
 module.exports = router;

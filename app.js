@@ -1,55 +1,36 @@
-// var ambiente_processo = 'producao';
-var ambiente_processo = 'desenvolvimento';
-
-var caminho_env = ambiente_processo === 'producao' ? '.env' : '.env.dev';
-// Acima, temos o uso do operador ternário para definir o caminho do arquivo .env
-// A sintaxe do operador ternário é: condição ? valor_se_verdadeiro : valor_se_falso
-
-require("dotenv").config({ path: caminho_env });
-
-var express = require("express");
-var cors = require("cors");
-var path = require("path");
-var PORTA_APP = process.env.APP_PORT;
-var HOST_APP = process.env.APP_HOST;
-
-var app = express();
-
-var indexRouter = require("./src/routes/index");
-var usuarioRouter = require("./src/routes/usuarios");
-var partidasRouter = require("./src/routes/partidas");
-var streakRouter = require("./src/routes/streak");
-var desafiosRouter = require("./src/routes/desafios");
-var estatisticasRouter = require("./src/routes/estatisticas");
-var conquistasRouter = require("./src/routes/conquistas");
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use("/", indexRouter);
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use(cors());
-
-app.use("/usuarios", usuarioRouter);
-app.use("/partidas", partidasRouter);
-app.use("/streak", streakRouter);
-app.use("/desafios", desafiosRouter);
-app.use("/estatisticas", estatisticasRouter);
-app.use("/conquistas", conquistasRouter);
-
-app.listen(PORTA_APP, function () {
-    console.log(`
-    ##   ##  ######   #####             ####       ##     ######     ##              ##  ##    ####    ######  
-    ##   ##  ##       ##  ##            ## ##     ####      ##      ####             ##  ##     ##         ##  
-    ##   ##  ##       ##  ##            ##  ##   ##  ##     ##     ##  ##            ##  ##     ##        ##   
-    ## # ##  ####     #####    ######   ##  ##   ######     ##     ######   ######   ##  ##     ##       ##    
-    #######  ##       ##  ##            ##  ##   ##  ##     ##     ##  ##            ##  ##     ##      ##     
-    ### ###  ##       ##  ##            ## ##    ##  ##     ##     ##  ##             ####      ##     ##      
-    ##   ##  ######   #####             ####     ##  ##     ##     ##  ##              ##      ####    ######  
-    \n\n\n                                                                                                 
-    Servidor do seu site já está rodando! Acesse o caminho a seguir para visualizar .: http://${HOST_APP}:${PORTA_APP} :. \n\n
-    Você está rodando sua aplicação em ambiente de .:${process.env.AMBIENTE_PROCESSO}:. \n\n
-    \tSe .:desenvolvimento:. você está se conectando ao banco local. \n
-    \tSe .:producao:. você está se conectando ao banco remoto. \n\n
-    \t\tPara alterar o ambiente, comente ou descomente as linhas 1 ou 2 no arquivo 'app.js'\n\n`);
+const path = require("node:path");
+const ambiente = process.env.AMBIENTE_PROCESSO || "desenvolvimento";
+require("dotenv").config({ path: path.join(__dirname, ambiente === "producao" ? ".env" : ".env.dev") });
+const express = require("express");
+const { exigirSessao } = require("./src/middleware/sessao");
+const app = express();
+app.disable("x-powered-by");
+app.use(express.json({ limit: "16kb" }));
+app.use((req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Referrer-Policy", "same-origin");
+    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+    if (req.method !== "GET" && req.method !== "HEAD" && req.headers.origin &&
+        req.headers.origin !== req.protocol + "://" + req.get("host")) {
+        return res.status(403).json({ mensagem: "Origem da requisição não permitida." });
+    }
+    next();
 });
+app.use("/usuarios", require("./src/routes/usuarios"));
+app.get("/quiz.html", exigirSessao, (req, res) => res.sendFile(path.join(__dirname, "public/quiz.html")));
+app.get("/js/questoes.js", exigirSessao, (req, res) => res.sendFile(path.join(__dirname, "public/js/questoes.js")));
+// Rotas explícitas evitam expor o quiz por aliases de arquivos no Windows.
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html")));
+for (const arquivo of ["index.html", "ranking.html", "login.html", "cadastro.html", "css/site.css", "js/site.js", "js/autenticacao.js", "js/quiz.js"]) {
+    app.get("/" + arquivo, (req, res) => res.sendFile(path.join(__dirname, "public", arquivo)));
+}
+app.use("/assets/jogadores", express.static(path.join(__dirname, "public/assets/jogadores"), { index: false, dotfiles: "deny" }));
+app.use((req, res) => res.status(404).send("Página não encontrada. Volte ao início."));
+app.use((erro, req, res, next) => {
+    res.status(erro.status === 400 ? 400 : 500).json({ mensagem: erro.status === 400 ? "Requisição inválida." : "Não foi possível concluir a operação." });
+});
+if (require.main === module) {
+    const porta = Number(process.env.APP_PORT) || 8080;
+    app.listen(porta, () => console.log("Site disponível em http://" + (process.env.APP_HOST || "localhost") + ":" + porta));
+}
+module.exports = app;

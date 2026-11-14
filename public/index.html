@@ -1,123 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#14231d">
-  <meta name="description" content="Três desafios diários para quem ama xadrez. Jogue Chessdle de graça.">
-  <title>Chessdle — desafios diários de xadrez</title>
-  <script>
-    if (!sessionStorage.getItem("ID_USUARIO") ||
-        !sessionStorage.getItem("EMAIL_USUARIO") ||
-        !sessionStorage.getItem("NOME_USUARIO")) {
-      window.location.replace("login.html");
-    }
-  </script>
-  <link rel="stylesheet" href="css/chessdle.css">
-  <link rel="stylesheet" href="css/streak.css">
-</head>
-<body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="#" aria-label="Chessdle, início">
-        <span class="brand-mark" aria-hidden="true">♞</span>
-        <span>chessdle</span>
-      </a>
-      <div class="streak-widget" id="streak-widget">
-        <button class="streak-button zero" id="streak-button" type="button"
-          aria-label="Sequência de 0 dias" aria-controls="streak-popover" aria-expanded="false">
-          <svg class="streak-flame" viewBox="0 0 32 40" aria-hidden="true" focusable="false">
-            <path class="flame-outer" d="M17.4 1.5c1.2 7.6-1.1 10.5-4.6 14.1-2.2 2.3-3.8 4.8-3.8 8.3a7 7 0 0 0 14 0c0-2.8-1.2-5.2-3.2-7.6 6.4 2.7 10.1 8.1 10.1 14.1A13.9 13.9 0 0 1 16 44.3 13.9 13.9 0 0 1 2.1 30.4c0-7.6 4.1-12.5 8.8-17.2 2.7-2.7 5.1-6.1 6.5-11.7Z" transform="translate(0 -4)" />
-            <path class="flame-inner" d="M16 22.5c2.8 3.2 4.4 5.4 4.4 8a4.4 4.4 0 0 1-8.8 0c0-2.7 1.6-5 4.4-8Z" />
-          </svg>
-          <span class="streak-count" id="streak-count">0</span>
-        </button>
-        <section class="streak-popover" id="streak-popover" aria-labelledby="streak-title" hidden>
-          <button class="streak-close" id="streak-close" type="button" aria-label="Fechar sequência">×</button>
-          <h2 id="streak-title">Sua sequência</h2>
-          <div class="streak-stats">
-            <p><strong id="streak-current">0</strong><span>dias atuais</span></p>
-            <p><strong id="streak-best">0</strong><span>maior sequência</span></p>
-          </div>
-          <p class="streak-week-label">Últimos 7 dias</p>
-          <div class="streak-week" id="streak-week" aria-label="Atividade nos últimos sete dias"></div>
-          <p class="streak-message" id="streak-message" aria-live="polite"></p>
-        </section>
-      </div>
-      <div class="header-right">
-        <span class="header-note">Três desafios. Um novo dia.</span>
-        <a class="stats-nav-link" href="dashboard.html">Estatísticas</a>
-        <a class="stats-nav-link" href="perfil.html">Perfil</a>
-        <a class="header-user" id="header-user" href="perfil.html" aria-label="Abrir perfil" hidden></a>
-        <button class="logout-button" type="button" data-redirect="login.html" hidden>Sair</button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <section class="intro" aria-labelledby="page-title">
-      <p class="eyebrow">Seu desafio diário de xadrez</p>
-      <h1 id="page-title">Quanto você conhece de xadrez?</h1>
-      <p class="intro-copy">Escolha um modo, use as pistas e descubra a resposta do dia.</p>
-    </section>
-
-    <nav class="mode-tabs" role="tablist" aria-label="Navegação principal">
-      <button class="mode-tab" id="tab-player" type="button" role="tab" aria-selected="true" aria-controls="game-content" data-mode="player">
-        <span class="tab-icon" aria-hidden="true">♟</span><span class="tab-label">Jogador</span>
-      </button>
-      <button class="mode-tab" id="tab-opening" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="opening">
-        <span class="tab-icon" aria-hidden="true">♘</span><span class="tab-label">Abertura</span>
-      </button>
-      <button class="mode-tab" id="tab-quote" type="button" role="tab" aria-selected="false" aria-controls="game-content" data-mode="quote">
-        <span class="tab-icon" aria-hidden="true">❝</span><span class="tab-label">Citação</span>
-      </button>
-    </nav>
-
-    <section class="game-panel" id="game-content" role="tabpanel" aria-labelledby="tab-player">
-      <div class="panel-top">
-        <div>
-          <p class="mode-kicker" id="mode-kicker">Desafio 1 de 3</p>
-          <h2 id="mode-title"></h2>
-          <p class="mode-description" id="mode-description"></p>
-        </div>
-        <div class="tries" id="tries-counter" aria-live="polite"></div>
-      </div>
-      <div class="challenge">
-        <div class="challenge-content" id="challenge-content"></div>
-        <aside class="side-card" aria-label="Como jogar">
-          <p class="side-card-title">Como jogar</p>
-          <ul>
-            <li><span aria-hidden="true">●</span> Você tem até 6 tentativas.</li>
-            <li><span aria-hidden="true">●</span> Peça uma pista se precisar.</li>
-            <li><span aria-hidden="true">●</span> Um novo desafio chega à meia-noite.</li>
-          </ul>
-        </aside>
-      </div>
-      <div class="history" id="guess-history" aria-live="polite"></div>
-    </section>
-
-    <section class="daily-footer" aria-label="Resumo diário">
-      <div>
-        <strong>♙ Três desafios de xadrez</strong>
-        <p>Novos desafios todos os dias. Entre na sua conta para jogar.</p>
-      </div>
-      <div class="daily-meta">
-        Desafio de hoje
-        <span id="today-date"></span>
-        <button class="reset-button" id="reset-button" type="button">Jogar novamente</button>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <p>Feito para quem ama xadrez. ♞</p>
-      <p>Chessdle não é afiliado ao Chess.com.</p>
-    </footer>
-  </main>
-
-  <div class="achievement-toast" id="achievement-toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-
-  <script src="js/chessdle.js" defer></script>
-  <script src="js/streak.js" defer></script>
-  <script src="js/logout.js" defer></script>
-</body>
-</html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#eee9df"><meta name="description" content="Um caderno pessoal sobre xadrez: aprenda o básico, conheça minha história e teste seus conhecimentos."><title>Meu mundo em 64 casas — Entre lances</title><link rel="stylesheet" href="/css/site.css"><script src="/js/site.js" defer></script></head>
+<body id="topo"><a class="pular" href="#conteudo">Pular para o conteúdo</a><header class="cabecalho"><a class="marca" href="/"><span aria-hidden="true">♞</span> entre lances<span class="marca-ponto">.</span></a><nav aria-label="Principal"><a href="/#aprender">O jogo</a><a href="/#historia">Minha história</a><a href="/ranking.html">Favoritos</a><a href="/quiz.html">Quiz ↗</a></nav><div class="conta"><a href="/login.html" data-entrar>Entrar</a><span data-nome hidden></span><button class="link-botao" data-sair hidden>Sair</button></div></header>
+<main id="conteudo">
+<section class="hero margem">
+<div class="hero-texto"><p class="etiqueta"><span class="ponto"></span> UM CADERNO PESSOAL SOBRE XADREZ</p>
+<h1>Meu mundo<br>em <em>64 casas.</em></h1>
+<p class="abertura">Entre uma escolha e outra, o xadrez me ensina a olhar de novo.</p>
+<p class="texto-suave">Este é meu espaço para dividir o que aprendo, as histórias que me trouxeram até aqui e os jogadores que me fazem querer voltar ao tabuleiro.</p>
+<div class="acoes"><a class="botao" href="#historia">Conheça minha história <span>↘</span></a><a class="link-seta" href="#aprender">Primeiro, o básico →</a></div>
+<p class="nota">UMA PARTIDA COMEÇA COM UM MOVIMENTO. UMA HISTÓRIA TAMBÉM.</p></div>
+<figure class="arte-tabuleiro"><div class="legenda-arte"><span>ESTUDO Nº 01</span><span>O PRIMEIRO LANCE</span></div><div class="tabuleiro" aria-label="Tabuleiro ilustrativo com um cavalo, uma torre e dois peões"><span class="peca peca-cavalo" aria-hidden="true">♞</span><span class="peca peca-torre" aria-hidden="true">♜</span><span class="peca peca-peao" aria-hidden="true">♟</span><span class="peca peca-peao-claro" aria-hidden="true">♙</span></div><figcaption>Nem todo caminho precisa ser uma linha reta. <span>↗</span></figcaption></figure>
+</section>
+<div class="faixa"><span>01 / APRENDER</span><span>02 / RECORDAR</span><span>03 / ADMIRAR</span><span>04 / EXPERIMENTAR</span></div>
+<section class="margem secao" id="aprender"><div class="titulo-secao"><p class="etiqueta">01 / O JOGO</p><h2>Antes do primeiro<br><em>movimento.</em></h2><p>Não precisa saber uma abertura de cor. Eu começaria por aqui: duas pessoas, um tabuleiro e uma ideia de cada vez.</p></div>
+<div class="introducao-jogo"><div><h3>O objetivo não é capturar o rei.</h3><p>É dar <strong>xeque-mate</strong>: atacar o rei adversário de um jeito que ele não consiga escapar. Se o rei está sob ataque, é xeque. Você precisa protegê-lo, capturar a peça atacante ou bloquear o ataque quando for possível.</p></div><div><h3>64 casas. Muitas possibilidades.</h3><p>Cada lado começa com 16 peças. As brancas jogam primeiro e os turnos se alternam. Ao montar o tabuleiro, deixe uma casa clara no canto direito e a dama na casa da própria cor. Um empate também pode encerrar a partida.</p></div></div>
+<div class="pecas-grid">
+<article><span aria-hidden="true">♔</span><h3>Rei</h3><p>Uma casa em qualquer direção. Nunca pode ir para uma casa atacada nem ficar ao lado do rei adversário.</p></article>
+<article><span aria-hidden="true">♕</span><h3>Dama</h3><p>Quantas casas quiser na horizontal, vertical ou diagonal, sem saltar sobre outras peças.</p></article>
+<article><span aria-hidden="true">♖</span><h3>Torre</h3><p>Segue em linhas retas: horizontal e vertical, por quantas casas livres quiser.</p></article>
+<article><span aria-hidden="true">♗</span><h3>Bispo</h3><p>Move-se pelas diagonais livres. Cada bispo permanece sempre em casas de uma mesma cor.</p></article>
+<article><span aria-hidden="true">♘</span><h3>Cavalo</h3><p>Faz um L: duas casas em uma direção e uma de lado. É a única peça que salta sobre as outras.</p></article>
+<article><span aria-hidden="true">♙</span><h3>Peão</h3><p>Avança uma casa; no primeiro movimento, pode avançar duas se o caminho estiver livre. Captura uma casa na diagonal à frente.</p></article>
+</div>
+<div class="regras"><div><p class="etiqueta">TRÊS DETALHES QUE MUDAM O JOGO</p><h3>Os movimentos<br>especiais.</h3></div><div>
+<details><summary>01. Roque <span aria-hidden="true">+</span></summary><p>O rei anda duas casas em direção à torre, e a torre passa para a casa ao lado dele. Só vale se ambos nunca se moveram e não houver peças entre eles. O rei não pode estar em xeque, atravessar uma casa atacada nem terminar em uma.</p></details>
+<details><summary>02. En passant <span aria-hidden="true">+</span></summary><p>Se um peão adversário avança duas casas desde a posição inicial e para ao lado do seu peão, você pode capturá-lo como se ele tivesse avançado só uma. Seu peão deve estar na quinta fileira a partir do seu lado. A captura só vale no turno imediatamente seguinte ao avanço.</p></details>
+<details><summary>03. Promoção <span aria-hidden="true">+</span></summary><p>Quando um peão chega à última fileira, ele se transforma em dama, torre, bispo ou cavalo da mesma cor. A escolha não depende de uma peça já ter sido capturada.</p></details>
+</div></div></section>
+<section class="historia secao" id="historia"><div class="margem historia-grid"><div><p class="etiqueta">02 / MINHA HISTÓRIA</p><h2>O que fica<br><em>depois do jogo.</em></h2><p class="selo-exemplo">Narrativa de exemplo · personalize com suas memórias</p><figure class="citacao-pessoal"><span aria-hidden="true">“</span><blockquote><p>Saber jogar xadrez é sinal de um cavalheiro; saber jogar xadrez bem é sinal de uma vida desperdiçada.</p></blockquote><figcaption>Atribuída a Paul Morphy · tradução livre.</figcaption><details class="fonte-citacao"><summary>De onde vem essa frase? <span aria-hidden="true">+</span></summary><p>A frase é reproduzida como uma atribuição a Morphy pelo <a href="https://themarshallspectator.substack.com/p/5767081_marshall-spectator-4-6-2022">Marshall Chess Club (6 de abril de 2022)</a>. Não localizei uma fonte primária que confirme a autoria; por isso, mantenho a indicação “atribuída”. Há também uma <a href="https://skeptics.stackexchange.com/questions/57931/did-chess-champion-paul-morphy-say-the-ability-to-play-chess-well-is-the-sign-o">investigação sobre a origem e a atribuição</a>.</p></details></figure></div>
+<div class="memorias">
+<!-- PERSONALIZAR: troque estes parágrafos por suas experiências reais. -->
+<article><span class="numero-memoria">01</span><div><h3>Como tudo começou</h3><p>Minha primeira lembrança do xadrez é a curiosidade de entender por que cada peça seguia um caminho diferente. No começo, eu só queria mover o cavalo sem errar. Aos poucos, comecei a enxergar as ideias por trás dos movimentos.</p></div></article>
+<article><span class="numero-memoria">02</span><div><h3>A partida que ficou comigo</h3><p>Uma derrota pode ensinar mais do que uma vitória apressada. Gosto de pensar nas partidas em que precisei respirar, rever o plano e aceitar que havia algo que eu ainda não tinha percebido. São essas descobertas que quero guardar aqui.</p></div></article>
+<article><span class="numero-memoria">03</span><div><h3>Por que eu continuo</h3><p>Hoje, o xadrez representa um intervalo para pensar com calma. Não preciso encontrar o lance perfeito em toda posição. Quero cultivar a atenção, experimentar ideias e aproveitar a conversa que acontece dos dois lados do tabuleiro.</p></div></article>
+</div></div></section>
+<section class="margem secao chamada-ranking" id="favoritos"><div><p class="etiqueta">03 / MINHAS REFERÊNCIAS</p><h2>Quem me inspira<br><em>a voltar ao tabuleiro.</em></h2></div><div><p>Conheça meus cinco jogadores favoritos, os estilos que admiro e os feitos que ficaram na história.</p><a class="botao" href="/ranking.html">Ver meu ranking <span aria-hidden="true">↗</span></a></div></section>
+<section class="convite margem"><div><p class="etiqueta">04 / SUA VEZ</p><h2>Vamos colocar essas<br><em>ideias em jogo?</em></h2><p>Um quiz sem relógio: responda, descubra os porquês e tente de novo quando quiser.</p><a class="botao botao-claro" href="/quiz.html">Responder ao quiz <span>↗</span></a><p class="nota">ENTRE NA SUA CONTA PARA PARTICIPAR.</p></div><span class="convite-peca" aria-hidden="true">♘</span></section>
+</main><footer class="rodape"><a class="marca" href="/">♞ entre lances.</a><p>Um olhar pessoal sobre o jogo e o que fica além dele.</p><a href="/#topo">Voltar ao topo ↑</a></footer></body></html>
