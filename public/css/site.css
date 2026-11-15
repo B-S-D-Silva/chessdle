@@ -127,6 +127,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 
 .cabecalho nav {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 

@@ -12,6 +12,7 @@ Requer Node.js 20+ e MySQL.
 2. Configure `.env.dev` (desenvolvimento) ou `.env` (produção) com `APP_PORT`, `APP_HOST`, `AMBIENTE_PROCESSO`, `DB_HOST`, `DB_DATABASE`, `DB_USER`, `DB_PASSWORD` e `DB_PORT`. Não publique credenciais.
 3. Para um banco novo, execute `src/database/script-tabelas.sql`. Ele cria o banco e a tabela sem apagar dados. Se escolher outro nome de banco, ajuste o SQL e `DB_DATABASE`.
 4. Para o banco Chessdle anterior, faça backup e aplique manualmente `src/database/migracao-site-pessoal.sql`. Ela preserva as contas e remove os dados e campos das funcionalidades antigas. O schema mínimo sozinho não remove as tabelas antigas.
+   Para adicionar o dashboard a um banco que já possui as contas, execute `src/database/migracao-dashboard-quiz.sql` no Workbench com uma conta que tenha permissão CREATE. A migração cria apenas quiz_tentativa e quiz_resposta. A conta da aplicação precisa de SELECT, INSERT e UPDATE em quiz_tentativa e SELECT e INSERT em quiz_resposta.
 5. Execute `npm start` ou `npm run dev`. O endereço é mostrado no terminal.
 
 O ambiente padrão é desenvolvimento (`.env.dev`). Para produção, defina `AMBIENTE_PROCESSO=producao` no processo antes de iniciar. Produção requer HTTPS, porque o cookie de sessão usa `Secure`.
@@ -25,6 +26,8 @@ O ambiente padrão é desenvolvimento (`.env.dev`). Para produção, defina `AMB
 - `public/js/site.js`: estado da conta e botão Sair.
 - `public/login.html`, `public/cadastro.html`, `public/js/autenticacao.js`: formulários.
 - `public/quiz.html`, `public/js/questoes.js`, `public/js/quiz.js`: perguntas, renderização e correção.
+- `public/dashboard.html`, `public/js/dashboard.js`, `public/css/dashboard.css`: indicadores e gráfico dos quizzes salvos.
+- `src/routes/quiz.js`, `src/controllers/quizController.js`, `src/models/quizModel.js`, `src/services/quiz.js`: API, correção e persistência dos resultados.
 - `public/css/site.css`: identidade visual compartilhada e responsiva.
 - `src/routes/usuarios.js`, `src/controllers/usuarioController.js`, `src/models/usuarioModel.js`: API de contas.
 - `src/services/senha.js`, `src/middleware/sessao.js`: hash e sessão.
@@ -43,13 +46,32 @@ A lista inclui Bobby Fischer (1º), Judit Polgár, Mikhail Tal, Magnus Carlsen e
 
 A frase na história usa tradução livre e a indicação “atribuída a Paul Morphy”: o [Marshall Chess Club](https://themarshallspectator.substack.com/p/5767081_marshall-spectator-4-6-2022) reproduz essa atribuição, mas não foi localizada uma fonte primária que confirme a autoria. A própria seção inclui os links de referência.
 
-O array `questoes` em `questoes.js` contém enunciado, alternativas, índice da resposta correta (começa em zero) e explicação. Laços `for` renderizam as perguntas e fazem a correção. O quiz é educativo: as respostas estão no código entregue ao navegador. Não há histórico, ranking de visitantes ou resultado gravado no banco.
+O array `questoes` em `questoes.js` contém enunciado, alternativas, índice da resposta correta (começa em zero) e explicação. Laços `for` renderizam as perguntas e mostram a correção. A mesma lista é usada no servidor para calcular a nota e salvar o resultado. O quiz é educativo: as respostas estão no código entregue ao navegador. Não existe ranking entre visitantes; cada conta acessa somente seu histórico.
 
 O front-end usa funções nomeadas, listas, for e if/else. Os campos são lidos por querySelector(...).value, sem getElementById ou FormData. As chamadas à API usam fetch e then nativos, com funções tradicionais. Não há bibliotecas, animações, observers, arrow functions ou async/await no JavaScript do site. O backend e sua autenticação foram preservados.
 
 As variáveis do front-end usam let e os textos dinâmicos usam interpolação com template literals. O código do front-end não contém comentários. innerHTML monta o quiz e suas mensagens fixas; textContent mantém nomes e respostas da API como texto. Os avisos de login/cadastro e do quiz são exibidos em divs com role de status.
 
 Referência para as regras: [Leis do Xadrez da FIDE](https://handbook.fide.com/chapter/E012023).
+
+## Dashboard do quiz
+
+Depois de responder, use **Ver meu desempenho** ou o link **Dashboard** no cabeçalho. A gravação precisa ser confirmada antes de o quiz mostrar o resultado como salvo. Se houver falha, as alternativas permanecem na tela para repetir o envio.
+
+- **Quizzes concluídos:** total de tentativas salvas.
+- **Média de acertos:** média dos percentuais de todas as tentativas.
+- **Melhor resultado:** maior percentual registrado.
+- **Última evolução:** percentual da última tentativa menos o da anterior, em pontos percentuais. Só aparece com duas ou mais tentativas.
+- **Gráfico:** últimas dez tentativas em ordem cronológica; tabela correspondente em ordem inversa.
+- **Revisão:** até três perguntas com maior proporção de erros em todo o histórico.
+
+Sem tentativas, a página mostra um convite para responder, sem gráfico fictício. Os horários são exibidos em America/Sao_Paulo.
+
+As tabelas são quiz_tentativa (usuário, chave única de envio, versão do quiz, acertos, total e horário UTC) e quiz_resposta (tentativa, ordem, enunciado, alternativa escolhida, alternativa correta e acerto). Os textos são preservados como registro histórico; não há tabela de perguntas nem de alternativas.
+
+`POST /quiz/resultados` recebe `{ chaveTentativa: "1800000000000-123", respostas: [1, 2, 0, 1, 2, 0, 1, 2] }`. A API ignora notas ou IDs de usuário enviados pelo navegador: corrige as alternativas e usa a sessão. Uma restrição única por usuário/chave evita duplicar o mesmo envio. Reutilizar a chave com outras respostas retorna 409.
+
+`GET /quiz/dashboard` retorna `{ resumo: { tentativas, mediaAcertos, melhorResultado, evolucao }, recentes: [...], revisao: [...] }`. Todos os dados são filtrados pelo usuário autenticado. O gráfico é SVG nativo, com valores também disponíveis em tabela.
 
 ## Autenticação
 
@@ -65,7 +87,7 @@ A sessão usa token aleatório em cookie HTTP-only, SameSite=Lax, com prazo de o
 
 ## Verificar
 
-`npm test` verifica autenticação por HTTP com model simulado, hash, migração de senha legada, logout e proteção do quiz. Não altera o banco real. A correção, as explicações e o reinício do quiz também foram verificados no navegador com uma conta simulada em memória.
+`npm test` verifica autenticação, correção no servidor, proteção dos endpoints, isolamento entre contas e erros recuperáveis com dados simulados. Para a integração real, execute no PowerShell `$env:TESTE_MYSQL='1'; node --test test/mysql.test.js`. Esse teste insere contas e resultados temporários em uma única transação e faz rollback; não deixa esses dados no banco. Pode haver intervalos na numeração dos IDs, pois o MySQL não reverte AUTO_INCREMENT.
 
 Para validar o MySQL do seu ambiente, cadastre uma conta, teste e-mail duplicado, login incorreto e correto, abra o quiz, envie respostas, confira as explicações, reinicie o quiz e saia. Depois do logout, o endereço direto do quiz deve redirecionar para o login.
 

@@ -49,3 +49,10 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 34. Redesenhar a identidade visual de todo o site com inspiração em recortes de jornal e álbuns de lembranças, trazendo uma estética nostálgica, caseira, menos clássica e mais informal para todas as páginas.
 35. Refatorar e simplificar o site: organizar todos os HTMLs com a estrutura padrão do Emmet (!), tags indentadas e espaços entre seções; simplificar e formatar o CSS com propriedades em linhas separadas; simplificar muito o JavaScript do front-end, priorizando listas, for, while e if/else, sem bibliotecas externas ou getElementById, lendo campos com .value. Preservar a API Web Data Viz/backend.
 36. Usar interpolação em vez de concatenar strings, substituir var por let e retirar os comentários do front-end. Explicar se querySelector é necessário e se textContent pode ser substituído por innerHTML para exibir conteúdo em uma div.
+
+## 2026-11-15
+
+37. Criar um dashboard com base nos resultados do preenchimento do quiz, incluindo KPIs interessantes, um gráfico e persistência no banco, com criação das tabelas necessárias.
+38. Informar que executará a migração das tabelas no MySQL Workbench.
+39. Interromper temporariamente o trabalho.
+40. Informar que as tabelas foram criadas e retomar a verificação e conclusão do dashboard.

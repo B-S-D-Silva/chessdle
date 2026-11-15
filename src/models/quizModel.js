@@ -51,42 +51,44 @@ function salvar(usuarioId, chave, resultado) {
     });
 }
 
-async function dashboard(usuarioId) {
-    let resumo = await database.executar(
-        "SELECT COUNT(*) AS tentativas, ROUND(AVG(100.0 * acertos / total), 1) AS mediaAcertos, ROUND(MAX(100.0 * acertos / total), 1) AS melhorResultado FROM quiz_tentativa WHERE usuario_id = ?",
-        [usuarioId]
-    );
-    let recentes = await database.executar(
-        "SELECT id, acertos, total, ROUND(100.0 * acertos / total, 1) AS percentual, DATE_FORMAT(finalizada_em, '%Y-%m-%dT%H:%i:%sZ') AS data FROM quiz_tentativa WHERE usuario_id = ? ORDER BY id DESC LIMIT 10",
-        [usuarioId]
-    );
-    let revisao = await database.executar(
-        "SELECT r.enunciado, COUNT(*) AS respostas, SUM(r.acertou) AS acertos, SUM(1 - r.acertou) AS erros FROM quiz_resposta r JOIN quiz_tentativa t ON t.id = r.tentativa_id WHERE t.usuario_id = ? GROUP BY r.enunciado HAVING SUM(1 - r.acertou) > 0 ORDER BY (SUM(1 - r.acertou) / COUNT(*)) DESC, erros DESC, r.enunciado LIMIT 3",
-        [usuarioId]
-    );
+function dashboard(usuarioId) {
+    return database.executarTransacao(async function (executar) {
+        let resumo = await executar(
+            "SELECT COUNT(*) AS tentativas, ROUND(AVG(100.0 * acertos / total), 1) AS mediaAcertos, ROUND(MAX(100.0 * acertos / total), 1) AS melhorResultado FROM quiz_tentativa WHERE usuario_id = ?",
+            [usuarioId]
+        );
+        let recentes = await executar(
+            "SELECT id, acertos, total, ROUND(100.0 * acertos / total, 1) AS percentual, DATE_FORMAT(finalizada_em, '%Y-%m-%dT%H:%i:%sZ') AS data FROM quiz_tentativa WHERE usuario_id = ? ORDER BY id DESC LIMIT 10",
+            [usuarioId]
+        );
+        let revisao = await executar(
+            "SELECT r.enunciado, COUNT(*) AS respostas, SUM(r.acertou) AS acertos, SUM(1 - r.acertou) AS erros FROM quiz_resposta r JOIN quiz_tentativa t ON t.id = r.tentativa_id WHERE t.usuario_id = ? GROUP BY r.enunciado HAVING SUM(1 - r.acertou) > 0 ORDER BY (SUM(1 - r.acertou) / COUNT(*)) DESC, erros DESC, r.enunciado LIMIT 3",
+            [usuarioId]
+        );
 
-    let evolucao = null;
+        let evolucao = null;
 
-    if (recentes.length >= 2) {
-        evolucao = Math.round((Number(recentes[0].percentual) - Number(recentes[1].percentual)) * 10) / 10;
-    }
+        if (recentes.length >= 2) {
+            evolucao = Math.round((Number(recentes[0].percentual) - Number(recentes[1].percentual)) * 10) / 10;
+        }
 
-    let ordemCronologica = [];
+        let ordemCronologica = [];
 
-    for (let i = recentes.length - 1; i >= 0; i--) {
-        ordemCronologica.push(recentes[i]);
-    }
+        for (let i = recentes.length - 1; i >= 0; i--) {
+            ordemCronologica.push(recentes[i]);
+        }
 
-    return {
-        resumo: {
-            tentativas: Number(resumo[0].tentativas),
-            mediaAcertos: Number(resumo[0].mediaAcertos || 0),
-            melhorResultado: Number(resumo[0].melhorResultado || 0),
-            evolucao: evolucao
-        },
-        recentes: ordemCronologica,
-        revisao: revisao
-    };
+        return {
+            resumo: {
+                tentativas: Number(resumo[0].tentativas),
+                mediaAcertos: Number(resumo[0].mediaAcertos || 0),
+                melhorResultado: Number(resumo[0].melhorResultado || 0),
+                evolucao: evolucao
+            },
+            recentes: ordemCronologica,
+            revisao: revisao
+        };
+    });
 }
 
 module.exports = { salvar, dashboard };

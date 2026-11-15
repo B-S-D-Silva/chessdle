@@ -1,3 +1,5 @@
+USE chessdle;
+
 CREATE TABLE IF NOT EXISTS quiz_tentativa (
     id INT PRIMARY KEY AUTO_INCREMENT,
     usuario_id INT NOT NULL,

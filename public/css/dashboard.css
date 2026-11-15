@@ -1,0 +1,139 @@
+.pagina-dashboard {
+    padding-top: 45px;
+}
+
+.pagina-dashboard h1 {
+    font-size: 44px;
+}
+
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 35px 0;
+}
+
+.cartao-indicador, .painel-dashboard {
+    padding: 25px;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    box-shadow: 3px 4px 0 #c3b79c;
+}
+
+.cartao-indicador h2 {
+    font-size: 17px;
+}
+
+.cartao-indicador p:last-child {
+    color: var(--suave);
+    font-size: 12px;
+}
+
+.valor-indicador {
+    margin: 15px 0;
+    font: bold 34px var(--maquina);
+    color: var(--madeira);
+}
+
+.painel-dashboard {
+    margin-top: 25px;
+}
+
+.painel-dashboard h2 {
+    margin-bottom: 15px;
+    font-size: 27px;
+}
+
+.painel-dashboard > p {
+    font-size: 14px;
+}
+
+#grafico-quiz {
+    display: block;
+    width: 100%;
+    margin-top: 25px;
+    min-height: 230px;
+}
+
+.linha-grafico {
+    stroke: var(--linha);
+    stroke-dasharray: 4 4;
+}
+
+.grafico-rolagem {
+    overflow-x: auto;
+}
+
+.barra-grafico {
+    fill: var(--verde);
+}
+
+.rotulo-grafico {
+    fill: var(--tinta);
+    font: 11px Arial, sans-serif;
+}
+
+.lista-revisao {
+    padding-left: 20px;
+    line-height: 1.8;
+}
+
+.lista-revisao li {
+    margin-top: 14px;
+}
+
+.tabela-rolagem {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+caption {
+    text-align: left;
+    margin-bottom: 15px;
+    color: var(--suave);
+    line-height: 1.8;
+}
+
+th, td {
+    padding: 14px 10px;
+    border-bottom: 1px solid var(--linha);
+    text-align: left;
+}
+
+@media (max-width: 900px) {
+    .indicadores {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .pagina-dashboard h1 {
+        font-size: 38px;
+    }
+
+    .cartao-indicador, .painel-dashboard {
+        padding: 20px;
+    }
+
+    .valor-indicador {
+        font-size: 27px;
+    }
+
+    table {
+        min-width: 490px;
+    }
+}
+
+@media (max-width: 450px) {
+    .indicadores {
+        grid-template-columns: 1fr;
+    }
+
+    #grafico-quiz {
+        min-width: 570px;
+    }
+
+}

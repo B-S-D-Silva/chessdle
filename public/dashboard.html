@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#e7ddc7">
+    <meta name="description" content="Meu desempenho no quiz de xadrez: resultados, evolução e perguntas para revisar.">
+    <title>Meu desempenho — Entre lances</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/site.js" defer></script>
+    <script src="/js/dashboard.js" defer></script>
+</head>
+<body id="topo">
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="cabecalho">
+        <a class="marca" href="/"><span aria-hidden="true">♞</span> entre lances<span class="marca-ponto">.</span></a>
+
+        <nav aria-label="Principal">
+            <a href="/#aprender">O jogo</a>
+            <a href="/historia.html">Minha história</a>
+            <a href="/ranking.html">Favoritos</a>
+            <a href="/quiz.html">Quiz ↗</a>
+            <a href="/dashboard.html" aria-current="page">Dashboard</a>
+        </nav>
+
+        <div class="conta">
+            <a href="/login.html" data-entrar>Entrar</a>
+            <span data-nome hidden></span>
+            <button class="link-botao" data-sair hidden>Sair</button>
+        </div>
+    </header>
+
+    <main id="conteudo" class="margem pagina-dashboard">
+        <section class="titulo-secao">
+            <div>
+                <p class="etiqueta">MEU CADERNO DE RESULTADOS</p>
+                <h1>Cada tentativa,<br><em>uma descoberta.</em></h1>
+            </div>
+            <p>Um registro do que eu já aprendi e das ideias que vale a pena revisitar. Os indicadores consideram todos os meus quizzes concluídos.</p>
+        </section>
+
+        <div id="mensagem-dashboard" class="mensagem" role="status" aria-live="polite">Carregando seu desempenho…</div>
+
+        <div class="acoes">
+            <a class="botao" href="/quiz.html">Responder ao quiz →</a>
+            <button id="atualizar-dashboard" class="link-botao" type="button">Atualizar resultados</button>
+        </div>
+
+        <section class="indicadores" aria-label="Indicadores de desempenho">
+            <article class="cartao-indicador">
+                <h2>Quizzes concluídos</h2>
+                <p id="kpi-tentativas" class="valor-indicador">—</p>
+                <p>Tentativas salvas na sua conta.</p>
+            </article>
+            <article class="cartao-indicador">
+                <h2>Média de acertos</h2>
+                <p id="kpi-media" class="valor-indicador">—</p>
+                <p>Média percentual de todas as tentativas.</p>
+            </article>
+            <article class="cartao-indicador">
+                <h2>Melhor resultado</h2>
+                <p id="kpi-melhor" class="valor-indicador">—</p>
+                <p>Seu maior percentual de acertos.</p>
+            </article>
+            <article class="cartao-indicador">
+                <h2>Última evolução</h2>
+                <p id="kpi-evolucao" class="valor-indicador">—</p>
+                <p>Última tentativa menos a anterior, em pontos percentuais.</p>
+            </article>
+        </section>
+
+        <div id="conteudo-dashboard" hidden>
+            <section class="painel-dashboard" aria-labelledby="titulo-grafico">
+                <p class="etiqueta">UM LANCE DE CADA VEZ</p>
+                <h2 id="titulo-grafico">Sua evolução no quiz</h2>
+                <p>Percentual de acertos nas últimas dez tentativas, da mais antiga para a mais recente. A numeração corresponde ao histórico abaixo.</p>
+                <div class="grafico-rolagem">
+                    <svg id="grafico-quiz" viewBox="0 0 640 280" role="img" aria-labelledby="titulo-grafico descricao-grafico">
+                    <desc id="descricao-grafico">Gráfico de barras com os percentuais das tentativas. Os valores completos estão na tabela de histórico.</desc>
+                    </svg>
+                </div>
+            </section>
+
+            <section class="painel-dashboard" aria-labelledby="titulo-revisao">
+                <p class="etiqueta">UM BILHETE PARA A PRÓXIMA PARTIDA</p>
+                <h2 id="titulo-revisao">Vale a pena revisar</h2>
+                <p>Até três perguntas com maior proporção de erros no seu histórico. Empates consideram a quantidade de erros.</p>
+                <ul id="lista-revisao" class="lista-revisao"></ul>
+            </section>
+
+            <section class="painel-dashboard" aria-labelledby="titulo-historico">
+                <h2 id="titulo-historico">As últimas páginas do caderno</h2>
+                <div class="tabela-rolagem" role="region" aria-label="Histórico de tentativas" tabindex="0">
+                    <table>
+                        <caption>Últimas dez tentativas, da mais recente para a mais antiga. Horários de Brasília.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Tentativa</th>
+                                <th scope="col">Quando</th>
+                                <th scope="col">Acertos</th>
+                                <th scope="col">Percentual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historico-quiz"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="rodape">
+        <a class="marca" href="/">♞ entre lances.</a>
+        <p>Um olhar pessoal sobre o jogo e o que fica além dele.</p>
+        <a href="#topo">Voltar ao topo ↑</a>
+    </footer>
+</body>
+</html>

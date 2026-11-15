@@ -92,12 +92,16 @@ function receberResultado(resposta) {
                     corrigirRespostas(dados);
                 } else {
                     avisoQuiz.textContent = dados.mensagem;
+                    if (resposta.status === 409) {
+                        botaoReiniciar.hidden = false;
+                    }
                 }
                 botaoCorrigir.disabled = false;
             }, function () {
                 avisoQuiz.textContent = "Não foi possível ler o resultado. Tente novamente.";
                 botaoCorrigir.disabled = false;
             });
+            return;
         } else {
             avisoQuiz.innerHTML = "O servidor está desatualizado. Reinicie a aplicação e entre novamente.";
         }
