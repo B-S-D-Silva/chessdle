@@ -56,3 +56,4 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 38. Informar que executará a migração das tabelas no MySQL Workbench.
 39. Interromper temporariamente o trabalho.
 40. Informar que as tabelas foram criadas e retomar a verificação e conclusão do dashboard.
+41. Recuperar a aparência anterior de “Minha história”, com a trilha mais curvada, e explicar como ela funciona.

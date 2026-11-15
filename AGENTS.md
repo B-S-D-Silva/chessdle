@@ -9,7 +9,7 @@ Entre lances é um site pessoal de xadrez em português do Brasil. Usa Node.js/E
 - `public/historia.html`, `public/css/historia.css`: história pessoal em uma trilha vertical de três capítulos, sem JavaScript. Infância com o pai, significado afetivo do jogo e reencontro após um término são relatos fornecidos pelo usuário; não invente datas ou eventos.
 - `public/ranking.html`: ranking público de favoritos com fotos locais e créditos.
 - `public/assets/jogadores/`: retratos licenciados da Wikimedia Commons.
-- `public/assets/memorias/`: fotos pessoais da história. Cinco molduras em historia.html usam placeholders até o autor inserir imagens; LEIA-ME.md explica a troca. A trilha é um SVG decorativo estático ao lado dos capítulos; mantenha as fotos no celular e não invente retratos pessoais.
+- `public/assets/memorias/`: fotos pessoais da história. Cinco molduras em historia.html usam placeholders até o autor inserir imagens; LEIA-ME.md explica a troca. A trilha usa um SVG curvado por capítulo: os trechos se conectam pelo centro. No desktop, textos e fotos alternam de lado; no celular, o caminho fica à esquerda. Não exige JavaScript.
 - `public/login.html`, `public/cadastro.html`, `public/quiz.html`: páginas.
 - `public/dashboard.html`, `public/js/dashboard.js`, `public/css/dashboard.css`: dashboard autenticado com KPIs, gráfico SVG, revisão e histórico.
 - `public/css/site.css`: todos os estilos, inclusive responsividade.

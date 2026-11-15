@@ -8,7 +8,7 @@ Coloque suas fotos nesta pasta. Use nomes simples, por exemplo:
 - uma-partida.jpg
 - meu-reencontro.jpg
 
-Em public/historia.html, encontre o comentário da foto desejada e substitua
+Em public/historia.html, encontre a moldura da foto desejada e substitua
 apenas o bloco div com a classe espaco-foto por uma imagem:
 
     <img class="foto-memoria" src="/assets/memorias/com-meu-pai.jpg" alt="Eu e meu pai juntos">

@@ -46,9 +46,10 @@
 .caminho-desenhado {
     position: absolute;
     top: 0;
-    left: 4px;
-    width: 40px;
+    left: 50%;
+    width: 120px;
     height: 100%;
+    transform: translateX(-50%);
     pointer-events: none;
 }
 
@@ -56,6 +57,7 @@
     fill: none;
     stroke: #b99570;
     stroke-width: 16;
+    stroke-linecap: round;
     vector-effect: non-scaling-stroke;
 }
 
@@ -70,20 +72,45 @@
 .capitulo {
     position: relative;
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 35px;
-    padding: 25px 0 60px 70px;
+    grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1fr);
+    padding: 30px 0 100px;
     scroll-margin-top: 20px;
+}
+
+.memoria-trilha {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.album-fotos {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.capitulo:nth-child(even) .memoria-trilha {
+    grid-column: 3;
+}
+
+.capitulo:nth-child(even) .album-fotos {
+    grid-column: 1;
+}
+
+.memoria-trilha, .album-fotos {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
 }
 
 .marco-trilha {
     position: absolute;
     top: 25px;
-    left: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     border: 2px solid var(--madeira);
     border-radius: 50%;
     background: var(--papel);
@@ -257,8 +284,26 @@
 
     .capitulo {
         grid-template-columns: 1fr;
-        padding-left: 55px;
+        padding-left: 60px;
         gap: 25px;
+    }
+
+    .caminho-desenhado {
+        left: 24px;
+        width: 32px;
+    }
+
+    .marco-trilha {
+        left: 24px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .memoria-trilha, .album-fotos,
+    .capitulo:nth-child(even) .memoria-trilha,
+    .capitulo:nth-child(even) .album-fotos {
+        grid-column: 1;
+        grid-row: auto;
     }
 
     .memoria-trilha {
