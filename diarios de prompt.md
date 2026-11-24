@@ -57,3 +57,23 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 39. Interromper temporariamente o trabalho.
 40. Informar que as tabelas foram criadas e retomar a verificação e conclusão do dashboard.
 41. Recuperar a aparência anterior de “Minha história”, com a trilha mais curvada, e explicar como ela funciona.
+42. Eu quero que refaça todo o CSS, mas que continue simples, eu não gostei do visual.
+43. Substituir o quiz por um jogo da memória de xadrez com cinco partidas reais terminadas em mate, tempo decrescente, remontagem pontuada por peça, bônus pelo lance de mate e resumo por fase. Usar listas, laços for, decisões if/else, comentários simples e mensagens em português.
+44. Usar posições com menos peças e procurar imagens mais bonitas das peças na internet.
+45. Remover os comentários do JavaScript e simplificar bastante o código do jogo.
+46. Sugerir ideias menos óbvias de jogos de xadrez para o projeto.
+47. Sugerir uma ideia de jogo de xadrez que dispense o tabuleiro.
+48. Sugerir outras ideias simples e pouco convencionais de jogos de xadrez sem tabuleiro.
+49. Dar 20 ideias de jogos de xadrez sem tabuleiro, incluindo opções clássicas.
+50. Sugerir um jogo mais simples para uma pessoa, que pode ser um quiz com algum diferencial.
+51. Implementar o quiz individual Qual é a peça?, com cinco rodadas, pistas progressivas e pontuação de acordo com a quantidade de pistas usadas.
+52. Voltar ao quiz de múltipla escolha e restaurar o dashboard que existia no início do projeto.
+53. Criar a documentação de todo o Entre Lances com base no documento AmoniaSense, em uma versão simples para um projeto individual e com palavras do dia a dia.
+54. Rodar o projeto Entre Lances.
+55. Substituir os exemplos do ranking pelos meus motivos pessoais: o domínio de Fischer, a formação de Judit e seu lugar na elite, os sacrifícios de Tal, os títulos e o rating de Carlsen e o carisma de Hikaru, cujas partidas acompanhei muito.
+56. Começar minha história pelo pedido que fiz ao meu pai por curiosidade e contar que ele aprendeu só para me ensinar. Tirar a explicação escondida da citação, brincar que não desperdicei a vida porque não jogo tão bem e resumir minha volta ao tabuleiro com a meta de jogar campeonatos abertos por diversão no ano que vem.
+57. Colocar a foto enviada na moldura “Eu e meu pai” e remover a moldura do primeiro tabuleiro.
+58. Incluir minha irmã na legenda da foto e dizer que ela e meu pai foram meus primeiros parceiros de jogo.
+59. Colocar a foto do grupo na moldura “As pessoas que fazem parte do jogo”.
+60. Colocar a imagem da partida na última moldura de “Minha história”, em “Um novo capítulo”.
+61. Fazer o commit das mudanças com Bruno como autor.

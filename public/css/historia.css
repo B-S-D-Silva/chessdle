@@ -196,6 +196,11 @@
     background: #e8e1d2;
 }
 
+.foto-memoria {
+    aspect-ratio: auto;
+    height: auto;
+}
+
 .espaco-foto {
     display: flex;
     flex-direction: column;
