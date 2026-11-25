@@ -26,6 +26,7 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public/index.html"
 for (const arquivo of ["index.html", "historia.html", "ranking.html", "login.html", "cadastro.html", "css/site.css", "css/historia.css", "css/dashboard.css", "js/site.js", "js/autenticacao.js", "js/quiz.js", "js/dashboard.js"]) {
     app.get("/" + arquivo, (req, res) => res.sendFile(path.join(__dirname, "public", arquivo)));
 }
+app.use("/assets/home", express.static(path.join(__dirname, "public/assets/home"), { index: false, dotfiles: "deny" }));
 app.use("/assets/jogadores", express.static(path.join(__dirname, "public/assets/jogadores"), { index: false, dotfiles: "deny" }));
 app.use("/assets/memorias", express.static(path.join(__dirname, "public/assets/memorias"), { index: false, dotfiles: "deny" }));
 app.use((req, res) => res.status(404).send("Página não encontrada. Volte ao início."));

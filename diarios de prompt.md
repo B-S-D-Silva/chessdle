@@ -77,3 +77,11 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 59. Colocar a foto do grupo na moldura “As pessoas que fazem parte do jogo”.
 60. Colocar a imagem da partida na última moldura de “Minha história”, em “Um novo capítulo”.
 61. Fazer o commit das mudanças com Bruno como autor.
+
+## 2026-11-25
+
+62. Colocar o projeto na VM com o banco de dados.
+63. Explicar por que o projeto não consegue acessar o banco de dados que está na mesma VM.
+64. Informar que npm start é executado dentro da VM.
+65. Enviar a saída dos comandos mostrando o MySQL ativo e escutando na porta 3306.
+66. Trocar a imagem do Estudo nº 1 na home por uma foto real da internet que combine com o site e acrescentar uma seção com a história do xadrez bem resumida.
