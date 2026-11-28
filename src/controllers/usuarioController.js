@@ -1,6 +1,6 @@
 const usuarios = require("../models/usuarioModel");
 const { criarHash, verificarSenha } = require("../services/senha");
-const { iniciarSessao } = require("../middleware/sessao");
+const { iniciarSessao, encerrarSessao } = require("../middleware/sessao");
 function dados(req) {
     const corpo = req.body || {};
     return { nome: typeof corpo.nomeServer === "string" ? corpo.nomeServer.trim() : "",
@@ -38,4 +38,13 @@ async function autenticar(req, res) {
         res.status(500).json({ mensagem: "Não foi possível entrar. Tente novamente." });
     }
 }
-module.exports = { cadastrar, autenticar };
+function sessao(req, res) {
+    res.json(req.usuario);
+}
+
+function sair(req, res) {
+    encerrarSessao(req, res);
+    res.sendStatus(204);
+}
+
+module.exports = { cadastrar, autenticar, sessao, sair };

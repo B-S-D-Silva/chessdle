@@ -1,27 +1,29 @@
-const mysql = require("mysql2/promise");
-async function executar(instrucao, valores = []) {
-    const conexao = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        database: process.env.DB_DATABASE,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        port: Number(process.env.DB_PORT) || 3306
+const mysql = require("mysql2");
+
+const mySqlConfig = {
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT) || 3306
+};
+
+function executar(instrucao, valores = []) {
+    return new Promise(function (resolve, reject) {
+        const conexao = mysql.createConnection(mySqlConfig);
+        conexao.execute(instrucao, valores, function (erro, resultados) {
+            conexao.end();
+            if (erro) {
+                reject(erro);
+            } else {
+                resolve(resultados);
+            }
+        });
     });
-    try {
-        const [linhas] = await conexao.execute(instrucao, valores);
-        return linhas;
-    } finally {
-        await conexao.end();
-    }
 }
+
 async function executarTransacao(operacao) {
-    const conexao = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        database: process.env.DB_DATABASE,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        port: Number(process.env.DB_PORT) || 3306
-    });
+    const conexao = mysql.createConnection(mySqlConfig).promise();
 
     try {
         await conexao.beginTransaction();

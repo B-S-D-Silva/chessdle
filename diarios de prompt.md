@@ -77,3 +77,10 @@ Prompts do projeto registrados em português revisado, preservando a intenção 
 59. Colocar a foto do grupo na moldura “As pessoas que fazem parte do jogo”.
 60. Colocar a imagem da partida na última moldura de “Minha história”, em “Um novo capítulo”.
 61. Fazer o commit das mudanças com Bruno como autor.
+62. Remover o que não é útil e funcional no projeto e preservar o diário de prompts. Confirmar se o site deve continuar funcionando ou se apenas o diário deve permanecer.
+63. Manter o site funcionando, remover somente os arquivos dispensáveis e preservar o diário.
+64. Apagar os testes e os scripts de migração do projeto.
+65. Adaptar o Entre Lances ao padrão do projeto web-data-viz fornecido, principalmente na organização das rotas e no uso das tecnologias do exemplo.
+66. Corrigir a adaptação ao web-data-viz, remover a pasta privado e manter a estrutura original do modelo o máximo possível.
+67. Simplificar muito o código usando o exemplo enviado de funções, variáveis, vetores, objetos simples, for e if/else.
+68. Simplificar todo o JavaScript de public seguindo o exemplo de código enviado, sem alterar src.

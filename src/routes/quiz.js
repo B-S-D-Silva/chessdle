@@ -1,9 +1,14 @@
-let router = require("express").Router();
-let controller = require("../controllers/quizController");
-let exigirSessao = require("../middleware/sessao").exigirSessao;
+const express = require("express");
+const router = express.Router();
+const quizController = require("../controllers/quizController");
+const { exigirSessao } = require("../middleware/sessao");
 
-router.use(exigirSessao);
-router.post("/resultados", controller.salvar);
-router.get("/dashboard", controller.dashboard);
+router.post("/resultados", exigirSessao, function (req, res) {
+    quizController.salvar(req, res);
+});
+
+router.get("/dashboard", exigirSessao, function (req, res) {
+    quizController.dashboard(req, res);
+});
 
 module.exports = router;

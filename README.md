@@ -11,9 +11,7 @@ Requer Node.js 20+ e MySQL.
 1. Execute `npm install`.
 2. Configure `.env.dev` (desenvolvimento) ou `.env` (produção) com `APP_PORT`, `APP_HOST`, `AMBIENTE_PROCESSO`, `DB_HOST`, `DB_DATABASE`, `DB_USER`, `DB_PASSWORD` e `DB_PORT`. Não publique credenciais.
 3. Para um banco novo, execute `src/database/script-tabelas.sql`. Ele cria o banco e a tabela sem apagar dados. Se escolher outro nome de banco, ajuste o SQL e `DB_DATABASE`.
-4. Para o banco Chessdle anterior, faça backup e aplique manualmente `src/database/migracao-site-pessoal.sql`. Ela preserva as contas e remove os dados e campos das funcionalidades antigas. O schema mínimo sozinho não remove as tabelas antigas.
-   Para adicionar o dashboard a um banco que já possui as contas, execute `src/database/migracao-dashboard-quiz.sql` no Workbench com uma conta que tenha permissão CREATE. A migração cria apenas quiz_tentativa e quiz_resposta. A conta da aplicação precisa de SELECT, INSERT e UPDATE em quiz_tentativa e SELECT e INSERT em quiz_resposta.
-5. Execute `npm start` ou `npm run dev`. O endereço é mostrado no terminal.
+4. Execute `npm start` ou `npm run dev`. O endereço é mostrado no terminal.
 
 O ambiente padrão é desenvolvimento (`.env.dev`). Para produção, defina `AMBIENTE_PROCESSO=producao` no processo antes de iniciar. Produção requer HTTPS, porque o cookie de sessão usa `Secure`.
 
@@ -32,13 +30,12 @@ O ambiente padrão é desenvolvimento (`.env.dev`). Para produção, defina `AMB
 - `src/routes/usuarios.js`, `src/controllers/usuarioController.js`, `src/models/usuarioModel.js`: API de contas.
 - `src/services/senha.js`, `src/middleware/sessao.js`: hash e sessão.
 - `src/database/`: conexão e SQL mínimo.
-- `test/`: testes executados com `npm test`.
 
 ## Personalizar
 
 Os relatos em `historia.html` foram redigidos com base nas memórias fornecidas pelo autor: o pai que aprendeu xadrez para ensiná-lo, os encontros com amigos e família e a retomada do jogo após um término. Edite os textos diretamente nos três capítulos; não são usadas datas inventadas. A home só apresenta uma chamada para a história completa. O nome editorial “Entre lances” também pode ser trocado nos HTMLs.
 
-A história tem uma trilha decorativa em SVG e cinco espaços de foto em estilo de álbum caseiro. Para colocar suas fotos, salve os arquivos em `public/assets/memorias/` e substitua o `div.espaco-foto` de cada moldura por `<img class="foto-memoria" src="/assets/memorias/sua-foto.jpg" alt="Descrição da lembrança">`. Preserve o `figure` e personalize o `figcaption`. Há exemplos em `public/assets/memorias/LEIA-ME.md`. Os espaços continuam visíveis no celular; não existe upload nem armazenamento no navegador.
+A história usa uma trilha em SVG e fotos locais em `public/assets/memorias/`. Para preencher a moldura restante, substitua o `div.espaco-foto` em `public/historia.html` por uma imagem com a classe `foto-memoria` e um texto alternativo.
 
 O ranking e os créditos estão diretamente nos blocos article de `ranking.html`. Edite a ordem, nome, país, motivo, feito e foto no próprio HTML.
 
@@ -79,7 +76,7 @@ As tabelas são quiz_tentativa (usuário, chave única de envio, versão do quiz
 - `POST /usuarios/autenticar`: `emailServer`, `senhaServer`.
 - `GET /usuarios/sessao`: dados públicos da sessão ou 401.
 - `POST /usuarios/sair`: encerra a sessão e limpa o cookie.
-- `GET /quiz.html` e `GET /js/questoes.js`: protegidos pelo servidor.
+- As páginas e perguntas são arquivos estáticos em public. O navegador encaminha ao login quando a sessão expira. As rotas de resultados e dados do dashboard validam a sessão no servidor.
 
 As senhas novas usam scrypt com sal aleatório (módulo nativo do Node). Senhas antigas em texto puro são aceitas e substituídas por hash após login válido, sem apagar contas. Nome, e-mail e senha são validados no servidor; o e-mail tem restrição de unicidade e o SQL usa parâmetros.
 
@@ -87,8 +84,5 @@ A sessão usa token aleatório em cookie HTTP-only, SameSite=Lax, com prazo de o
 
 ## Verificar
 
-`npm test` verifica autenticação, correção no servidor, proteção dos endpoints, isolamento entre contas e erros recuperáveis com dados simulados. Para a integração real, execute no PowerShell `$env:TESTE_MYSQL='1'; node --test test/mysql.test.js`. Esse teste insere contas e resultados temporários em uma única transação e faz rollback; não deixa esses dados no banco. Pode haver intervalos na numeração dos IDs, pois o MySQL não reverte AUTO_INCREMENT.
 
 Para validar o MySQL do seu ambiente, cadastre uma conta, teste e-mail duplicado, login incorreto e correto, abra o quiz, envie respostas, confira as explicações, reinicie o quiz e saia. Depois do logout, o endereço direto do quiz deve redirecionar para o login.
-
-A migração SQL não é executada ao iniciar o site. As tabelas legadas de aquários/empresas/avisos/medidas não constam no schema Chessdle fornecido; seus arquivos foram removidos do código. Se estiverem em outro banco histórico, revise as dependências desse banco antes de descartá-las.

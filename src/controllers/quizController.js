@@ -1,39 +1,39 @@
 let quizModel = require("../models/quizModel");
 let quiz = require("../services/quiz");
 
-async function salvar(req, res) {
-    let corpo = req.body || {};
-    let chave = corpo.chaveTentativa;
+function salvar(req, res) {
+    let respostas = req.body.respostas;
+    let chave = req.body.chaveTentativa;
 
     if (typeof chave !== "string" || !/^[0-9]{10,16}-[0-9]{1,10}$/.test(chave)) {
-        return res.status(400).json({ mensagem: "Identificador da tentativa inválido." });
+        res.status(400).json({ mensagem: "Identificador da tentativa inválido." });
+        return;
     }
 
-    let resultado = quiz.corrigir(corpo.respostas);
+    let resultado = quiz.corrigir(respostas);
 
     if (!resultado) {
-        return res.status(400).json({ mensagem: "Responda todas as perguntas com alternativas válidas." });
+        res.status(400).json({ mensagem: "Responda todas as perguntas." });
+        return;
     }
 
-    try {
-        let salvo = await quizModel.salvar(req.usuario.id, chave, resultado);
+    quizModel.salvar(req.usuario.id, chave, resultado).then(function (salvo) {
         res.status(201).json(salvo);
-    } catch (erro) {
+    }).catch(function (erro) {
         if (erro.code === "QUIZ_TENTATIVA_DIFERENTE") {
-            return res.status(409).json({ mensagem: "Esta tentativa já foi salva. Veja o dashboard ou use Tentar de novo para iniciar outra." });
+            res.status(409).json({ mensagem: "Tentativa já salva. Use Tentar de novo para iniciar outra." });
+        } else {
+            res.status(500).json({ mensagem: "Não foi possível salvar. Tente novamente." });
         }
-        console.error("Erro ao salvar o quiz:", erro.code);
-        res.status(500).json({ mensagem: "Não foi possível salvar seu resultado. Suas respostas continuam na tela; tente novamente." });
-    }
+    });
 }
 
-async function dashboard(req, res) {
-    try {
-        res.json(await quizModel.dashboard(req.usuario.id));
-    } catch (erro) {
-        console.error("Erro ao consultar o dashboard:", erro.code);
-        res.status(500).json({ mensagem: "Não foi possível carregar seu desempenho. Tente novamente." });
-    }
+function dashboard(req, res) {
+    quizModel.dashboard(req.usuario.id).then(function (dados) {
+        res.json(dados);
+    }).catch(function () {
+        res.status(500).json({ mensagem: "Não foi possível carregar seu desempenho." });
+    });
 }
 
 module.exports = { salvar, dashboard };

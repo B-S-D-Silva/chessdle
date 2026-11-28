@@ -1,15 +1,15 @@
 # AGENTS.md
 
 ## Contexto atual
-Entre lances é um site pessoal de xadrez em português do Brasil. Usa Node.js/Express, HTML/CSS/JavaScript vanilla e MySQL. A home é pública; o quiz exige sessão validada no servidor.
+Entre lances é um site pessoal de xadrez em português do Brasil. Usa Node.js/Express, HTML/CSS/JavaScript vanilla e MySQL. As páginas ficam em public; a API de resultados e dashboard exige sessão validada no servidor.
 
 ## Estrutura
-- `app.js`: configuração do Express e proteção do quiz antes dos arquivos estáticos.
+- `app.js`: configuração do Express, arquivos públicos e montagem dos roteadores. As páginas ficam em public e são entregues por express.static.
 - `public/index.html`: básico do xadrez e chamadas para a história e o ranking.
 - `public/historia.html`, `public/css/historia.css`: história pessoal em uma trilha vertical de três capítulos, sem JavaScript. Infância com o pai, significado afetivo do jogo e reencontro após um término são relatos fornecidos pelo usuário; não invente datas ou eventos.
 - `public/ranking.html`: ranking público de favoritos com fotos locais e créditos.
 - `public/assets/jogadores/`: retratos licenciados da Wikimedia Commons.
-- `public/assets/memorias/`: fotos pessoais da história. Cinco molduras em historia.html usam placeholders até o autor inserir imagens; LEIA-ME.md explica a troca. A trilha usa um SVG curvado por capítulo: os trechos se conectam pelo centro. No desktop, textos e fotos alternam de lado; no celular, o caminho fica à esquerda. Não exige JavaScript.
+- `public/assets/memorias/`: imagens pessoais da história. A trilha usa um SVG curvado por capítulo: os trechos se conectam pelo centro. No desktop, textos e fotos alternam de lado; no celular, o caminho fica à esquerda. Não exige JavaScript.
 - `public/login.html`, `public/cadastro.html`, `public/quiz.html`: páginas.
 - `public/dashboard.html`, `public/js/dashboard.js`, `public/css/dashboard.css`: dashboard autenticado com KPIs, gráfico SVG, revisão e histórico.
 - `public/css/site.css`: todos os estilos, inclusive responsividade.
@@ -24,8 +24,6 @@ Entre lances é um site pessoal de xadrez em português do Brasil. Usa Node.js/E
 - `src/services/senha.js`: scrypt e conversão de senhas legadas.
 - `src/database/config.js`: consultas parametrizadas.
 - `src/database/script-tabelas.sql`: schema com usuario, quiz_tentativa e quiz_resposta.
-- `src/database/migracao-dashboard-quiz.sql`: cria somente as duas tabelas do quiz, sem apagar dados.
-- `src/database/migracao-site-pessoal.sql`: remove dados antigos preservando contas.
 
 ## Convenções
 Priorize código didático: HTML indentado, CSS com uma propriedade por linha e espaços entre blocos. No JavaScript do front-end, use listas, for, while e if/else; funções nomeadas e fetch nativo atendem aos eventos e à API. Leia campos com querySelector(...).value. Não use getElementById, bibliotecas externas, arrow functions, map, filter, forEach, async/await nem observers. Use textContent para exibir texto; value é para campos de formulário.
@@ -35,7 +33,7 @@ Mantenha HTML/CSS/JS vanilla, textos em português e SQL com placeholders. A his
 
 ## Ambiente e execução
 Antes de iniciar, verifique a presença das variáveis em .env.dev/.env sem expor credenciais. O processo usa .env.dev por padrão; AMBIENTE_PROCESSO=producao seleciona .env. Variáveis: APP_PORT, APP_HOST, AMBIENTE_PROCESSO, DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD e DB_PORT.
-Comandos: npm install, npm start, npm run dev, npm test.
+Comandos: npm install, npm start, npm run dev.
 Produção requer HTTPS. Sessões em memória são reiniciadas com o servidor.
 
 ## Manutenção
@@ -43,7 +41,5 @@ Produção requer HTTPS. Sessões em memória são reiniciadas com o servidor.
 - O banco usa usuario, quiz_tentativa e quiz_resposta. As perguntas continuam no código; as tabelas registram apenas tentativas e respostas, com textos históricos.
 - O quiz envia alternativas e chaveTentativa para POST /quiz/resultados; o servidor calcula a nota, usa o usuário da sessão e salva em uma transação. Repetir o mesmo envio não duplica a tentativa. GET /quiz/dashboard retorna indicadores de toda a conta e as últimas dez tentativas.
 - O gráfico usa SVG nativo sem biblioteca. Datas são gravadas em UTC e exibidas em America/Sao_Paulo.
-- npm test usa dados simulados; TESTE_MYSQL=1 habilita test/mysql.test.js, que valida a integração real e desfaz todos os dados de teste com rollback.
-- Nunca execute a migração destrutiva automaticamente. Ela apaga dados de partidas, conquistas e desafios; faça backup e confira o banco alvo.
 - Registre em `diarios de prompt.md` todo prompt enviado pelo usuário. Revise a redação quando necessário sem alterar a intenção.
 - Preserve alterações preexistentes não relacionadas à tarefa.

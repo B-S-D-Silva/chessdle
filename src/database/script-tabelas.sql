@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS usuario (
     email VARCHAR(254) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL
 );
--- Em um banco antigo, aplique migracao-site-pessoal.sql após um backup.
 
 CREATE TABLE IF NOT EXISTS quiz_tentativa (
     id INT PRIMARY KEY AUTO_INCREMENT,

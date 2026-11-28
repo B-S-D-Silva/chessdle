@@ -1,46 +1,43 @@
-let linksEntrar = document.querySelectorAll("[data-entrar]");
-let nomesUsuario = document.querySelectorAll("[data-nome]");
-let botoesSair = document.querySelectorAll("[data-sair]");
+let entrar = document.querySelector("[data-entrar]");
+let nomeUsuario = document.querySelector("[data-nome]");
+let botaoSair = document.querySelector("[data-sair]");
 
 function mostrarUsuario(usuario) {
-    for (let i = 0; i < linksEntrar.length; i++) {
-        linksEntrar[i].hidden = true;
-    }
-
-    for (let i = 0; i < nomesUsuario.length; i++) {
-        nomesUsuario[i].textContent = usuario.nome;
-        nomesUsuario[i].hidden = false;
-    }
-
-    for (let i = 0; i < botoesSair.length; i++) {
-        botoesSair[i].hidden = false;
-    }
+    entrar.hidden = true;
+    nomeUsuario.textContent = usuario.nome;
+    nomeUsuario.hidden = false;
+    botaoSair.hidden = false;
 }
 
 function sair() {
+    botaoSair.disabled = true;
+
     fetch("/usuarios/sair", { method: "POST" }).then(function (resposta) {
+        botaoSair.disabled = false;
         if (resposta.ok) {
             window.location.href = "/";
         } else {
-            for (let i = 0; i < botoesSair.length; i++) {
-                botoesSair[i].textContent = "Tentar sair novamente";
-            }
+            botaoSair.textContent = "Tentar sair novamente";
         }
-    }, function () {
-        for (let i = 0; i < botoesSair.length; i++) {
-            botoesSair[i].textContent = "Tentar sair novamente";
-        }
+    }).catch(function () {
+        botaoSair.disabled = false;
+        botaoSair.textContent = "Tentar sair novamente";
     });
 }
 
-for (let i = 0; i < botoesSair.length; i++) {
-    botoesSair[i].onclick = sair;
+function consultarConta() {
+    fetch("/usuarios/sessao", { cache: "no-store" }).then(function (resposta) {
+        if (resposta.ok) {
+            return resposta.json().then(mostrarUsuario);
+        } else if (resposta.status === 401) {
+            if (window.location.pathname === "/quiz.html" || window.location.pathname === "/dashboard.html") {
+                window.location.href = "/login.html";
+            }
+        }
+    }).catch(function () {
+        entrar.textContent = "Entrar novamente";
+    });
 }
 
-fetch("/usuarios/sessao", { cache: "no-store" }).then(function (resposta) {
-    if (resposta.ok) {
-        resposta.json().then(mostrarUsuario, function () {
-        });
-    }
-}, function () {
-});
+botaoSair.onclick = sair;
+consultarConta();
