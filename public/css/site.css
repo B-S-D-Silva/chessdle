@@ -24,3 +24,7 @@
 .historia-xadrez {
     border-top: 1px solid var(--linha);
 }
+
+output.mensagem {
+    display: block;
+}

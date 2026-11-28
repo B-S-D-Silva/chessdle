@@ -1,32 +1,30 @@
-let formulario = document.querySelector("#form-conta");
-let mensagem = document.querySelector("#mensagem-form");
-let botao = formulario.querySelector("button");
-let campoNome = document.querySelector("#nome");
+let formulario = document.forms[0];
+let cadastro = formulario.dataset.modo === "cadastro";
 
 function enviarFormulario(evento) {
     evento.preventDefault();
-    if (botao.disabled) {
+    if (formulario.botao.disabled) {
         return;
     }
 
-    let email = document.querySelector("#email").value.trim();
-    let senha = document.querySelector("#senha").value;
+    let email = formulario.email.value.trim();
+    let senha = formulario.senha.value;
     let nome = "";
     let endereco = "/usuarios/autenticar";
 
-    if (campoNome) {
-        nome = document.querySelector("#nome").value.trim();
+    if (cadastro) {
+        nome = formulario.nome.value.trim();
         endereco = "/usuarios/cadastrar";
 
-        if (senha !== document.querySelector("#confirmacao").value) {
-            mensagem.textContent = "As senhas precisam ser iguais.";
+        if (senha !== formulario.confirmacao.value) {
+            formulario.mensagem.textContent = "As senhas precisam ser iguais.";
             return;
         }
     }
 
-    botao.disabled = true;
-    mensagem.className = "mensagem";
-    mensagem.textContent = "Aguarde…";
+    formulario.botao.disabled = true;
+    formulario.mensagem.className = "mensagem";
+    formulario.mensagem.textContent = "Aguarde…";
 
     let dados = {
         nomeServer: nome,
@@ -40,21 +38,21 @@ function enviarFormulario(evento) {
         body: JSON.stringify(dados)
     }).then(function (resposta) {
         return resposta.json().then(function (dados) {
-            botao.disabled = false;
+            formulario.botao.disabled = false;
 
             if (!resposta.ok) {
-                mensagem.textContent = dados.mensagem;
-            } else if (campoNome) {
+                formulario.mensagem.textContent = dados.mensagem;
+            } else if (cadastro) {
                 formulario.reset();
-                mensagem.className = "mensagem sucesso";
-                mensagem.textContent = "Conta criada. Agora entre pelo link Entrar.";
+                formulario.mensagem.className = "mensagem sucesso";
+                formulario.mensagem.textContent = "Conta criada. Agora entre pelo link Entrar.";
             } else {
                 window.location.href = "/quiz.html";
             }
         });
     }).catch(function () {
-        botao.disabled = false;
-        mensagem.textContent = "Não foi possível concluir. Tente novamente.";
+        formulario.botao.disabled = false;
+        formulario.mensagem.textContent = "Não foi possível concluir. Tente novamente.";
     });
 }
 
